@@ -1,0 +1,19 @@
+services:
+  postgres:
+    container_name: postgres
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=myshopdb'
+      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_USER=jack'
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5332:5432"
+    networks:
+      - db
+    restart: unless-stopped
+networks:
+  db:
+volumes:
+  db:
