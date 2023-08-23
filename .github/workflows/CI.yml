@@ -15,7 +15,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-test:
 
     runs-on: ubuntu-latest
 
@@ -28,8 +28,8 @@ jobs:
         java-version: '20'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven and test
-      run: mvn clean install
+    - name: Build with Maven + test
+      run:  mvn -B package --file pom.xml
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Maven Dependency Tree Dependency Submission
