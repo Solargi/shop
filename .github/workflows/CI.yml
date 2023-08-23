@@ -21,7 +21,7 @@ jobs:
 
     steps:
     - name: checkout code
-    - uses: actions/checkout@v3
+      uses: actions/checkout@v3
     - name: Set up JDK 20
       uses: actions/setup-java@v3
       with:
@@ -43,7 +43,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Super-Linter
-    - uses: super-linter/super-linter@v5.2.1
+      uses: super-linter/super-linter@v5.2.1
     env:
           #validated just modified or new files
           VALIDATE_ALL_CODEBASE: false
