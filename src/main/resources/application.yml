@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5332/myshopdb
+    url: jdbc:postgresql://localhost:5432/myshopdb
     username: jack
     password: password
 
