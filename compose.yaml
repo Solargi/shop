@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     networks:
       - db
-    restart: always
+    restart: unless-stopped
 
   backend:
     container_name: shop_backend
@@ -28,7 +28,7 @@ services:
       spring.datasource.url: jdbc:postgresql://postgres_db:5432/myshopdb
       spring.datasource.username: jack
       spring.datasource.password: password
-    restart: always
+    restart: unless-stopped
 volumes:
   db:
 networks:
