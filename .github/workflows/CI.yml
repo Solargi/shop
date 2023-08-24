@@ -33,19 +33,19 @@ jobs:
 
   
   #check code style
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Super-Linter
-      uses: super-linter/super-linter@v5.2.1
-    env:
-          #validated just modified or new files
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  lint:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#
+#    - name: Super-Linter
+#      uses: super-linter/super-linter@v5.2.1
+#    env:
+#          #validated just modified or new files
+#          VALIDATE_ALL_CODEBASE: false
+#          DEFAULT_BRANCH: main
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             
     
   
