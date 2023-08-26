@@ -1,4 +1,4 @@
 package com.example.shop.services;
 
-public class CustomerService {
+public class UserService {
 }
