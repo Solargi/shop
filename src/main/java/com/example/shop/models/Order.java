@@ -13,13 +13,13 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
     private String status;
     private Integer total_price;
-    @OneToMany
-    private List<Item> itemList;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", orphanRemoval = true)
+    private List<OrderItem> orderItemList;
+    @ManyToOne(fetch = FetchType.LAZY)
     private Address shippingAddress;
 
 

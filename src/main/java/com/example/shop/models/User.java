@@ -14,15 +14,14 @@ public class User {
     private Integer id;
     private String name;
     private String surname;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy ="user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
     private String email;
     private String password;
     private String birthDate;
-    @OneToOne
-    private ShoppingCart shoppingCart;
-    @OneToMany
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> cartItem;
+    @OneToMany(mappedBy = "user")
     private List<Order> orderList;
     private String roles;
 }

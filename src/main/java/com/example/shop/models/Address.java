@@ -1,9 +1,6 @@
 package com.example.shop.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -12,6 +9,10 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn can be used to change the name of the user column
+    @JoinColumn(name = "user_id")
+    private User user;
     private String country;
     private String state;
     private String city;
