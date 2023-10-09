@@ -29,5 +29,25 @@ public class ItemService {
         return this.itemRepository.findAll();
     }
 
+    public Item save(Item item){
+        return this.itemRepository.save(item);
+    }
+
+    public Item update(Integer itemId,  Item update){
+        Item oldItem = this.itemRepository.findById(itemId).orElseThrow(()->new ObjectNotFoundException("item",itemId));
+        oldItem.setName(update.getName());
+        oldItem.setPrice(update.getPrice());
+        oldItem.setDescription(update.getDescription());
+        oldItem.setAvailableQuantity(update.getAvailableQuantity());
+        oldItem.setOrderItems(update.getOrderItems());
+        oldItem.setCartItems(update.getCartItems());
+        oldItem.setImageUrl(update.getImageUrl());
+        return this.itemRepository.save(oldItem);
+    }
+
+    public void delete(Integer itemId){
+        Item item = this.itemRepository.findById(itemId).orElseThrow(()-> new ObjectNotFoundException("item",itemId));
+        this.itemRepository.deleteById(itemId);
+    }
 
 }
