@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record ItemDTO(Integer id,
+public record ItemDTO(
+                      Integer id,
                       @NotEmpty(message = "should not be empty/null")
                       String name,
                       String description,

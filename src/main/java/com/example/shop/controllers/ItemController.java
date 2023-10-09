@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.endpoint.base-url}/items")
@@ -23,15 +24,19 @@ public class ItemController {
 
 
     @GetMapping("")
-    public ResponseEntity<List<Item>> getItems(){
-        List<Item> foundItem = this.itemService.findAll();
-        return ResponseEntity.ok(foundItem);
+    public ResponseEntity<List<ItemDTO>> getItems(){
+        List<Item> foundItems = this.itemService.findAll();
+        //convert to dtos
+        List<ItemDTO> foundItemsDTO = foundItems.stream()
+                .map(this.itemToItemDTOConverter::convert)
+                .toList();
+        return ResponseEntity.ok(foundItemsDTO);
 
     }
     @GetMapping("/{itemId}")
-    public ResponseEntity<Item> findItemById(@PathVariable("itemId") int itemId){
+    public ResponseEntity<ItemDTO> findItemById(@PathVariable("itemId") int itemId){
         Item foundItem = this.itemService.findById(itemId);
-        return ResponseEntity.ok(foundItem);
+        return ResponseEntity.ok(this.itemToItemDTOConverter.convert(foundItem));
     }
 
     @PostMapping("")
