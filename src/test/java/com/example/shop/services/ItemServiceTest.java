@@ -47,6 +47,7 @@ class ItemServiceTest {
 
         item1.setId(1);
         item1.setName("a");
+        //TODO: ASSIGN TO ACTUAL OBJECTS
         item1.setCartItems(null);
         item1.setOrderItems(null);
         item1.setDescription("yay");
@@ -57,6 +58,7 @@ class ItemServiceTest {
 
         item2.setId(2);
         item2.setName("b");
+        //TODO: ASSIGN TO ACTUAL OBJECTS
         item2.setCartItems(null);
         item2.setOrderItems(null);
         item2.setDescription("yay2");
