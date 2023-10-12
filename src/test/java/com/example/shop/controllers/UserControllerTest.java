@@ -88,6 +88,9 @@ class UserControllerTest {
         u2.setAddresses(null);
         u2.setOrderList(null);
         u2.setCartItem(null);
+
+        usersList.add(u1);
+        usersList.add(u2);
     }
 
     @AfterEach
