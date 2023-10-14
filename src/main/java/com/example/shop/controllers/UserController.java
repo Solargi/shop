@@ -35,10 +35,9 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<UserDTO> addUser(@Valid @RequestBody UserDTO userDTO){
-        User user = this.userDTOToUserConverter.convert(userDTO);
-        user = this.userService.save(user);
-        UserDTO savedUserDTO = this.userToUserDTOConverter.convert(user);
+    public ResponseEntity<UserDTO> addUser(@Valid @RequestBody User user){
+        User savedUser = this.userService.save(user);
+        UserDTO savedUserDTO = this.userToUserDTOConverter.convert(savedUser);
         return ResponseEntity.ok(savedUserDTO);
     }
 

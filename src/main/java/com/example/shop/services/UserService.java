@@ -27,6 +27,7 @@ public class UserService {
     }
 
     public User save(User user){
+        //TODO ENCRYPT PASSWORD BEFORE SAVING IT
         return this.userRepository.save(user);
     }
 

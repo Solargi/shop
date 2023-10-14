@@ -3,6 +3,7 @@ package com.example.shop.controllers;
 import com.example.shop.dtos.UserDTO;
 import com.example.shop.dtos.converters.UserDTOToUserConverter;
 import com.example.shop.dtos.converters.UserToUserDTOConverter;
+import com.example.shop.models.Address;
 import com.example.shop.models.User;
 import com.example.shop.services.ItemService;
 import com.example.shop.services.UserService;
@@ -140,12 +141,16 @@ class UserControllerTest {
 
     @Test
     void testAddUserSuccess() throws Exception{
-        UserDTO userDTO = new UserDTO(
-                4, "q","a","k",
-                "a@a.com","yay","admin");
-
-        String jsonUser = this.objectMapper.writeValueAsString(userDTO);
-
+        Address a3 = new Address();
+        a3.setId(1);
+        a3.setCountry("a");
+        a3.setCity("b");
+        a3.setStreet("c");
+        a3.setState("d");
+        a3.setZipCode(56);
+        a3.setUser(u1);
+        List<Address> addresses = new ArrayList<Address>();
+        addresses.add(a3);
         User u3 = new User();
         u3.setId(6);
         u3.setName("a");
@@ -156,11 +161,12 @@ class UserControllerTest {
         u3.setRoles("admin");
         u3.setBirthDate("yay");
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
-        u3.setAddresses(null);
+        u3.setAddresses(addresses);
         u3.setOrderList(null);
         u3.setCartItem(null);
 
         given(this.userService.save(Mockito.any(User.class))).willReturn(u3);
+        String jsonUser = this.objectMapper.writeValueAsString(u3);
 
         this.mockMvc.perform(post(this.baseUrl + "/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -183,18 +189,12 @@ class UserControllerTest {
 
     @Test
     void testAddUserBadRequest() throws Exception {
-        UserDTO userDTO = new UserDTO(
-                4, "q","","",
-                "a@a.com","yay","admin");
-
-        String jsonUser = this.objectMapper.writeValueAsString(userDTO);
-
         User u3 = new User();
         u3.setId(6);
         u3.setName("a");
         u3.setSurname("b");
         u3.setUsername("u1");
-        u3.setPassword("q");
+        u3.setPassword("");
         u3.setEmail("c");
         u3.setRoles("admin");
         u3.setBirthDate("yay");
@@ -203,13 +203,15 @@ class UserControllerTest {
         u3.setOrderList(null);
         u3.setCartItem(null);
 
+        String jsonUser = this.objectMapper.writeValueAsString(u3);
+
         this.mockMvc.perform(post(this.baseUrl + "/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("$.name").value("should not be empty/null"))
-                .andExpect(jsonPath("$.surname").value("should not be empty/null"));
+                .andExpect(jsonPath("$.addresses").value("must not be null"))
+                .andExpect(jsonPath("$.password").doesNotExist());
     }
 
     @Test
