@@ -42,9 +42,9 @@ class CartItemServiceTest {
 
     CartItem ci1 = new CartItem();
     CartItem ci2 = new CartItem();
-    CartItemId id1 = new CartItemId(u1.getId(),i1.getId());
-    CartItemId id3 = new CartItemId(u2.getId(),i2.getId());
-    CartItemId id2 = new CartItemId(u1.getId(),i2.getId());
+    CartItemId id1 = new CartItemId();
+    CartItemId id3 = new CartItemId();
+    CartItemId id2 = new CartItemId();
 
     List<CartItem> cartItemsList = new ArrayList<CartItem>();
 
@@ -97,8 +97,12 @@ class CartItemServiceTest {
         u2.setOrderList(null);
         u2.setCartItem(null);
 
-
-
+        id1.setItemId(i1.getId());
+        id1.setUserId(u1.getId());
+        id3.setUserId(u2.getId());
+        id3.setItemId(i2.getId());
+        id2.setItemId(i2.getId());
+        id2.setItemId(u1.getId());
 
 
         ci1.setId(id1);
