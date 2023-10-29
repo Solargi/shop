@@ -28,8 +28,8 @@ public class User {
     @NotNull
     @NotEmpty
     private String email;
-    @NotNull
     @NotEmpty
+    @NotNull
     private String password;
     @NotNull
     private String birthDate;
