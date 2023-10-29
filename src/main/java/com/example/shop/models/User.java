@@ -1,6 +1,7 @@
 package com.example.shop.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -25,8 +26,10 @@ public class User {
     @OneToMany(mappedBy ="user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
     @NotNull
+    @NotEmpty
     private String email;
     @NotNull
+    @NotEmpty
     private String password;
     @NotNull
     private String birthDate;
@@ -35,6 +38,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Order> orderList;
     @NotNull
+    @NotEmpty
     private String roles;
 
     public void addCartItem(CartItem cartItem){

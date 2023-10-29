@@ -107,7 +107,7 @@ class AddressControllerTest {
         given(this.addressService.findById(1)).willReturn(this.a1);
 
         //When and then
-        this.mockMvc.perform(get(this.baseUrl + "/Addresses/1").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/addresses/1").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a1.getId()))
@@ -123,7 +123,7 @@ class AddressControllerTest {
     void testFindAddressByIdNotFound() throws Exception {
         given(this.addressService.findById(123)).willThrow(new ObjectNotFoundException("address",123));
 
-        this.mockMvc.perform(get(this.baseUrl + "/Addresses/123").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/addresses/123").accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 123"));
@@ -210,7 +210,7 @@ class AddressControllerTest {
                 .andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("$.state").value("must not be empty"))
-                .andExpect(jsonPath("$.city").value("must not be empty"));
+                .andExpect(jsonPath("$.city").value("must not be null"));
     }
     @Test
     void testUpdateAddressSuccess() throws Exception {

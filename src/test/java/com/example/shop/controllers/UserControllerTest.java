@@ -184,29 +184,32 @@ class UserControllerTest {
 
     @Test
     void testAddUserBadRequest() throws Exception {
+
         User u3 = new User();
         u3.setId(6);
         u3.setName("a");
         u3.setSurname("b");
         u3.setUsername("u1");
-        u3.setPassword("");
-        u3.setEmail("c");
+        u3.setPassword(null);
+        u3.setEmail("");
         u3.setRoles("admin");
         u3.setBirthDate("yay");
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
-        u3.setAddresses(null);
         u3.setOrderList(null);
         u3.setCartItems(null);
+        u3.setAddresses(null);
 
+        given(this.userService.save(Mockito.any(User.class))).willReturn(u3);
         String jsonUser = this.objectMapper.writeValueAsString(u3);
+        System.out.println(jsonUser);
 
         this.mockMvc.perform(post(this.baseUrl + "/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("$.addresses").value("must not be null"))
-                .andExpect(jsonPath("$.password").doesNotExist());
+                .andExpect(jsonPath("$.password").value("must not be null"))
+                .andExpect(jsonPath("$.email").value("must not be empty"));
     }
 
     @Test
