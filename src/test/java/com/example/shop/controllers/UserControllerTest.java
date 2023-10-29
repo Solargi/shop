@@ -208,7 +208,7 @@ class UserControllerTest {
                         .content(jsonUser).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("$.password").value("must not be null"))
+                .andExpect(jsonPath("$.password").value("must not be empty"))
                 .andExpect(jsonPath("$.email").value("must not be empty"));
     }
 
