@@ -15,5 +15,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql : true
+
   main:
     web-application-type: servlet
+
+api:
+  endpoint:
+    base-url: /api/v1
