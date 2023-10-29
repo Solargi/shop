@@ -210,7 +210,7 @@ class AddressControllerTest {
                 .andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("$.state").value("must not be empty"))
-                .andExpect(jsonPath("$.city").value("must not be null"));
+                .andExpect(jsonPath("$.city").value("must not be empty"));
     }
     @Test
     void testUpdateAddressSuccess() throws Exception {
