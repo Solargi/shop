@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.math.BigDecimal;
 
@@ -37,6 +39,11 @@ public class OrderItem {
         this.item = item;
         this.quantity = quantity;
         this.totalCost = totalCost;
+    }
+    public OrderItem (Order order, CartItem cartItem){
+        this.order = order;
+        this.item = cartItem.getItem();
+        this.totalCost = cartItem.getTotalCost();
     }
 
 

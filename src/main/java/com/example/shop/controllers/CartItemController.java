@@ -39,14 +39,19 @@ public class CartItemController {
         return ResponseEntity.ok(this.cartItemToCartItemDTOConverter.convert(foundCartItem));
     }
 
+    //TODO: ADD A TEST ENDPOINT TO FETCH ALL CARTITEMS BELONGING TO A USER USING USERID
+
     @PostMapping("")
     //valid checks for validity of fields defined in ItemDto class with annotation
     // request body takes
     public ResponseEntity<CartItemDTO> addCartItem(@Valid @RequestBody CartItemDTO cartItemDTO){
         //convert dto to object
         CartItem cartItem = this.cartItemDTOToCartItemConverter.convert(cartItemDTO);
+        //set correct total price based on item price and quantity (should not produce empty thanks to validation)
+        cartItem.setTotalCost(cartItem.computeTotalCost());
         //save cartItem
         CartItem savedItem = this.cartItemService.save(cartItem);
+
         // reconvert to dto to get generated field id
         CartItemDTO savedItemDTO = this.cartItemToCartItemDTOConverter.convert(savedItem);
         return ResponseEntity.ok(savedItemDTO);
@@ -54,7 +59,7 @@ public class CartItemController {
     }
 
     @PutMapping("/{userId}/{itemId}")
-    public ResponseEntity<CartItemDTO> updateItem(@PathVariable Integer userId,
+    public ResponseEntity<CartItemDTO> updateCartItem(@PathVariable Integer userId,
             @PathVariable Integer itemId, @Valid @RequestBody CartItemDTO cartItemDTO){
         CartItemId cartItemId = new CartItemId(userId, itemId);
         CartItem cartItem = this.cartItemDTOToCartItemConverter.convert(cartItemDTO);
@@ -64,11 +69,19 @@ public class CartItemController {
     }
 
     @DeleteMapping("/{userId}/{itemId}")
-    public ResponseEntity<String> deleteItem (@PathVariable Integer userId,
+    public ResponseEntity<String> deleteCartItem (@PathVariable Integer userId,
                                               @PathVariable Integer itemId){
         CartItemId cartItemId = new CartItemId(userId, itemId);
         this.cartItemService.delete(cartItemId);
         return ResponseEntity.ok("CartItem deleted successfully!");
 
     }
+
+    //TODO TEST THIS ENDPOINT
+    @DeleteMapping("{userId}")
+    public ResponseEntity<String> deleteAllByUserId (@PathVariable Integer userId){
+        this.cartItemService.deleteAllByUserId(userId);
+        return ResponseEntity.ok("CartItem deleted successfully!");
+    }
+
 }

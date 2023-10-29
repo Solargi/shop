@@ -17,6 +17,6 @@ public class CartItemToCartItemDTOConverter implements Converter<CartItem, CartI
         return new CartItemDTO(source.getId(),
                 this.userToUserDTOConverter.convert(source.getUser()),
                 this.itemToItemDTOConverter.convert(source.getItem()),
-                source.getQuantity());
+                source.getQuantity(), source.getTotalCost());
     }
 }

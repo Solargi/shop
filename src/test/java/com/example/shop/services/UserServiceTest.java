@@ -1,6 +1,5 @@
 package com.example.shop.services;
 
-import com.example.shop.models.Item;
 import com.example.shop.models.User;
 import com.example.shop.repositories.UserRepository;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
@@ -13,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +50,7 @@ class UserServiceTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u1.setAddresses(null);
         u1.setOrderList(null);
-        u1.setCartItem(null);
+        u1.setCartItems(null);
 
         u2.setId(2);
         u2.setName("d");
@@ -65,7 +63,7 @@ class UserServiceTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u2.setAddresses(null);
         u2.setOrderList(null);
-        u2.setCartItem(null);
+        u2.setCartItems(null);
 
         usersList.add(u1);
         usersList.add(u2);
@@ -88,7 +86,7 @@ class UserServiceTest {
         assertThat(foundUser.getEmail()).isEqualTo(u1.getEmail());
         assertThat(foundUser.getBirthDate()).isEqualTo(u1.getBirthDate());
         assertThat(foundUser.getRoles()).isEqualTo(u1.getRoles());
-        assertThat(foundUser.getCartItem()).isEqualTo(u1.getCartItem());
+        assertThat(foundUser.getCartItems()).isEqualTo(u1.getCartItems());
         assertThat(foundUser.getPassword()).isEqualTo(u1.getPassword());
         assertThat(foundUser.getAddresses()).isEqualTo(u1.getAddresses());
         assertThat(foundUser.getOrderList()).isEqualTo(u1.getOrderList());
@@ -134,7 +132,7 @@ class UserServiceTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u3.setAddresses(null);
         u3.setOrderList(null);
-        u3.setCartItem(null);
+        u3.setCartItems(null);
 
         given(this.userRepository.save(u3)).willReturn(u3);
 
@@ -146,7 +144,7 @@ class UserServiceTest {
         assertThat(savedUser.getEmail()).isEqualTo(u3.getEmail());
         assertThat(savedUser.getBirthDate()).isEqualTo(u3.getBirthDate());
         assertThat(savedUser.getRoles()).isEqualTo(u3.getRoles());
-        assertThat(savedUser.getCartItem()).isEqualTo(u3.getCartItem());
+        assertThat(savedUser.getCartItems()).isEqualTo(u3.getCartItems());
     }
 
     @Test
@@ -163,7 +161,7 @@ class UserServiceTest {
          //TODO: ASSIGN THEM TO ACTUAL OBJECTS
          u3.setAddresses(null);
          u3.setOrderList(null);
-         u3.setCartItem(null);
+         u3.setCartItems(null);
 
          given(this.userRepository.findById(1)).willReturn(Optional.of(u1));
          //when saving item 1 already has the new values

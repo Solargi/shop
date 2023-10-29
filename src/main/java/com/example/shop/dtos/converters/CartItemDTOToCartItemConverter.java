@@ -20,6 +20,7 @@ public class CartItemDTOToCartItemConverter implements Converter<CartItemDTO, Ca
         cartItem.setUser(this.userDTOToUserConverter.convert(source.userDTO()));
         cartItem.setItem(this.itemDTOToItemConverter.convert(source.itemDTO()));
         cartItem.setQuantity(source.quantity());
+        cartItem.setTotalCost(source.totalCost());
         return cartItem;
     }
 }

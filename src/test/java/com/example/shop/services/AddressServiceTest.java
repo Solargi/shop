@@ -1,7 +1,6 @@
 package com.example.shop.services;
 
 import com.example.shop.models.Address;
-import com.example.shop.models.Address;
 import com.example.shop.models.User;
 import com.example.shop.repositories.AddressRepository;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
@@ -14,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +51,7 @@ class AddressServiceTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u1.setAddresses(null);
         u1.setOrderList(null);
-        u1.setCartItem(null);
+        u1.setCartItems(null);
 
         a1.setId(1);
         a1.setCountry("a");

@@ -1,15 +1,11 @@
 package com.example.shop.controllers;
 
 import com.example.shop.dtos.UserDTO;
-import com.example.shop.dtos.converters.UserDTOToUserConverter;
-import com.example.shop.dtos.converters.UserToUserDTOConverter;
 import com.example.shop.models.Address;
 import com.example.shop.models.User;
-import com.example.shop.services.ItemService;
 import com.example.shop.services.UserService;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -75,7 +70,7 @@ class UserControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u1.setAddresses(null);
         u1.setOrderList(null);
-        u1.setCartItem(null);
+        u1.setCartItems(null);
 
         u2.setId(1);
         u2.setName("d");
@@ -88,7 +83,7 @@ class UserControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u2.setAddresses(null);
         u2.setOrderList(null);
-        u2.setCartItem(null);
+        u2.setCartItems(null);
 
         usersList.add(u1);
         usersList.add(u2);
@@ -163,7 +158,7 @@ class UserControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u3.setAddresses(addresses);
         u3.setOrderList(null);
-        u3.setCartItem(null);
+        u3.setCartItems(null);
 
         given(this.userService.save(Mockito.any(User.class))).willReturn(u3);
         String jsonUser = this.objectMapper.writeValueAsString(u3);
@@ -201,7 +196,7 @@ class UserControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u3.setAddresses(null);
         u3.setOrderList(null);
-        u3.setCartItem(null);
+        u3.setCartItems(null);
 
         String jsonUser = this.objectMapper.writeValueAsString(u3);
 
@@ -234,7 +229,7 @@ class UserControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u3.setAddresses(null);
         u3.setOrderList(null);
-        u3.setCartItem(null);
+        u3.setCartItems(null);
 
         given(this.userService.update(eq(1),Mockito.any(User.class))).willReturn(u3);
 
@@ -276,7 +271,7 @@ class UserControllerTest {
         u3.setBirthDate("yay");
         u3.setAddresses(null);
         u3.setOrderList(null);
-        u3.setCartItem(null);
+        u3.setCartItems(null);
 
         given(this.userService.update(eq(3232),Mockito.any(User.class))).willThrow(new ObjectNotFoundException("user",3232));
 

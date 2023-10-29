@@ -112,7 +112,7 @@ class CartItemControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u1.setAddresses(null);
         u1.setOrderList(null);
-        u1.setCartItem(null);
+        u1.setCartItems(null);
 
         u2.setId(4);
         u2.setName("d");
@@ -125,7 +125,7 @@ class CartItemControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u2.setAddresses(null);
         u2.setOrderList(null);
-        u2.setCartItem(null);
+        u2.setCartItems(null);
 
 
         id1.setItemId(i1.getId());
@@ -206,6 +206,7 @@ class CartItemControllerTest {
         ci3.setItem(i2);
         ci3.setUser(u1);
         ci3.setQuantity(1);
+        ci3.setTotalCost(new BigDecimal(10));
         
         //given
         CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
@@ -226,7 +227,8 @@ class CartItemControllerTest {
                 .andExpect(jsonPath("$.userDTO.id").value(ci3.getUser().getId()))
                 .andExpect(jsonPath("$.quantity").value(ci3.getQuantity()))
                 .andExpect(jsonPath("$.id.userId").value(ci3.getId().getUserId()))
-                .andExpect(jsonPath("$.id.itemId").value(ci3.getId().getItemId()));
+                .andExpect(jsonPath("$.id.itemId").value(ci3.getId().getItemId()))
+                .andExpect(jsonPath("$.totalCost").value(ci3.getTotalCost()));
     }
 //
     @Test
@@ -239,9 +241,10 @@ class CartItemControllerTest {
         ci3.setItem(null);
         ci3.setUser(u1);
         ci3.setQuantity(1);
+        ci3.setTotalCost(new BigDecimal(10));
 
         //given
-        CartItemDTO cartItemDTO = new CartItemDTO(null,null,null,3);
+        CartItemDTO cartItemDTO = new CartItemDTO(null,null,null,-5,new BigDecimal(6));
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
 
@@ -253,10 +256,11 @@ class CartItemControllerTest {
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("$.itemDTO").value("must not be null"))
-                .andExpect(jsonPath("$.userDTO").value("must not be null"))
+                .andExpect(jsonPath("$.quantity").value("must be greater than 0"))
                 .andExpect(jsonPath("$.id").doesNotExist());
     }
+
+    //TODO add test for adding items with invalid item id , user id
     @Test
     void testUpdateItemSuccess() throws Exception {
         CartItem ci3 = new CartItem();
@@ -266,6 +270,7 @@ class CartItemControllerTest {
         ci3.setItem(i2);
         ci3.setUser(u1);
         ci3.setQuantity(1);
+        ci3.setTotalCost(new BigDecimal(10));
 
         //given
         CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
@@ -285,7 +290,8 @@ class CartItemControllerTest {
                 .andExpect(jsonPath("$.userDTO.id").value(ci3.getUser().getId()))
                 .andExpect(jsonPath("$.quantity").value(ci3.getQuantity()))
                 .andExpect(jsonPath("$.id.userId").value(ci3.getId().getUserId()))
-                .andExpect(jsonPath("$.id.itemId").value(ci3.getId().getItemId()));
+                .andExpect(jsonPath("$.id.itemId").value(ci3.getId().getItemId()))
+                .andExpect(jsonPath("$.totalCost").value(ci3.getTotalCost()));
     }
     @Test
     void testUpdateItemNotFound () throws Exception{
@@ -297,6 +303,7 @@ class CartItemControllerTest {
         ci3.setItem(i2);
         ci3.setUser(u1);
         ci3.setQuantity(1);
+        ci3.setTotalCost(new BigDecimal(10));
 
         //given
         CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);

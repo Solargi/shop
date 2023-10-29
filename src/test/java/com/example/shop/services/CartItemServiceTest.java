@@ -2,10 +2,11 @@ package com.example.shop.services;
 
 import com.example.shop.Embeddables.CartItemId;
 import com.example.shop.models.CartItem;
-import com.example.shop.models.CartItem;
 import com.example.shop.models.Item;
 import com.example.shop.models.User;
 import com.example.shop.repositories.CartItemRepository;
+import com.example.shop.repositories.ItemRepository;
+import com.example.shop.repositories.UserRepository;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,10 @@ import static org.mockito.Mockito.*;
 class CartItemServiceTest {
     @Mock
     CartItemRepository cartItemRepository;
+    @Mock
+    UserRepository userRepository;
+    @Mock
+    ItemRepository itemRepository;
     
     @InjectMocks
     CartItemService cartItemService;
@@ -53,7 +58,7 @@ class CartItemServiceTest {
         i1.setId(1);
         i1.setName("a");
         //TODO: ASSIGN TO ACTUAL OBJECTS
-        i1.setCartItems(null);
+        i1.setCartItems(new ArrayList<CartItem>());
         i1.setOrderItems(null);
         i1.setDescription("yay");
         i1.setPrice(new BigDecimal("32.1"));
@@ -64,7 +69,7 @@ class CartItemServiceTest {
         i2.setId(2);
         i2.setName("b");
         //TODO: ASSIGN TO ACTUAL OBJECTS
-        i2.setCartItems(null);
+        i2.setCartItems(new ArrayList<CartItem>());
         i2.setOrderItems(null);
         i2.setDescription("yay2");
         i2.setPrice(new BigDecimal("32.1"));
@@ -82,7 +87,7 @@ class CartItemServiceTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u1.setAddresses(null);
         u1.setOrderList(null);
-        u1.setCartItem(null);
+        u1.setCartItems(new ArrayList<CartItem>());
 
         u2.setId(4);
         u2.setName("d");
@@ -95,7 +100,7 @@ class CartItemServiceTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u2.setAddresses(null);
         u2.setOrderList(null);
-        u2.setCartItem(null);
+        u2.setCartItems(new ArrayList<CartItem>());
 
         id1.setItemId(i1.getId());
         id1.setUserId(u1.getId());
@@ -180,6 +185,8 @@ class CartItemServiceTest {
         ci3.setQuantity(1);
 
         given(cartItemRepository.save(ci3)).willReturn(ci3);
+        given(userRepository.findById(cid3.getUserId())).willReturn(Optional.of(u1));
+        given(itemRepository.findById(cid3.getItemId())).willReturn(Optional.of(i2));
 
         CartItem savedCartItem = cartItemService.save(ci3);
         assertThat(savedCartItem.getId()).isEqualTo(ci3.getId());
@@ -224,6 +231,8 @@ class CartItemServiceTest {
     @Test
     void testDeleteSuccess(){
         given(cartItemRepository.findById(id1)).willReturn(Optional.of(ci1));
+        given(userRepository.findById(id1.getUserId())).willReturn(Optional.of(u1));
+        given(itemRepository.findById(id1.getItemId())).willReturn(Optional.of(i1));
         doNothing().when(cartItemRepository).deleteById(id1);
 
         cartItemService.delete(id1);

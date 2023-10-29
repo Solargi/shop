@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,13 +16,13 @@ public class User {
     @NotNull
     private Integer id;
     @NotNull
+    @Column(unique = true)
     private String username;
     @NotNull
     private String name;
     @NotNull
     private String surname;
     @OneToMany(mappedBy ="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @NotNull
     private List<Address> addresses;
     @NotNull
     private String email;
@@ -30,9 +31,29 @@ public class User {
     @NotNull
     private String birthDate;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItem;
+    private List<CartItem> cartItems;
     @OneToMany(mappedBy = "user")
     private List<Order> orderList;
     @NotNull
     private String roles;
+
+    public void addCartItem(CartItem cartItem){
+        if (!this.cartItems.contains(cartItem)) {
+            this.cartItems.add(cartItem);
+        }
+    }
+    public void removeCartItem(CartItem cartItem){
+        this.cartItems.remove(cartItem);
+    }
+
+    public void removeAllCartItems(){
+        setCartItems(new ArrayList<CartItem>());
+    }
+
+    public void addOrder(Order order){
+        if (!this.orderList.contains(order)) {
+            this.orderList.add(order);
+        }
+    }
+    public void removeOrder(Order order){this.orderList.remove(order);}
 }

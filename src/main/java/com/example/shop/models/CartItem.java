@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -29,11 +31,19 @@ public class CartItem {
     @NotNull
     private Integer quantity;
 
+    @NotNull
+    BigDecimal totalCost;
+
     public CartItem(User user, Item item, Integer quantity) {
         this.id = new CartItemId(user.getId(), item.getId());
         this.user = user;
         this.item = item;
         this. quantity =quantity;
+        this.totalCost = computeTotalCost();
 
+    }
+
+    public BigDecimal computeTotalCost(){
+        return  this.getItem().getPrice().multiply(BigDecimal.valueOf(getQuantity()));
     }
 }

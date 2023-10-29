@@ -4,7 +4,6 @@ import com.example.shop.models.User;
 import com.example.shop.repositories.UserRepository;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,7 +41,7 @@ public class UserService {
         oldUser.setRoles(update.getRoles());
         oldUser.setBirthDate(update.getBirthDate());
         oldUser.setAddresses(update.getAddresses());
-        oldUser.setCartItem(update.getCartItem());
+        oldUser.setCartItems(update.getCartItems());
         oldUser.setOrderList(update.getOrderList());
         return this.userRepository.save(oldUser);
 

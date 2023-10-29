@@ -1,16 +1,12 @@
 package com.example.shop.controllers;
 
 import com.example.shop.dtos.AddressDTO;
-import com.example.shop.dtos.converters.AddressDTOToAddressConverter;
-import com.example.shop.dtos.converters.AddressToAddressDTOConverter;
 import com.example.shop.dtos.converters.UserToUserDTOConverter;
-import com.example.shop.models.Address;
 import com.example.shop.models.Address;
 import com.example.shop.models.User;
 import com.example.shop.services.AddressService;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,13 +22,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -80,7 +74,7 @@ class AddressControllerTest {
         //TODO: ASSIGN THEM TO ACTUAL OBJECTS
         u1.setAddresses(null);
         u1.setOrderList(null);
-        u1.setCartItem(null);
+        u1.setCartItems(null);
 
         a1.setId(1);
         a1.setCountry("a");
