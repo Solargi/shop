@@ -34,7 +34,7 @@ public class OrderService {
     //to save the order we need the id of the user and the cart items of the user,
     // cart items are converted into orderitems and addet to the order that is then added to the user
     // cart items are then deleted from usrer
-    public Order saveOrder(Order order){
+    public Order save(Order order){
         //fetch user if exists
         User user = this.userRepository.findById(order.getUser().getId()).orElseThrow(() ->
                 new ObjectNotFoundException("user", order.getUser().getId()));
