@@ -7,13 +7,13 @@ import jakarta.validation.constraints.NotNull;
 public record AddressDTO (Integer id,
                           @NotNull
                           UserDTO userDTO,
-                          @NotNull @NotEmpty
+                          @NotEmpty
                           String country,
-                          @NotNull @NotEmpty
+                          @NotEmpty
                           String state,
-                          @NotNull @NotEmpty
+                           @NotEmpty
                           String city,
-                          @NotNull @NotEmpty
+                          @NotEmpty
                           String street,
                           @NotNull
                           Integer zipCode) {

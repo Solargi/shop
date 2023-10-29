@@ -16,28 +16,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @NotNull
     private Integer id;
-    @NotNull
+    @NotEmpty
     @Column(unique = true)
     private String username;
-    @NotNull
+    @NotEmpty
     private String name;
-    @NotNull
+    @NotEmpty
     private String surname;
     @OneToMany(mappedBy ="user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
-    @NotNull
     @NotEmpty
     private String email;
     @NotEmpty
-    @NotNull
     private String password;
-    @NotNull
+    @NotEmpty
     private String birthDate;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems;
     @OneToMany(mappedBy = "user")
     private List<Order> orderList;
-    @NotNull
     @NotEmpty
     private String roles;
 
