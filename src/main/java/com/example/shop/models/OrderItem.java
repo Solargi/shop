@@ -46,5 +46,9 @@ public class OrderItem {
         this.totalCost = cartItem.getTotalCost();
     }
 
+    public BigDecimal computeTotalCost () {
+        return this.item.getPrice().multiply(new BigDecimal(this.getQuantity()));
+    }
+
 
 }
