@@ -7,17 +7,16 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public record CartItemDTO (
+public record CartItemDTO (@NotNull
                            CartItemId id,
-                           //setted in services before saving
-                           // and putting so can be null
+                           // user and item dto must be manually assigned
+                           // is services to make sure data is consistent with db
                           UserDTO userDTO,
-                           //setted in services before saving
-                           // and putting so can be null
                           ItemDTO itemDTO,
-                           @NotNull @Positive
+                           @NotNull
+                           @Positive
                           Integer quantity,
                            //setted in services before saving
-                           // and putting so can be null
+                           //or updating to avoid wrong / null values
                            BigDecimal totalCost) {
 }

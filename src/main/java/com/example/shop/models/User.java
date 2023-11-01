@@ -24,7 +24,7 @@ public class User {
     @NotEmpty
     private String surname;
     @OneToMany(mappedBy ="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses;
+    private List<Address> addresses = new ArrayList<>();
     @NotEmpty
     private String email;
     @NotEmpty
@@ -32,15 +32,23 @@ public class User {
     @NotEmpty
     private String birthDate;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItems;
+    private List<CartItem> cartItems = new ArrayList<>();
     @OneToMany(mappedBy = "user")
-    private List<Order> orderList;
+    private List<Order> orderList = new ArrayList<>();
     @NotEmpty
     private String roles;
 
     public void addCartItem(CartItem cartItem){
         if (!this.cartItems.contains(cartItem)) {
             this.cartItems.add(cartItem);
+            cartItem.setUser(this);
+        }
+    }
+
+    public void addAddress(Address address){
+        if (!this.addresses.contains(address)) {
+            this.addresses.add(address);
+            address.setUser(this);
         }
     }
     public void removeCartItem(CartItem cartItem){
@@ -48,7 +56,7 @@ public class User {
     }
 
     public void removeAllCartItems(){
-        setCartItems(new ArrayList<CartItem>());
+        this.cartItems.clear();
     }
 
     public void addOrder(Order order){

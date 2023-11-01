@@ -40,17 +40,16 @@ public class OrderController {
 
 
 
-    @PostMapping("")
+    @PostMapping("/{userId}")
     //valid checks for validity of fields defined in OrderDto class with annotation
     // request body
-    public ResponseEntity<OrderDTO> addOrder(@Valid @RequestBody OrderDTO orderDTO){
-        //convert dto to object
-        Order order = this.orderDTOToOrderConverter.convert(orderDTO);
+    public ResponseEntity<Object> addOrder(@PathVariable("userId") int userId){
         //save order
-        Order savedOrder = this.orderService.save(order);
-        // reconvert to dto to get generated field id
-        OrderDTO savedOrderDTO = this.orderToOrderDTOConverter.convert(savedOrder);
-        return ResponseEntity.ok(savedOrderDTO);
+        Order savedOrder = this.orderService.save(userId);
+        //TODO REWORK DTO
+//         reconvert to dto to get generated field id
+//        OrderDTO savedOrderDTO = this.orderToOrderDTOConverter.convert(savedOrder);
+        return ResponseEntity.ok("Yay");
 
     }
 

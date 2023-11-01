@@ -41,9 +41,11 @@ public class OrderItem {
         this.totalCost = totalCost;
     }
     public OrderItem (Order order, CartItem cartItem){
+        this.id = new OrderItemId(order.getId(),cartItem.getItem().getId());
         this.order = order;
         this.item = cartItem.getItem();
         this.totalCost = cartItem.getTotalCost();
+        this.quantity = cartItem.getQuantity();
     }
 
     public BigDecimal computeTotalCost () {

@@ -47,8 +47,7 @@ public class CartItemController {
     public ResponseEntity<CartItemDTO> addCartItem(@Valid @RequestBody CartItemDTO cartItemDTO){
         //convert dto to object
         CartItem cartItem = this.cartItemDTOToCartItemConverter.convert(cartItemDTO);
-        //set correct total price based on item price and quantity (should not produce empty thanks to validation)
-        cartItem.setTotalCost(cartItem.computeTotalCost());
+
         //save cartItem
         CartItem savedItem = this.cartItemService.save(cartItem);
 
@@ -81,7 +80,7 @@ public class CartItemController {
     @DeleteMapping("{userId}")
     public ResponseEntity<String> deleteAllByUserId (@PathVariable Integer userId){
         this.cartItemService.deleteAllByUserId(userId);
-        return ResponseEntity.ok("CartItem deleted successfully!");
+        return ResponseEntity.ok("CartItems of user: " + userId + " deleted successfully!");
     }
 
 }

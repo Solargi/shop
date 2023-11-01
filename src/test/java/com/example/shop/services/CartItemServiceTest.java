@@ -206,6 +206,8 @@ class CartItemServiceTest {
        ci3.setQuantity(1);
 
         given(cartItemRepository.findById(ci1.getId())).willReturn(Optional.of(ci1));
+        given(userRepository.findById(u1.getId())).willReturn(Optional.of(u1));
+        given(itemRepository.findById(i2.getId())).willReturn(Optional.of(i2));
         //when savind address 1 already has the new values
         given(cartItemRepository.save(ci1)).willReturn(ci1);
 
@@ -231,8 +233,9 @@ class CartItemServiceTest {
     @Test
     void testDeleteSuccess(){
         given(cartItemRepository.findById(id1)).willReturn(Optional.of(ci1));
-        given(userRepository.findById(id1.getUserId())).willReturn(Optional.of(u1));
-        given(itemRepository.findById(id1.getItemId())).willReturn(Optional.of(i1));
+        //no longer needed
+//        given(userRepository.findById(id1.getUserId())).willReturn(Optional.of(u1));
+//        given(itemRepository.findById(id1.getItemId())).willReturn(Optional.of(i1));
         doNothing().when(cartItemRepository).deleteById(id1);
 
         cartItemService.delete(id1);

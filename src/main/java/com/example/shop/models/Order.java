@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,9 +24,9 @@ public class Order {
     private String status;
     @NotNull
     private BigDecimal totalCost;
-    @OneToMany(mappedBy = "order", orphanRemoval = true)
-    @NotNull
-    private List<OrderItem> orderItemList;
+    @OneToMany(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
+//    @NotNull
+    private List<OrderItem> orderItemList = new ArrayList<>();
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     private Address shippingAddress;
@@ -41,6 +42,15 @@ public class Order {
         }
         total = total.add(shippingCost);
         return total;
+    }
+    public void addOrderItem(OrderItem orderItem){
+        if (!this.orderItemList.contains(orderItem)) {
+            this.orderItemList.add(orderItem);
+            orderItem.setOrder(this);
+        }
+    }
+    public void removeAllOrderItems(){
+        this.orderItemList.clear();
     }
 
     public void setTotalCost () {
