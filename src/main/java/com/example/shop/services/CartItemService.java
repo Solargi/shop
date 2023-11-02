@@ -73,21 +73,22 @@ public class CartItemService {
         }
     }
 
+//    only update allowed is quantity
     public CartItem update(CartItemId cartItemId,  CartItem update){
         CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartitem",cartItemId));
         // make sure update cart item id is valid
-        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
-                new ObjectNotFoundException("user", update.getId().getUserId()));
-        Item item = this.itemRepository.findById(update.getId().getItemId()).orElseThrow(() ->
-                new ObjectNotFoundException("item", update.getId().getItemId()));
-        //set right fields in update
-        update.setItem(item);
-        update.setUser(user);
-        update.setTotalCost(update.computeTotalCost());
-        // update old item and save
-        oldItem.setItem(update.getItem());
+//        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
+//                new ObjectNotFoundException("user", update.getId().getUserId()));
+//        Item item = this.itemRepository.findById(update.getId().getItemId()).orElseThrow(() ->
+//                new ObjectNotFoundException("item", update.getId().getItemId()));
+//        //set right fields in update
+//        update.setItem(item);
+//        update.setUser(user);
+//        update.setTotalCost(update.computeTotalCost());
+//        // update old item and save
+//        oldItem.setItem(update.getItem());
         oldItem.setQuantity(update.getQuantity());
-        oldItem.setUser(update.getUser());
+//        oldItem.setUser(update.getUser());
         oldItem.setTotalCost(oldItem.computeTotalCost());
         return this.cartItemRepository.save(oldItem);
     }

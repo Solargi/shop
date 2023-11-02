@@ -11,11 +11,11 @@ import java.util.List;
 
 public record OrderDTO (Integer id,
                         @NotNull
-                        User user,
+                        UserDTO user,
                         @NotNull
                         String status,
                         @NotNull
-                        Address shippingAddress,
+                        AddressDTO shippingAddress,
                         @NotNull
                         BigDecimal shippingCost,
                         @NotNull

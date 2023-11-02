@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,12 +44,6 @@ public class OrderService {
         //if CartItemList not empty:
         // create and save the order
         if (!user.getCartItems().isEmpty()){
-            // optional find cartItems list to convert to orderItems (assumes that cartItemlist of fetched user
-            // is a valid list of valid items with valid total prices)
-            for (CartItem cartItem : user.getCartItems()){
-                order.addOrderItem(new OrderItem(order, cartItem));
-            }
-
             //set default order parameters to avoid false data
             //might want to remove this and put it in userservice
             //lock pure crud to admin? and do specific order crud inside user for users?
@@ -60,6 +53,14 @@ public class OrderService {
             order.setTotalCost(order.computeTotalCost());
             order.setShippingAddress(user.getAddresses().get(0));
             order.setUser(user);
+
+            // optional find cartItems list to convert to orderItems (assumes that cartItemlist of fetched user
+            // is a valid list of valid items with valid total prices)
+            for (CartItem cartItem : user.getCartItems()){
+                order.addOrderItem(new OrderItem(order, cartItem));
+            }
+
+
 
 //            saving order generates key for order and order items
             Order savedOrder = orderRepository.save(order);
@@ -107,7 +108,7 @@ public class OrderService {
         oldOrder.setShippingAddress(update.getShippingAddress());
         oldOrder.setShippingCost(update.getShippingCost());
         oldOrder.setStatus(update.getStatus());
-        oldOrder.setTotalCost();
+        oldOrder.updateTotalCost();
         return this.orderRepository.save(oldOrder);
     }
 

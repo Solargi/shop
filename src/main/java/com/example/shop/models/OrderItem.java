@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import java.math.BigDecimal;
 
@@ -33,12 +31,12 @@ public class OrderItem {
     @NotNull
     private BigDecimal totalCost;
 
-    public OrderItem (Order order, Item item, Integer quantity, BigDecimal totalCost){
+    public OrderItem (Order order, Item item, Integer quantity){
         this.id = new OrderItemId(order.getId(), item.getId());
         this.order = order;
         this.item = item;
         this.quantity = quantity;
-        this.totalCost = totalCost;
+        this.totalCost = this.computeTotalCost();
     }
     public OrderItem (Order order, CartItem cartItem){
         this.id = new OrderItemId(order.getId(),cartItem.getItem().getId());
@@ -46,6 +44,15 @@ public class OrderItem {
         this.item = cartItem.getItem();
         this.totalCost = cartItem.getTotalCost();
         this.quantity = cartItem.getQuantity();
+    }
+
+    public void updateTotalCost(){
+        this.setTotalCost(this.computeTotalCost());
+        this.order.updateTotalCost();
+    }
+
+    public void removeFromOrder (){
+        this.order.removeOrderItem(this);
     }
 
     public BigDecimal computeTotalCost () {

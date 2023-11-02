@@ -206,13 +206,14 @@ class CartItemServiceTest {
        ci3.setQuantity(1);
 
         given(cartItemRepository.findById(ci1.getId())).willReturn(Optional.of(ci1));
-        given(userRepository.findById(u1.getId())).willReturn(Optional.of(u1));
-        given(itemRepository.findById(i2.getId())).willReturn(Optional.of(i2));
+//        given(userRepository.findById(u1.getId())).willReturn(Optional.of(u1));
+//        given(itemRepository.findById(i2.getId())).willReturn(Optional.of(i2));
         //when savind address 1 already has the new values
         given(cartItemRepository.save(ci1)).willReturn(ci1);
 
         CartItem updated1 = cartItemService.update(ci1.getId(),ci3);
-        assertThat(updated1.getId()).isEqualTo(ci3.getId());
+        // check that it doesn't allow to modify id
+        assertThat(updated1.getId()).isEqualTo(ci1.getId());
         assertThat(updated1.getQuantity()).isEqualTo(ci3.getQuantity());
         verify(cartItemRepository, times(1)).findById(id1);
         verify(cartItemRepository, times(1)).save(ci1);
