@@ -1,10 +1,11 @@
 package com.example.shop.controllers;
 
 import com.example.shop.Embeddables.CartItemId;
-import com.example.shop.dtos.CartItemDTO;
-import com.example.shop.dtos.converters.CartItemDTOToCartItemConverter;
-import com.example.shop.dtos.converters.CartItemToCartItemDTOConverter;
-import com.example.shop.models.CartItem;
+import com.example.shop.dtos.CartItemRequestDTO;
+import com.example.shop.dtos.CartItemResponseDTO;
+import com.example.shop.dtos.converters.CartItemRequestDTOToCartItemConverter;
+import com.example.shop.dtos.converters.CartItemResponseDTOToCartItemConverter;
+import com.example.shop.dtos.converters.CartItemToCartItemResponseDTOConverter;
 import com.example.shop.models.CartItem;
 import com.example.shop.services.CartItemService;
 import jakarta.validation.Valid;
@@ -19,24 +20,25 @@ import java.util.List;
 @AllArgsConstructor
 public class CartItemController {
     CartItemService cartItemService;
-    CartItemToCartItemDTOConverter cartItemToCartItemDTOConverter;
-    CartItemDTOToCartItemConverter cartItemDTOToCartItemConverter;
+    CartItemToCartItemResponseDTOConverter cartItemToCartItemResponseDTOConverter;
+    CartItemResponseDTOToCartItemConverter cartItemResponseDTOToCartItemConverter;
+    CartItemRequestDTOToCartItemConverter cartItemRequestDTOToCartItemConverter;
     @GetMapping("")
-    public ResponseEntity<List<CartItemDTO>> getCartItems(){
+    public ResponseEntity<List<CartItemResponseDTO>> getCartItems(){
         List<CartItem> foundCartItems = this.cartItemService.findAll();
         //convert to dtos
-        List<CartItemDTO> foundItemsDTO = foundCartItems.stream()
-                .map(this.cartItemToCartItemDTOConverter::convert)
+        List<CartItemResponseDTO> foundItemsDTO = foundCartItems.stream()
+                .map(this.cartItemToCartItemResponseDTOConverter::convert)
                 .toList();
         return ResponseEntity.ok(foundItemsDTO);
 
     }
     @GetMapping("/{userId}/{itemId}")
-    public ResponseEntity<CartItemDTO> findCartItemById(@PathVariable("userId") Integer userId,
-                                                    @PathVariable("itemId") Integer itemId){
+    public ResponseEntity<CartItemResponseDTO> findCartItemById(@PathVariable("userId") Integer userId,
+                                                                @PathVariable("itemId") Integer itemId){
         CartItemId cartItemId = new CartItemId(userId, itemId);
         CartItem foundCartItem = this.cartItemService.findById(cartItemId);
-        return ResponseEntity.ok(this.cartItemToCartItemDTOConverter.convert(foundCartItem));
+        return ResponseEntity.ok(this.cartItemToCartItemResponseDTOConverter.convert(foundCartItem));
     }
 
     //TODO: ADD A TEST ENDPOINT TO FETCH ALL CARTITEMS BELONGING TO A USER USING USERID
@@ -44,26 +46,27 @@ public class CartItemController {
     @PostMapping("")
     //valid checks for validity of fields defined in ItemDto class with annotation
     // request body takes
-    public ResponseEntity<CartItemDTO> addCartItem(@Valid @RequestBody CartItemDTO cartItemDTO){
+    public ResponseEntity<CartItemResponseDTO> addCartItem(@Valid @RequestBody CartItemRequestDTO cartItemRequestDTO){
         //convert dto to object
-        CartItem cartItem = this.cartItemDTOToCartItemConverter.convert(cartItemDTO);
+        CartItem cartItem = this.cartItemRequestDTOToCartItemConverter.convert(cartItemRequestDTO);
 
         //save cartItem
         CartItem savedItem = this.cartItemService.save(cartItem);
 
         // reconvert to dto to get generated field id
-        CartItemDTO savedItemDTO = this.cartItemToCartItemDTOConverter.convert(savedItem);
+        CartItemResponseDTO savedItemDTO = this.cartItemToCartItemResponseDTOConverter.convert(savedItem);
         return ResponseEntity.ok(savedItemDTO);
 
     }
 
     @PutMapping("/{userId}/{itemId}")
-    public ResponseEntity<CartItemDTO> updateCartItem(@PathVariable Integer userId,
-            @PathVariable Integer itemId, @Valid @RequestBody CartItemDTO cartItemDTO){
+    public ResponseEntity<CartItemResponseDTO> updateCartItem(@PathVariable Integer userId,
+                                                              @PathVariable Integer itemId, @Valid @RequestBody CartItemRequestDTO cartItemRequestDTO){
         CartItemId cartItemId = new CartItemId(userId, itemId);
-        CartItem cartItem = this.cartItemDTOToCartItemConverter.convert(cartItemDTO);
+        CartItem cartItem = this.cartItemRequestDTOToCartItemConverter.convert(cartItemRequestDTO);
+        //service defines missing fields in requestItem
         CartItem updatedItem = this.cartItemService.update(cartItemId,cartItem);
-        CartItemDTO updatedItemDTO = this.cartItemToCartItemDTOConverter.convert(updatedItem);
+        CartItemResponseDTO updatedItemDTO = this.cartItemToCartItemResponseDTOConverter.convert(updatedItem);
         return ResponseEntity.ok(updatedItemDTO);
     }
 

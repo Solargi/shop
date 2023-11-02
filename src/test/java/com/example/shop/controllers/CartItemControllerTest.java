@@ -1,9 +1,9 @@
 package com.example.shop.controllers;
 
 import com.example.shop.Embeddables.CartItemId;
-import com.example.shop.dtos.CartItemDTO;
-import com.example.shop.dtos.converters.CartItemDTOToCartItemConverter;
-import com.example.shop.dtos.converters.CartItemToCartItemDTOConverter;
+import com.example.shop.dtos.CartItemResponseDTO;
+import com.example.shop.dtos.converters.CartItemResponseDTOToCartItemConverter;
+import com.example.shop.dtos.converters.CartItemToCartItemResponseDTOConverter;
 import com.example.shop.models.CartItem;
 import com.example.shop.models.Item;
 import com.example.shop.models.User;
@@ -74,9 +74,9 @@ class CartItemControllerTest {
     List<CartItem> cartItemsList = new ArrayList<CartItem>();
 
     @Autowired
-    CartItemToCartItemDTOConverter cartItemToCartItemDTOConverter;
+    CartItemToCartItemResponseDTOConverter cartItemToCartItemResponseDTOConverter;
     @Autowired
-    CartItemDTOToCartItemConverter cartItemDTOToCartItemConverter;
+    CartItemResponseDTOToCartItemConverter cartItemResponseDTOToCartItemConverter;
 
     @BeforeEach
     void setUp() {
@@ -209,9 +209,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
         
         //given
-        CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
+        CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
         
 
 
@@ -244,9 +244,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
 
         //given
-        CartItemDTO cartItemDTO = new CartItemDTO(null,null,null,-5,new BigDecimal(6));
+        CartItemResponseDTO cartItemResponseDTO = new CartItemResponseDTO(null,null,null,-5,new BigDecimal(6));
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
         given(this.cartItemService.save(Mockito.any(CartItem.class))).willReturn(ci3);
@@ -273,9 +273,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
 
         //given
-        CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
+        CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
         given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willReturn(ci3);
@@ -306,9 +306,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
 
         //given
-        CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
+        CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
         given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willThrow(new ObjectNotFoundException("cartItem", ci3.getId()));

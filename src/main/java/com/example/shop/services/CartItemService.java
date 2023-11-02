@@ -46,24 +46,29 @@ public class CartItemService {
     // and recompute the total cost
 
     //TODO REWRITE SERVICE TESTS
-    public CartItem save(CartItem cartitem){
-        Optional<CartItem> foundCartItemOpt = this.cartItemRepository.findById(cartitem.getId());
+    public CartItem save(CartItem cartItem){
+        Optional<CartItem> foundCartItemOpt = this.cartItemRepository.findById(cartItem.getId());
         // if cartItem already exist increase quantity and recompute cost
         if (foundCartItemOpt.isPresent()){
             CartItem foundCartItem = foundCartItemOpt.get();
-            foundCartItem.modifyQuantity(cartitem.getQuantity());
+            foundCartItem.modifyQuantity(cartItem.getQuantity());
             return this.cartItemRepository.save(foundCartItem);
         } else {
             //if cart item doesn't exist check that quantity is positive
             // if it doesn't exist fetch user and item
             // to make sure that CartItemId is valid
-            User user = new User();
-            Item item = new Item();
-            this.verifyIdAndSetData(cartitem, user, item);
+            User user = this.userRepository.findById(cartItem.getId().getUserId()).orElseThrow(() ->
+                    new ObjectNotFoundException("user", cartItem.getId().getUserId()));
+            Item item = this.itemRepository.findById(cartItem.getId().getItemId()).orElseThrow(() ->
+                    new ObjectNotFoundException("item", cartItem.getId().getItemId()));
+            //set right fields in cartItem
+            cartItem.setItem(item);
+            cartItem.setUser(user);
+            cartItem.setTotalCost(cartItem.computeTotalCost());
             // set all cartItem fields and recompute total cost
-            CartItem savedCartItem = this.cartItemRepository.save(cartitem);
-            user.addCartItem(cartitem);
-            item.addCartItem(cartitem);
+            CartItem savedCartItem = this.cartItemRepository.save(cartItem);
+            user.addCartItem(savedCartItem);
+            item.addCartItem(savedCartItem);
             return savedCartItem;
         }
     }
@@ -71,14 +76,18 @@ public class CartItemService {
     public CartItem update(CartItemId cartItemId,  CartItem update){
         CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartitem",cartItemId));
         // make sure update cart item id is valid
-        User user = new User();
-        Item item = new Item();
-        this.verifyIdAndSetData(update,user,item);
+        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
+                new ObjectNotFoundException("user", update.getId().getUserId()));
+        Item item = this.itemRepository.findById(update.getId().getItemId()).orElseThrow(() ->
+                new ObjectNotFoundException("item", update.getId().getItemId()));
+        //set right fields in update
+        update.setItem(item);
+        update.setUser(user);
+        update.setTotalCost(update.computeTotalCost());
         // update old item and save
         oldItem.setItem(update.getItem());
         oldItem.setQuantity(update.getQuantity());
         oldItem.setUser(update.getUser());
-        oldItem.setId(update.getId());
         oldItem.setTotalCost(oldItem.computeTotalCost());
         return this.cartItemRepository.save(oldItem);
     }
@@ -92,18 +101,6 @@ public class CartItemService {
     //TODO TEST SERVICE:
     public void deleteAllByUserId(Integer userId){
             this.cartItemRepository.deleteAllByUserId(userId);
-    }
-
-    private void verifyIdAndSetData(CartItem cartItem, User user, Item item){
-        user = this.userRepository.findById(cartItem.getId().getUserId()).orElseThrow(() ->
-                new ObjectNotFoundException("user", cartItem.getId().getUserId()));
-        item = this.itemRepository.findById(cartItem.getId().getItemId()).orElseThrow(() ->
-                new ObjectNotFoundException("item", cartItem.getId().getItemId()));
-        //set right fields in cartItem
-        cartItem.setItem(item);
-        cartItem.setUser(user);
-        cartItem.setTotalCost(cartItem.computeTotalCost());
-
     }
 
 
