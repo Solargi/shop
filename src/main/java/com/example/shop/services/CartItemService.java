@@ -57,14 +57,10 @@ public class CartItemService {
             //if cart item doesn't exist check that quantity is positive
             // if it doesn't exist fetch user and item
             // to make sure that CartItemId is valid
-            User user = this.userRepository.findById(cartitem.getId().getUserId()).orElseThrow(() ->
-                    new ObjectNotFoundException("user", cartitem.getId().getUserId()));
-            Item item = this.itemRepository.findById(cartitem.getId().getItemId()).orElseThrow(() ->
-                    new ObjectNotFoundException("item", cartitem.getId().getItemId()));
+            User user = new User();
+            Item item = new Item();
+            this.verifyIdAndSetData(cartitem, user, item);
             // set all cartItem fields and recompute total cost
-            cartitem.setItem(item);
-            cartitem.setUser(user);
-            cartitem.setTotalCost(cartitem.computeTotalCost());
             CartItem savedCartItem = this.cartItemRepository.save(cartitem);
             user.addCartItem(cartitem);
             item.addCartItem(cartitem);
@@ -75,19 +71,15 @@ public class CartItemService {
     public CartItem update(CartItemId cartItemId,  CartItem update){
         CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartitem",cartItemId));
         // make sure update cart item id is valid
-        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
-                new ObjectNotFoundException("user", update.getId().getUserId()));
-        Item item = this.itemRepository.findById(update.getId().getItemId()).orElseThrow(() ->
-                new ObjectNotFoundException("item", update.getId().getItemId()));
-        //set right fields in update
-        update.setItem(item);
-        update.setUser(user);
-        update.setTotalCost(update.computeTotalCost());
+        User user = new User();
+        Item item = new Item();
+        this.verifyIdAndSetData(update,user,item);
         // update old item and save
         oldItem.setItem(update.getItem());
         oldItem.setQuantity(update.getQuantity());
         oldItem.setUser(update.getUser());
         oldItem.setId(update.getId());
+        oldItem.setTotalCost(oldItem.computeTotalCost());
         return this.cartItemRepository.save(oldItem);
     }
 
@@ -102,6 +94,17 @@ public class CartItemService {
             this.cartItemRepository.deleteAllByUserId(userId);
     }
 
+    private void verifyIdAndSetData(CartItem cartItem, User user, Item item){
+        user = this.userRepository.findById(cartItem.getId().getUserId()).orElseThrow(() ->
+                new ObjectNotFoundException("user", cartItem.getId().getUserId()));
+        item = this.itemRepository.findById(cartItem.getId().getItemId()).orElseThrow(() ->
+                new ObjectNotFoundException("item", cartItem.getId().getItemId()));
+        //set right fields in cartItem
+        cartItem.setItem(item);
+        cartItem.setUser(user);
+        cartItem.setTotalCost(cartItem.computeTotalCost());
+
+    }
 
 
 }
