@@ -34,8 +34,9 @@ public class OrderService {
     //to save the order we need the id of the user and the cart items of the user
     // the id or name of the user will be used to fetch the user and the relative cart item
     // the order will be automatically be created using the cart items of the user
-    // cart items are converted into orderitems and addet to the order that is then added to the user
+    // cart items are converted into orderitems and added to the order that is then added to the user
     // cart items are then deleted from usrer
+    //cart items are also deleted from items while orderitems are added.
     public Order save(Integer userId){
         Order order = new Order();
         //fetch user if exists
@@ -54,7 +55,7 @@ public class OrderService {
             order.setShippingAddress(user.getAddresses().get(0));
             order.setUser(user);
 
-            // optional find cartItems list to convert to orderItems (assumes that cartItemlist of fetched user
+            // find cartItems list to convert to orderItems (assumes that cartItemlist of fetched user
             // is a valid list of valid items with valid total prices)
             for (CartItem cartItem : user.getCartItems()){
                 order.addOrderItem(new OrderItem(order, cartItem));

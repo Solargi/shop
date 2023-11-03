@@ -167,9 +167,9 @@ class CartItemServiceTest {
 //        given
         given(cartItemRepository.findAll()).willReturn(this.cartItemsList);
 //        when
-        List<CartItem> foundAddresss = cartItemService.findAll();
+        List<CartItem> foundCartItems = cartItemService.findAll();
 //        then
-        assertThat(foundAddresss.size()).isEqualTo(this.cartItemsList.size());
+        assertThat(foundCartItems.size()).isEqualTo(this.cartItemsList.size());
         verify(cartItemRepository, times(1)).findAll();
 
     }
