@@ -99,7 +99,7 @@ public class OrderService {
             return savedOrder;
 
         }
-        throw new GenericException("User's Cart has no items in it");
+        throw new GenericException("User's cart has no items in it");
     }
 
     public Order update(Integer orderId,  Order update){

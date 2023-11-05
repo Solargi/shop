@@ -35,7 +35,7 @@ public class ExceptionHandlerAdvice {
 
    @ExceptionHandler(GenericException.class)
    ResponseEntity<Object> handlerGenericException (GenericException ex){
-      return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.PRECONDITION_FAILED);
+      return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.BAD_REQUEST);
    }
 
 }

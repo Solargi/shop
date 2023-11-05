@@ -48,8 +48,8 @@ public class OrderController {
         Order savedOrder = this.orderService.save(userId);
         //TODO REWORK DTO
 //         reconvert to dto to get generated field id
-//        OrderDTO savedOrderDTO = this.orderToOrderDTOConverter.convert(savedOrder);
-        return ResponseEntity.ok("Yay");
+        OrderDTO savedOrderDTO = this.orderToOrderDTOConverter.convert(savedOrder);
+        return ResponseEntity.ok(savedOrderDTO);
 
     }
 

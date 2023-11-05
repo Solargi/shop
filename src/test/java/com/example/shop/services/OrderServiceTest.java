@@ -27,15 +27,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
-    @Mock
-    CartItemRepository cartItemRepository;
-    @Mock
-    UserRepository userRepository;
-    @Mock
-    ItemRepository itemRepository;
 
     @Mock
-    OrderItemRepository orderItemRepository;
+    UserRepository userRepository;
     @Mock
     OrderRepository orderRepository;
 
