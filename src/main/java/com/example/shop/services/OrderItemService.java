@@ -26,7 +26,7 @@ public class OrderItemService {
         return this.orderItemRepository.findAll();
     }
     public OrderItem findById (OrderItemId orderItemId){
-       return this.orderItemRepository.findById(orderItemId).orElseThrow(()->new ObjectNotFoundException("OrderItem", orderItemId));
+       return this.orderItemRepository.findById(orderItemId).orElseThrow(()->new ObjectNotFoundException("orderItem", orderItemId));
     }
 
     public OrderItem save(OrderItem orderItem){
@@ -68,11 +68,11 @@ public class OrderItemService {
         this.orderItemRepository.deleteById(orderItemId);
     }
 
-    private void updateOrderTotalCost(OrderItem orderItem){
-        Order order = this.orderRepository.findById(orderItem.getId().getOrderId())
-                .orElseThrow(() -> new ObjectNotFoundException("order", orderItem.getId().getOrderId()));
-        order.updateTotalCost();
-    }
+//    private void updateOrderTotalCost(OrderItem orderItem){
+//        Order order = this.orderRepository.findById(orderItem.getId().getOrderId())
+//                .orElseThrow(() -> new ObjectNotFoundException("order", orderItem.getId().getOrderId()));
+//        order.updateTotalCost();
+//    }
 
 
 
