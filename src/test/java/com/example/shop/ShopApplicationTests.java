@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 //annotation to be removed/modified when implementing test containers .
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 class ShopApplicationTests {
 
 	@Test
