@@ -48,8 +48,6 @@ public class ItemService {
         oldItem.setPrice(update.getPrice());
         oldItem.setDescription(update.getDescription());
         oldItem.setAvailableQuantity(update.getAvailableQuantity());
-        oldItem.setOrderItems(update.getOrderItems());
-        oldItem.setCartItems(update.getCartItems());
         oldItem.setImageUrl(update.getImageUrl());
         return this.itemRepository.save(oldItem);
     }

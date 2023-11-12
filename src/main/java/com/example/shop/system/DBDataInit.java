@@ -20,7 +20,7 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-@Profile({"!production"})
+@Profile({"!prod"})
 public class DBDataInit implements CommandLineRunner {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
