@@ -5,8 +5,10 @@ import com.example.shop.dtos.UserDTO;
 import com.example.shop.models.Address;
 import com.example.shop.models.User;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest()
 @AutoConfigureMockMvc
 @Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
 public class UserControllerIntegrationTest {
     //setup postgres test container
@@ -65,7 +68,7 @@ public class UserControllerIntegrationTest {
 
     @Test
     @Order(2)
-    void testFindItemByIdSuccess() throws Exception {
+    void testFindUserByIdSuccess() throws Exception {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/users/1").accept(MediaType.APPLICATION_JSON))
