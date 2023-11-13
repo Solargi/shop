@@ -18,7 +18,7 @@ public class UserService {
     }
 
     public User findById(Integer id){
-        return this.userRepository.findById(id).orElseThrow(()->new ObjectNotFoundException("User", id));
+        return this.userRepository.findById(id).orElseThrow(()->new ObjectNotFoundException("user", id));
     }
 
     public List<User> findAll(){
@@ -40,9 +40,10 @@ public class UserService {
         oldUser.setEmail(update.getEmail());
         oldUser.setRoles(update.getRoles());
         oldUser.setBirthDate(update.getBirthDate());
-        oldUser.setAddresses(update.getAddresses());
-        oldUser.setCartItems(update.getCartItems());
-        oldUser.setOrderList(update.getOrderList());
+        //better to handle update of sub/related entities differently
+//        oldUser.setAddresses(update.getAddresses());
+//        oldUser.setCartItems(update.getCartItems());
+//        oldUser.setOrderList(update.getOrderList());
         return this.userRepository.save(oldUser);
 
     }

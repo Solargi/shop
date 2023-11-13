@@ -45,6 +45,9 @@ public class OrderService {
         //if CartItemList not empty:
         // create and save the order
         if (!user.getCartItems().isEmpty()){
+            if(user.getAddresses().isEmpty()){
+                throw new GenericException("User doesn't have a shipping address");
+            }
             //set default order parameters to avoid false data
             //might want to remove this and put it in userservice
             //lock pure crud to admin? and do specific order crud inside user for users?

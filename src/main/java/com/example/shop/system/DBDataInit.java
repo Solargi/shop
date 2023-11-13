@@ -30,7 +30,7 @@ public class DBDataInit implements CommandLineRunner {
     public void run(String... args) throws Exception {
         User u1 = new User();
         User u2 = new User();
-        User u3 = new User();
+//        User u3 = new User();
 
 
         u1.setId(1);
@@ -43,13 +43,13 @@ public class DBDataInit implements CommandLineRunner {
         u1.setBirthDate("yay");
 
 //        u3.setId(3);
-        u3.setName("poop");
-        u3.setSurname("b");
-        u3.setUsername("u5");
-        u3.setPassword("q");
-        u3.setEmail("c");
-        u3.setRoles("admin");
-        u3.setBirthDate("yay");
+//        u3.setName("poop");
+//        u3.setSurname("b");
+//        u3.setUsername("u5");
+//        u3.setPassword("q");
+//        u3.setEmail("c");
+//        u3.setRoles("admin");
+//        u3.setBirthDate("yay");
 
 
         this.userRepository.save(u1);
@@ -83,7 +83,7 @@ public class DBDataInit implements CommandLineRunner {
         u2.addAddress(a2);
         this.addressRepository.save(a1);
         this.userRepository.save(u2);
-        this.userRepository.save(u3);
+//        this.userRepository.save(u3);
         this.addressRepository.save(a1);
 
         Item i1 = new Item();
