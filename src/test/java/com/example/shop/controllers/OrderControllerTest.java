@@ -1,8 +1,7 @@
 package com.example.shop.controllers;
 
 import com.example.shop.Embeddables.CartItemId;
-import com.example.shop.dtos.CartItemResponseDTO;
-import com.example.shop.dtos.OrderDTO;
+import com.example.shop.dtos.OrderResponseDTO;
 import com.example.shop.dtos.converters.OrderToOrderDTOConverter;
 import com.example.shop.models.*;
 import com.example.shop.services.OrderService;
@@ -189,7 +188,7 @@ public class OrderControllerTest {
     void tearDown() {
     }
     @Test
-    void testFindCartItemByIdSuccess() throws Exception {
+    void testFindOrderByIdSuccess() throws Exception {
         //Given
         given(this.orderService.findById(o1.getId())).willReturn(o1);
 
@@ -205,7 +204,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void testFindCartItemByIdNotFound() throws Exception {
+    void testFindOrderByIdNotFound() throws Exception {
         given(this.orderService.findById(Mockito.any(Integer.class))).willThrow(new ObjectNotFoundException("order",o1.getId()));
 
         this.mockMvc.perform(get(this.baseUrl + "/orders/1").accept(MediaType.APPLICATION_JSON))
@@ -215,7 +214,7 @@ public class OrderControllerTest {
     }
 
     @Test
-    void testFindAllCartItemSuccess() throws Exception {
+    void testFindAllOrderSuccess() throws Exception {
         given(this.orderService.findAll()).willReturn(this.orderList);
 
         this.mockMvc.perform(get(this.baseUrl + "/orders").accept(MediaType.APPLICATION_JSON))
@@ -298,9 +297,9 @@ public class OrderControllerTest {
         }
 
         //given
-        OrderDTO orderDTO = this.orderToOrderDTOConverter.convert(order);
+        OrderResponseDTO orderResponseDTO = this.orderToOrderDTOConverter.convert(order);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(orderDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(orderResponseDTO);
 
 
         given(this.orderService.update(eq(o1.getId()),Mockito.any(Order.class))).willReturn(order);
@@ -334,9 +333,9 @@ public class OrderControllerTest {
         }
 
         //given
-        OrderDTO orderDTO = this.orderToOrderDTOConverter.convert(order);
+        OrderResponseDTO orderResponseDTO = this.orderToOrderDTOConverter.convert(order);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(orderDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(orderResponseDTO);
 
 
         given(this.orderService.update(eq(order.getId()),Mockito.any(Order.class))).willThrow(new ObjectNotFoundException("order", order.getId()));

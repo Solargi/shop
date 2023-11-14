@@ -107,8 +107,11 @@ public class OrderService {
 
     public Order update(Integer orderId,  Order update){
         Order oldOrder = this.orderRepository.findById(orderId).orElseThrow(()->new ObjectNotFoundException("order",orderId));
-        oldOrder.setUser(update.getUser());
-        oldOrder.setOrderItemList(update.getOrderItemList());
+        //user can't be updated
+//        oldOrder.setUser(update.getUser());
+        //orderitem list can't be updated here directly,
+//        better to update orderItems singularly
+//        oldOrder.setOrderItemList(update.getOrderItemList());
         oldOrder.setShippingAddress(update.getShippingAddress());
         oldOrder.setShippingCost(update.getShippingCost());
         oldOrder.setStatus(update.getStatus());

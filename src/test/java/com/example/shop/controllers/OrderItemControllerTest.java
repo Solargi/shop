@@ -221,7 +221,7 @@ class OrderItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.orderId").value(oi1.getId().getOrderId()))
                 .andExpect(jsonPath("$.id.itemId").value(oi1.getId().getItemId()))
-                .andExpect(jsonPath("$.orderDTO.shippingCost").value(oi1.getOrder().getShippingCost()))
+                .andExpect(jsonPath("$.orderResponseDTO.shippingCost").value(oi1.getOrder().getShippingCost()))
                 .andExpect(jsonPath("$.totalCost").value(oi1.getTotalCost()))
                 .andExpect(jsonPath("$.quantity").value(oi1.getQuantity()));
     }
@@ -263,7 +263,7 @@ class OrderItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.orderId").value(oi1.getId().getOrderId()))
                 .andExpect(jsonPath("$.id.itemId").value(oi1.getId().getItemId()))
-                .andExpect(jsonPath("$.orderDTO.shippingCost").value(oi1.getOrder().getShippingCost()))
+                .andExpect(jsonPath("$.orderResponseDTO.shippingCost").value(oi1.getOrder().getShippingCost()))
                 .andExpect(jsonPath("$.totalCost").value(oi1.getTotalCost()))
                 .andExpect(jsonPath("$.quantity").value(oi1.getQuantity()));
     }
@@ -301,7 +301,7 @@ class OrderItemControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.orderId").value(oi1.getId().getOrderId()))
                 .andExpect(jsonPath("$.id.itemId").value(oi1.getId().getItemId()))
-                .andExpect(jsonPath("$.orderDTO.shippingCost").value(oi1.getOrder().getShippingCost()))
+                .andExpect(jsonPath("$.orderResponseDTO.shippingCost").value(oi1.getOrder().getShippingCost()))
                 .andExpect(jsonPath("$.totalCost").value(oi1.getTotalCost()))
                 .andExpect(jsonPath("$.quantity").value(oi1.getQuantity()));
     }

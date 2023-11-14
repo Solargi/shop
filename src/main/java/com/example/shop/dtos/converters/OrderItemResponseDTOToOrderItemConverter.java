@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class OrderItemResponseDTOToOrderItemConverter implements Converter <OrderItemResponseDTO, OrderItem> {
     ItemDTOToItemConverter itemDTOToItemConverter;
-    OrderDTOToOrderConverter orderDTOToOrderConverter;
+    OrderResponseDTOToOrderConverter orderResponseDTOToOrderConverter;
     @Override
     public OrderItem convert(OrderItemResponseDTO source) {
         OrderItem orderItem = new OrderItem();
         orderItem.setId(source.id());
         orderItem.setItem(this.itemDTOToItemConverter.convert(source.itemDTO()));
-        orderItem.setOrder(this.orderDTOToOrderConverter.convert(source.orderDTO()));
+        orderItem.setOrder(this.orderResponseDTOToOrderConverter.convert(source.orderResponseDTO()));
         orderItem.setQuantity(source.quantity());
         orderItem.setTotalCost(source.totalCost());
         return orderItem;

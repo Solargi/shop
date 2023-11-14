@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 public record OrderItemResponseDTO(@NotNull
                             OrderItemId id,
-                                   OrderDTO orderDTO,
+                                   OrderResponseDTO orderResponseDTO,
                                    ItemDTO itemDTO,
                                    Integer quantity,
                                    BigDecimal totalCost){
