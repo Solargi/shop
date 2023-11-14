@@ -148,7 +148,7 @@ class OrderServiceTest {
         o1.setPaid(true);
         o1.setStatus("pending");
         o1.setShippingCost(new BigDecimal(10));
-        o1.setOrderItemList(null);
+        o1.setOrderItemList(new ArrayList<>());
 
         o2.setUser(u2);
         o2.setId(1);
@@ -156,7 +156,7 @@ class OrderServiceTest {
         o2.setPaid(true);
         o2.setStatus("paid");
         o2.setShippingCost(new BigDecimal(10));
-        o2.setOrderItemList(null);
+        o2.setOrderItemList(new ArrayList<>());
         orderList.add(o1);
         orderList.add(o2);
     }

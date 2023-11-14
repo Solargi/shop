@@ -1,4 +1,4 @@
-package com.example.shop.system;
+package com.example.shop;
 
 import com.example.shop.Embeddables.CartItemId;
 import com.example.shop.models.Address;

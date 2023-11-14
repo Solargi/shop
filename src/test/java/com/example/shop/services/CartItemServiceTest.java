@@ -159,7 +159,7 @@ class CartItemServiceTest {
         // Then
         assertThat(thrown)
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessage("could not find cartitem with id CartItemId(userId=3, itemId=1)");
+                .hasMessage("could not find cartItem with id CartItemId(userId=3, itemId=1)");
     }
 
     @Test
