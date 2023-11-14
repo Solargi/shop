@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles({"test","dev"})
-@SpringBootTest()
+@SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
 //run test in order as they appear in the code

@@ -13,8 +13,8 @@ public record CartItemResponseDTO(@NotNull
                                   UserDTO userDTO,
                                   ItemDTO itemDTO,
                                   @NotNull
-                           @Positive
-                          Integer quantity,
+                                  @Positive
+                                  Integer quantity,
                                   //setted in services before saving
                                   //or updating to avoid wrong / null values
                                   BigDecimal totalCost) {

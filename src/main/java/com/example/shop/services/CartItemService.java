@@ -28,7 +28,7 @@ public class CartItemService {
     private final UserRepository userRepository;
 
     public CartItem findById(CartItemId cartItemId){
-        return this.cartItemRepository.findById(cartItemId).orElseThrow(() -> new ObjectNotFoundException("cartitem",cartItemId));
+        return this.cartItemRepository.findById(cartItemId).orElseThrow(() -> new ObjectNotFoundException("cartItem",cartItemId));
     }
 
 
@@ -75,7 +75,7 @@ public class CartItemService {
 
 //    only update allowed is quantity
     public CartItem update(CartItemId cartItemId,  CartItem update){
-        CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartitem",cartItemId));
+        CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartItem",cartItemId));
         // make sure update cart item id is valid
 //        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
 //                new ObjectNotFoundException("user", update.getId().getUserId()));
@@ -95,7 +95,7 @@ public class CartItemService {
 
     //TODO REWRITE SERVICE TESTS
     public void delete(CartItemId cartItemId){
-        CartItem cartitem = this.cartItemRepository.findById(cartItemId).orElseThrow(()-> new ObjectNotFoundException("cartitem",cartItemId));
+        CartItem cartitem = this.cartItemRepository.findById(cartItemId).orElseThrow(()-> new ObjectNotFoundException("cartItem",cartItemId));
         this.cartItemRepository.deleteById(cartItemId);;
     }
 
