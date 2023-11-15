@@ -1,7 +1,9 @@
 package com.example.shop.controllers;
 
-import com.example.shop.dtos.OrderDTO;
-import com.example.shop.dtos.converters.OrderDTOToOrderConverter;
+import com.example.shop.dtos.OrderRequestDTO;
+import com.example.shop.dtos.OrderResponseDTO;
+import com.example.shop.dtos.converters.OrderRequestDTOToOrderConverter;
+import com.example.shop.dtos.converters.OrderResponseDTOToOrderConverter;
 import com.example.shop.dtos.converters.OrderToOrderDTOConverter;
 import com.example.shop.models.Order;
 import com.example.shop.services.OrderService;
@@ -18,48 +20,48 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
     private final OrderToOrderDTOConverter orderToOrderDTOConverter;
-    private final OrderDTOToOrderConverter orderDTOToOrderConverter;
+    private final OrderResponseDTOToOrderConverter orderResponseDTOToOrderConverter;
+    private final OrderRequestDTOToOrderConverter orderRequestDTOToOrderConverter;
 
 
 
     @GetMapping("")
-    public ResponseEntity<List<OrderDTO>> getOrders(){
+    public ResponseEntity<List<OrderResponseDTO>> getOrders(){
         List<Order> foundOrders = this.orderService.findAll();
         //convert to dtos
-        List<OrderDTO> foundOrdersDTO = foundOrders.stream()
+        List<OrderResponseDTO> foundOrdersDTO = foundOrders.stream()
                 .map(this.orderToOrderDTOConverter::convert)
                 .toList();
         return ResponseEntity.ok(foundOrdersDTO);
 
     }
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDTO> findOrderById(@PathVariable("orderId") int orderId){
+    public ResponseEntity<OrderResponseDTO> findOrderById(@PathVariable("orderId") int orderId){
         Order foundOrder = this.orderService.findById(orderId);
         return ResponseEntity.ok(this.orderToOrderDTOConverter.convert(foundOrder));
     }
 
 
 
-    @PostMapping("")
+    @PostMapping("/{userId}")
     //valid checks for validity of fields defined in OrderDto class with annotation
     // request body
-    public ResponseEntity<OrderDTO> addOrder(@Valid @RequestBody OrderDTO orderDTO){
-        //convert dto to object
-        Order order = this.orderDTOToOrderConverter.convert(orderDTO);
+    public ResponseEntity<Object> addOrder(@PathVariable("userId") int userId){
         //save order
-        Order savedOrder = this.orderService.save(order);
-        // reconvert to dto to get generated field id
-        OrderDTO savedOrderDTO = this.orderToOrderDTOConverter.convert(savedOrder);
-        return ResponseEntity.ok(savedOrderDTO);
+        Order savedOrder = this.orderService.save(userId);
+        //TODO REWORK DTO
+//         reconvert to dto to get generated field id
+        OrderResponseDTO savedOrderResponseDTO = this.orderToOrderDTOConverter.convert(savedOrder);
+        return ResponseEntity.ok(savedOrderResponseDTO);
 
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<OrderDTO> updateOrder(@PathVariable Integer orderId, @Valid @RequestBody OrderDTO orderDTO){
-        Order order = this.orderDTOToOrderConverter.convert(orderDTO);
+    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable Integer orderId, @Valid @RequestBody OrderRequestDTO orderRequestDTO){
+        Order order = this.orderRequestDTOToOrderConverter.convert(orderRequestDTO);
         Order updatedOrder = this.orderService.update(orderId,order);
-        OrderDTO updatedOrderDTO = this.orderToOrderDTOConverter.convert(updatedOrder);
-        return ResponseEntity.ok(updatedOrderDTO);
+        OrderResponseDTO updatedOrderResponseDTO = this.orderToOrderDTOConverter.convert(updatedOrder);
+        return ResponseEntity.ok(updatedOrderResponseDTO);
     }
 
     //TODO: TEST THIS ENDPOINT

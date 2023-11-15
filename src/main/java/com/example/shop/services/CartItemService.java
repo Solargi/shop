@@ -11,9 +11,13 @@ import com.example.shop.repositories.UserRepository;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,7 +28,7 @@ public class CartItemService {
     private final UserRepository userRepository;
 
     public CartItem findById(CartItemId cartItemId){
-        return this.cartItemRepository.findById(cartItemId).orElseThrow(() -> new ObjectNotFoundException("cartitem",cartItemId));
+        return this.cartItemRepository.findById(cartItemId).orElseThrow(() -> new ObjectNotFoundException("cartItem",cartItemId));
     }
 
 
@@ -42,66 +46,63 @@ public class CartItemService {
     // and recompute the total cost
 
     //TODO REWRITE SERVICE TESTS
-    public CartItem save(CartItem cartitem){
-        //if condition also enforced in dto validation
-        if (cartitem.getQuantity() > 0) {
-            User user = this.userRepository.findById(cartitem.getId().getUserId()).orElseThrow(() ->
-                    new ObjectNotFoundException("user", cartitem.getId().getUserId()));
-            Item item = this.itemRepository.findById(cartitem.getId().getItemId()).orElseThrow(() ->
-                    new ObjectNotFoundException("item", cartitem.getId().getItemId()));
-            //setting item, user and cost prevent null or wrong information
-            cartitem.setItem(item);
-            cartitem.setUser(user);
-            cartitem.setTotalCost(cartitem.computeTotalCost());
-            //assign/cartItem to lists in user and item. the instances fetched from db are
-            //persistent entities so no need to save the entities to apply changes
-            CartItem savedCartItem = this.cartItemRepository.save(cartitem);
-            user.addCartItem(cartitem);
-            item.addCartItem(cartitem);
-            return savedCartItem;
+    public CartItem save(CartItem cartItem){
+        Optional<CartItem> foundCartItemOpt = this.cartItemRepository.findById(cartItem.getId());
+        // if cartItem already exist increase quantity and recompute cost
+        if (foundCartItemOpt.isPresent()){
+            CartItem foundCartItem = foundCartItemOpt.get();
+            foundCartItem.modifyQuantity(cartItem.getQuantity());
+            return this.cartItemRepository.save(foundCartItem);
         } else {
-            throw new ObjectNotFoundException("CartItem quantity must be greater than 0 it was:", cartitem.getQuantity());
+            //if cart item doesn't exist check that quantity is positive
+            // if it doesn't exist fetch user and item
+            // to make sure that CartItemId is valid
+            User user = this.userRepository.findById(cartItem.getId().getUserId()).orElseThrow(() ->
+                    new ObjectNotFoundException("user", cartItem.getId().getUserId()));
+            Item item = this.itemRepository.findById(cartItem.getId().getItemId()).orElseThrow(() ->
+                    new ObjectNotFoundException("item", cartItem.getId().getItemId()));
+            //set right fields in cartItem
+            cartItem.setItem(item);
+            cartItem.setUser(user);
+            cartItem.setTotalCost(cartItem.computeTotalCost());
+            // set all cartItem fields and recompute total cost
+            CartItem savedCartItem = this.cartItemRepository.save(cartItem);
+            user.addCartItem(savedCartItem);
+            item.addCartItem(savedCartItem);
+            return savedCartItem;
         }
     }
 
+//    only update allowed is quantity
     public CartItem update(CartItemId cartItemId,  CartItem update){
-        CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartitem",cartItemId));
-        oldItem.setItem(update.getItem());
+        CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartItem",cartItemId));
+        // make sure update cart item id is valid
+//        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
+//                new ObjectNotFoundException("user", update.getId().getUserId()));
+//        Item item = this.itemRepository.findById(update.getId().getItemId()).orElseThrow(() ->
+//                new ObjectNotFoundException("item", update.getId().getItemId()));
+//        //set right fields in update
+//        update.setItem(item);
+//        update.setUser(user);
+//        update.setTotalCost(update.computeTotalCost());
+//        // update old item and save
+//        oldItem.setItem(update.getItem());
         oldItem.setQuantity(update.getQuantity());
-        oldItem.setUser(update.getUser());
-        oldItem.setId(update.getId());
+//        oldItem.setUser(update.getUser());
+        oldItem.setTotalCost(oldItem.computeTotalCost());
         return this.cartItemRepository.save(oldItem);
     }
 
     //TODO REWRITE SERVICE TESTS
     public void delete(CartItemId cartItemId){
-        CartItem cartitem = this.cartItemRepository.findById(cartItemId).orElseThrow(()-> new ObjectNotFoundException("cartitem",cartItemId));
-        this.cartItemRepository.deleteById(cartItemId);
-        //delete caritem from user and item /-> theoretically not necessary TODO TEST THIS ON INTEGRATION
-        User user = this.userRepository.findById(cartitem.getId().getUserId()).orElseThrow(() ->
-                new ObjectNotFoundException("user", cartitem.getId().getUserId()));
-        Item item = this.itemRepository.findById(cartitem.getId().getItemId()).orElseThrow(() ->
-                new ObjectNotFoundException("item", cartitem.getId().getItemId()));
-        user.removeCartItem(cartitem);
-        item.removeCartItem(cartitem);
+        CartItem cartitem = this.cartItemRepository.findById(cartItemId).orElseThrow(()-> new ObjectNotFoundException("cartItem",cartItemId));
+        this.cartItemRepository.deleteById(cartItemId);;
     }
 
     //TODO TEST SERVICE:
     public void deleteAllByUserId(Integer userId){
-        List<CartItem> cartItems = this.cartItemRepository.findAllByUserId(userId);
-        if (!cartItems.isEmpty()){
-            for (CartItem cartItem : cartItems){
-                Item item = this.itemRepository.findById(cartItem.getId().getItemId()).orElseThrow(() ->
-                        new ObjectNotFoundException("item", cartItem.getId().getItemId()));
-                item.removeCartItem(cartItem);
-            }
-            User user = this.userRepository.findById(userId).orElseThrow(() ->
-                    new ObjectNotFoundException("user", userId));
-            user.removeAllCartItems();
             this.cartItemRepository.deleteAllByUserId(userId);
-        }
     }
-
 
 
 }

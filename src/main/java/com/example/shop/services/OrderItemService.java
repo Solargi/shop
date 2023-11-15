@@ -26,7 +26,7 @@ public class OrderItemService {
         return this.orderItemRepository.findAll();
     }
     public OrderItem findById (OrderItemId orderItemId){
-       return this.orderItemRepository.findById(orderItemId).orElseThrow(()->new ObjectNotFoundException("OrderItem", orderItemId));
+       return this.orderItemRepository.findById(orderItemId).orElseThrow(()->new ObjectNotFoundException("orderItem", orderItemId));
     }
 
     public OrderItem save(OrderItem orderItem){
@@ -38,24 +38,41 @@ public class OrderItemService {
         orderItem.setItem(item);
         orderItem.setOrder(order);
         orderItem.setTotalCost(orderItem.computeTotalCost());
-        return this.orderItemRepository.save(orderItem);
+        OrderItem savedOrderItem = this.orderItemRepository.save(orderItem);
+        //add savedOrderItem to current persitent instance of Order
+        order.addOrderItem(savedOrderItem);
+        //update order total
+        order.updateTotalCost();
+        return savedOrderItem;
     }
 
+    //only allowed update is quantity
     public OrderItem update(OrderItemId orderItemId,  OrderItem update){
-        OrderItem oldOrderItem = this.orderItemRepository.findById(orderItemId).orElseThrow(()->new ObjectNotFoundException("orderItem",orderItemId));
+        OrderItem oldOrderItem = this.orderItemRepository.findById(orderItemId)
+                .orElseThrow(()->new ObjectNotFoundException("orderItem",orderItemId));
         //TODO might have to change this to avoid insertion of order fro non existing users, items
-        oldOrderItem.setOrder(update.getOrder());
+//        oldOrderItem.setOrder(update.getOrder());
         oldOrderItem.setQuantity(update.getQuantity());
-        oldOrderItem.setItem(update.getItem());
-        oldOrderItem.setId(update.getId());
+//        oldOrderItem.setItem(update.getItem());
+//        oldOrderItem.setId(update.getId());
         oldOrderItem.setTotalCost(oldOrderItem.computeTotalCost());
-        return this.orderItemRepository.save(oldOrderItem);
+        OrderItem savedOrderItem = this.orderItemRepository.save(oldOrderItem);
+        //update order total price
+        savedOrderItem.updateTotalCost();
+        return savedOrderItem;
     }
 
     public void delete(OrderItemId orderItemId){
         OrderItem orderItem = this.orderItemRepository.findById(orderItemId).orElseThrow(()-> new ObjectNotFoundException("orderItem",orderItemId));
+        orderItem.removeFromOrder();
         this.orderItemRepository.deleteById(orderItemId);
     }
+
+//    private void updateOrderTotalCost(OrderItem orderItem){
+//        Order order = this.orderRepository.findById(orderItem.getId().getOrderId())
+//                .orElseThrow(() -> new ObjectNotFoundException("order", orderItem.getId().getOrderId()));
+//        order.updateTotalCost();
+//    }
 
 
 

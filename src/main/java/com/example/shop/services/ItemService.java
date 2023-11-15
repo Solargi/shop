@@ -1,7 +1,9 @@
 package com.example.shop.services;
 
+import com.example.shop.models.CartItem;
 import com.example.shop.models.Item;
 import com.example.shop.repositories.ItemRepository;
+import com.example.shop.system.exceptions.ObjectAlreadyExistException;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,13 @@ public class ItemService {
     }
 
     public Item save(Item item){
+        // check if item already exist before saving it
+        if (item.getId() != null){
+            Optional<Item> foundCartItemOpt = this.itemRepository.findById(item.getId());
+            if (foundCartItemOpt.isPresent()) {
+                throw new ObjectAlreadyExistException("item", item.getId());
+            }
+        }
         return this.itemRepository.save(item);
     }
 
@@ -39,8 +48,6 @@ public class ItemService {
         oldItem.setPrice(update.getPrice());
         oldItem.setDescription(update.getDescription());
         oldItem.setAvailableQuantity(update.getAvailableQuantity());
-        oldItem.setOrderItems(update.getOrderItems());
-        oldItem.setCartItems(update.getCartItems());
         oldItem.setImageUrl(update.getImageUrl());
         return this.itemRepository.save(oldItem);
     }

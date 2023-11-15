@@ -103,7 +103,7 @@ class UserServiceTest {
         // Then
         assertThat(thrown)
                 .isInstanceOf(ObjectNotFoundException.class)
-                .hasMessage("could not find User with id 14");
+                .hasMessage("could not find user with id 14");
     }
 
     @Test

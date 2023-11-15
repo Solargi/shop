@@ -1,9 +1,9 @@
 package com.example.shop.controllers;
 
 import com.example.shop.Embeddables.CartItemId;
-import com.example.shop.dtos.CartItemDTO;
-import com.example.shop.dtos.converters.CartItemDTOToCartItemConverter;
-import com.example.shop.dtos.converters.CartItemToCartItemDTOConverter;
+import com.example.shop.dtos.CartItemResponseDTO;
+import com.example.shop.dtos.converters.CartItemResponseDTOToCartItemConverter;
+import com.example.shop.dtos.converters.CartItemToCartItemResponseDTOConverter;
 import com.example.shop.models.CartItem;
 import com.example.shop.models.Item;
 import com.example.shop.models.User;
@@ -74,9 +74,9 @@ class CartItemControllerTest {
     List<CartItem> cartItemsList = new ArrayList<CartItem>();
 
     @Autowired
-    CartItemToCartItemDTOConverter cartItemToCartItemDTOConverter;
+    CartItemToCartItemResponseDTOConverter cartItemToCartItemResponseDTOConverter;
     @Autowired
-    CartItemDTOToCartItemConverter cartItemDTOToCartItemConverter;
+    CartItemResponseDTOToCartItemConverter cartItemResponseDTOToCartItemConverter;
 
     @BeforeEach
     void setUp() {
@@ -161,7 +161,7 @@ class CartItemControllerTest {
     }
 
     @Test
-    void testFindItemByIdSuccess() throws Exception {
+    void testFindCartItemByIdSuccess() throws Exception {
         //Given
         given(this.cartItemService.findById(id1)).willReturn(this.ci1);
 
@@ -177,7 +177,7 @@ class CartItemControllerTest {
     }
 
     @Test
-    void testFindItemByIdNotFound() throws Exception {
+    void testFindCartItemByIdNotFound() throws Exception {
         given(this.cartItemService.findById(Mockito.any(CartItemId.class))).willThrow(new ObjectNotFoundException("cartItem",id1));
 
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/3/1").accept(MediaType.APPLICATION_JSON))
@@ -187,7 +187,7 @@ class CartItemControllerTest {
     }
 
     @Test
-    void testFindAllItemSuccess() throws Exception {
+    void testFindAllCartItemSuccess() throws Exception {
         given(this.cartItemService.findAll()).willReturn(this.cartItemsList);
 
         this.mockMvc.perform(get(this.baseUrl + "/cartItems").accept(MediaType.APPLICATION_JSON))
@@ -198,7 +198,7 @@ class CartItemControllerTest {
     }
 //
     @Test
-    void testAddItemSuccess() throws Exception {
+    void testAddCartItemSuccess() throws Exception {
         CartItem ci3 = new CartItem();
         CartItemId cid3 = new CartItemId(u1.getId(),i2.getId());
 
@@ -209,9 +209,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
         
         //given
-        CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
+        CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
         
 
 
@@ -232,7 +232,7 @@ class CartItemControllerTest {
     }
 //
     @Test
-    void testAddItemBadRequest() throws Exception {
+    void testAddCartItemBadRequest() throws Exception {
         //given
         CartItem ci3 = new CartItem();
         CartItemId cid3 = new CartItemId(u1.getId(),i2.getId());
@@ -244,9 +244,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
 
         //given
-        CartItemDTO cartItemDTO = new CartItemDTO(null,null,null,-5,new BigDecimal(6));
+        CartItemResponseDTO cartItemResponseDTO = new CartItemResponseDTO(null,null,null,-5,new BigDecimal(6));
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
         given(this.cartItemService.save(Mockito.any(CartItem.class))).willReturn(ci3);
@@ -257,12 +257,12 @@ class CartItemControllerTest {
                 .andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("$.quantity").value("must be greater than 0"))
-                .andExpect(jsonPath("$.id").doesNotExist());
+                .andExpect(jsonPath("$.id").value("must not be null"));
     }
 
     //TODO add test for adding items with invalid item id , user id
     @Test
-    void testUpdateItemSuccess() throws Exception {
+    void testUpdateCartItemSuccess() throws Exception {
         CartItem ci3 = new CartItem();
         CartItemId cid3 = new CartItemId(u1.getId(),i2.getId());
 
@@ -273,9 +273,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
 
         //given
-        CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
+        CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
         given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willReturn(ci3);
@@ -294,7 +294,7 @@ class CartItemControllerTest {
                 .andExpect(jsonPath("$.totalCost").value(ci3.getTotalCost()));
     }
     @Test
-    void testUpdateItemNotFound () throws Exception{
+    void testUpdateCartItemNotFound () throws Exception{
         //given
         CartItem ci3 = new CartItem();
         CartItemId cid3 = new CartItemId(u1.getId(),i2.getId());
@@ -306,9 +306,9 @@ class CartItemControllerTest {
         ci3.setTotalCost(new BigDecimal(10));
 
         //given
-        CartItemDTO cartItemDTO = this.cartItemToCartItemDTOConverter.convert(ci3);
+        CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
-        String jsonItem = this.objectMapper.writeValueAsString(cartItemDTO);
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
         given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willThrow(new ObjectNotFoundException("cartItem", ci3.getId()));
@@ -322,7 +322,7 @@ class CartItemControllerTest {
     }
 
     @Test
-    void testDeleteItemSuccess () throws Exception{
+    void testDeleteCartItemSuccess () throws Exception{
         doNothing().when(this.cartItemService).delete(ci1.getId());
 
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/3/1")
@@ -333,7 +333,7 @@ class CartItemControllerTest {
     }
 
     @Test
-    void testDeleteItemNotFound () throws Exception {
+    void testDeleteCartItemNotFound () throws Exception {
         doThrow(new ObjectNotFoundException("cartItem", ci1.getId())).when(this.cartItemService).delete(ci1.getId());
 
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/3/1")
