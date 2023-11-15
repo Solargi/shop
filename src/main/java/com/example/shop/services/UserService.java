@@ -2,19 +2,26 @@ package com.example.shop.services;
 
 import com.example.shop.models.User;
 import com.example.shop.repositories.UserRepository;
+import com.example.shop.security.UserPrincipal;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @Transactional
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService (UserRepository userRepository){
+    public UserService (UserRepository userRepository,PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User findById(Integer id){
@@ -26,7 +33,8 @@ public class UserService {
     }
 
     public User save(User user){
-        //TODO ENCRYPT PASSWORD BEFORE SAVING IT
+        //Encrypt password before storing it
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         return this.userRepository.save(user);
     }
 
@@ -53,5 +61,14 @@ public class UserService {
                 new ObjectNotFoundException("user", userId));
         this.userRepository.deleteById(userId);
 
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        this.userRepository.findByUsername(username)
+                .map(user -> new UserPrincipal(user))
+                .orElseThrow(() -> new UsernameNotFoundException("username " + username + "not found"));
+        //we need to convert user to a class implementing userDetails
+        return null;
     }
 }

@@ -2,6 +2,8 @@ package com.example.shop.system.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,6 +38,12 @@ public class ExceptionHandlerAdvice {
    @ExceptionHandler(ObjectAlreadyExistException.class)
    ResponseEntity<Object> handlerObjectAlreadyExistException (ObjectAlreadyExistException ex){
       return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+   }
+
+   @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
+   @ResponseStatus(HttpStatus.UNAUTHORIZED)
+   ResponseEntity<Object> handleAuthenticationException(Exception ex){
+      return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
    }
 
    @ExceptionHandler(GenericException.class)
