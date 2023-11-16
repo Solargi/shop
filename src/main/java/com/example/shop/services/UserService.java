@@ -65,10 +65,9 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        this.userRepository.findByUsername(username)
-                .map(user -> new UserPrincipal(user))
-                .orElseThrow(() -> new UsernameNotFoundException("username " + username + "not found"));
         //we need to convert user to a class implementing userDetails
-        return null;
+        return this.userRepository.findByUsername(username)
+                .map(UserPrincipal::new)
+                .orElseThrow(() -> new UsernameNotFoundException("username " + username + "not found"));
     }
 }

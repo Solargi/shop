@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import java.util.Arrays;
 import java.util.Collection;
 @AllArgsConstructor
+//uses adapter pattern to adapt user to UserDetailsInterface
 public class UserPrincipal implements UserDetails {
     private User user;
     @Override
@@ -49,5 +50,9 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User getUser() {
+        return this.user;
     }
 }
