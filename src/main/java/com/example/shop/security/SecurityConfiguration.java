@@ -83,8 +83,11 @@ public class SecurityConfiguration {
                 )
                 //enable when deploying in prod
                 .csrf(AbstractHttpConfigurer::disable)
+                //let spring security know the client is using basic
+                //authorization (user, password)
                 .httpBasic(Customizer.withDefaults())
                 //enable jwt verification/login for authorization and authentication
+                //jwt will help verify the authenticity of the token
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 //turn off sessions for requests, we don't need it anymore
                 // since we use jwt
@@ -118,7 +121,7 @@ public class SecurityConfiguration {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        //tell spring security that the authorities are in the custom defined claim authorities that
+        //tell spring security that the authorities are in the custom defined claim authorities
         // in the token creation in jwtProvider class
         jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
         //removes prefix SCOPE_ from authorities that would be a built-in prefix
