@@ -64,10 +64,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
         //we need to convert user to a class implementing userDetails
-        return this.userRepository.findByUsername(username)
+        return this.userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .map(UserPrincipal::new)
-                .orElseThrow(() -> new UsernameNotFoundException("username " + username + "not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("username or email " + usernameOrEmail + "not found"));
     }
 }
