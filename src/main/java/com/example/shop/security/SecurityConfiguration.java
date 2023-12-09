@@ -6,10 +6,12 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +25,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -53,7 +56,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain (HttpSecurity http, AuthorizationManager<RequestAuthorizationContext> userSecurity) throws Exception{
         //overwrite default authentication
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
@@ -71,7 +74,11 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html/**",
                                 "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/users/login**").permitAll()
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/login**").permitAll()
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/users").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/{userId}/**")
+                        .access(userSecurity)
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/items").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/items").hasAuthority("ROLE_admin")
@@ -95,7 +102,9 @@ public class SecurityConfiguration {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 //redirict to default login form
-                .formLogin(Customizer.withDefaults())
+//                .formLogin(Customizer.withDefaults())
+                //add social login with oauth2
+//                .oauth2Login(Customizer.withDefaults())
                 .build();
     }
 
@@ -133,7 +142,5 @@ public class SecurityConfiguration {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
-
-
     }
 }
