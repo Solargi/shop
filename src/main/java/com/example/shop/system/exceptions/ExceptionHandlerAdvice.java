@@ -51,7 +51,12 @@ public class ExceptionHandlerAdvice {
       return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.BAD_REQUEST);
    }
 
-
+   //fall back exception handler, handles all unhandled exceptions
+   @ExceptionHandler(Exception.class)
+   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+   ResponseEntity<Object> handleOtherException(Exception ex){
+      return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+   }
 
 }
 

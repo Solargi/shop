@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-@Component("userSecurity")
+@Component
 public class UserSecurity implements AuthorizationManager<RequestAuthorizationContext> {
 
     private static final String ADMIN_ROLE = "ROLE_admin";
@@ -55,7 +55,7 @@ public class UserSecurity implements AuthorizationManager<RequestAuthorizationCo
 
             // Extracting user ID from the JWT token
             System.out.println("token object:" + jwtAuthenticationToken.getTokenAttributes().get("userId"));
-            Integer jwtUserId = (Integer) jwtAuthenticationToken.getTokenAttributes().get("userId");
+            Integer jwtUserId = ((Long)jwtAuthenticationToken.getTokenAttributes().get("userId")).intValue();
 
 
             // Compare user ID parameter and user ID in the JWT token

@@ -6,11 +6,9 @@ import com.example.shop.dtos.converters.OrderToOrderDTOConverter;
 import com.example.shop.dtos.converters.OrderToOrderRequestDTOConverter;
 import com.example.shop.models.Address;
 import com.example.shop.models.User;
+import com.example.shop.utils.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -60,6 +58,15 @@ public class OrderControllerIntegrationTest {
     @Autowired
     OrderToOrderRequestDTOConverter orderToOrderRequestDTOConverter;
 
+    @Autowired
+    Login login;
+
+    String token;
+    @BeforeEach
+    public void setup() throws Exception {
+        this.token = login.getJWTToken("u1","q");
+    }
+
     @Test
     @Order(1)
     void testIfContainerIsThere(){
@@ -70,7 +77,7 @@ public class OrderControllerIntegrationTest {
     @Test
     @Order(2)
     void testFindOrderByIdNotFound() throws Exception {
-        this.mockMvc.perform(get(this.baseUrl + "/orders/1").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/orders/1").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id " + 1));
@@ -81,6 +88,7 @@ public class OrderControllerIntegrationTest {
     void testAddOrderSuccess() throws Exception {
 
         this.mockMvc.perform(post(this.baseUrl + "/orders/1")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -97,7 +105,10 @@ public class OrderControllerIntegrationTest {
     @Order(4)
     void testFindOrderByIdSuccess() throws Exception {
         //When and then
-        this.mockMvc.perform(get(this.baseUrl + "/orders/1").accept(MediaType.APPLICATION_JSON))
+        this.token = this.login.getJWTToken("u2","f");
+        this.mockMvc.perform(get(this.baseUrl + "/orders/1")
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))

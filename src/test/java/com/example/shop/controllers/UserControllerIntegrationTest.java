@@ -5,10 +5,9 @@ import com.example.shop.dtos.UserDTO;
 import com.example.shop.models.Address;
 import com.example.shop.models.User;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import com.example.shop.utils.Login;
+import org.json.JSONObject;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +18,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -43,6 +45,10 @@ public class UserControllerIntegrationTest {
     //setup postgres test container
     @Container
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
+
+    public UserControllerIntegrationTest() throws Exception {
+    }
+
     @DynamicPropertySource
     public static void overrideProperties(DynamicPropertyRegistry registry){
         //overwrite data source with the url of the container that is generated at random
@@ -58,6 +64,27 @@ public class UserControllerIntegrationTest {
 
     @Value("${api.endpoint.base-url}")
     String baseUrl;
+    @Autowired
+    Login login;
+    String token ;
+
+    @BeforeEach
+    void setUp() throws Exception {
+//        //since spring security is enabled we need to login to get a valid token
+//        //make login request and save results in result action
+//        ResultActions resultActions = this.mockMvc
+//                .perform(post(this.baseUrl + "/users/login")
+//                        .with(httpBasic("u1","q")));
+//        //convertAction to mvcResult
+//        MvcResult mvcResult = resultActions.andDo(print()).andReturn();
+//        //get response from mvcResult and convert to string
+//        String responseString = mvcResult.getResponse().getContentAsString();
+//        //convert string to json object
+//        JSONObject jsonResponse = new JSONObject(responseString);
+//        //finally save token in token field
+//        this.token = "Bearer " + jsonResponse.getString("token");
+        this.token = login.getJWTToken("u1","q");
+    }
 
     @Test
     @Order(1)
@@ -71,7 +98,7 @@ public class UserControllerIntegrationTest {
     void testFindUserByIdSuccess() throws Exception {
 
         //When and then
-        this.mockMvc.perform(get(this.baseUrl + "/users/1").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/users/2").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -90,7 +117,7 @@ public class UserControllerIntegrationTest {
     @Test
     @Order(3)
     void TestFindUserByIdNotFound() throws Exception {
-        this.mockMvc.perform(get(this.baseUrl + "/users/123").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/users/123").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 123"));
@@ -99,7 +126,7 @@ public class UserControllerIntegrationTest {
     @Test
     @Order(4)
     void testFindAllUsersSuccess() throws Exception{
-        this.mockMvc.perform(get(this.baseUrl + "/users").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/users").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -148,6 +175,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.birthDate").value(u3.getBirthDate()));
         this.mockMvc.perform(get(this.baseUrl + "/users/3")
+                        .header("Authorization", this.token)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -182,7 +210,7 @@ public class UserControllerIntegrationTest {
     @Order(7)
     void testUpdateUserSuccess() throws Exception{
         UserDTO userDTO = new UserDTO(
-                4, "q","a","k",
+                4, "u1","a","k",
                 "a@a.com","yay","user");
 
         String jsonUser = this.objectMapper.writeValueAsString(userDTO);
@@ -191,7 +219,7 @@ public class UserControllerIntegrationTest {
         u3.setId(1);
         u3.setName("a");
         u3.setSurname("k");
-        u3.setUsername("q");
+        u3.setUsername("u1");
         u3.setPassword("q");
         u3.setEmail("a@a.com");
         u3.setRoles("user");
@@ -203,6 +231,7 @@ public class UserControllerIntegrationTest {
 
         this.mockMvc.perform(put(this.baseUrl + "/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -220,6 +249,7 @@ public class UserControllerIntegrationTest {
         //check update has been saved
         this.mockMvc.perform(get(this.baseUrl + "/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.username").value(u3.getUsername()));
@@ -239,6 +269,7 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(put(this.baseUrl + "/users/3232")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser)
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -249,18 +280,21 @@ public class UserControllerIntegrationTest {
     void testDeleteUserSuccess () throws Exception {
         //check that cartItems before deleting related user
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
 //                .andDo(print())
                 .andExpect(jsonPath("$", hasSize(2)));
 
-        this.mockMvc.perform(delete(this.baseUrl + "/users/1")
-                        .accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(delete(this.baseUrl + "/users/2")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("user deleted successfully!"));
         //check that cartItems are deleted after the related user is deleted
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
 //                .andDo(print())
                 .andExpect(jsonPath("$", hasSize(1)));
 
@@ -270,7 +304,8 @@ public class UserControllerIntegrationTest {
     @Order(10)
     void testDeleteUserNotFound() throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/users/6")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 6"));
