@@ -45,6 +45,7 @@ public class AuthController {
 //    @Profile({"!prod"})
     @GetMapping("/info")
     public Object getInfo(Authentication auth, JwtAuthenticationToken principal, @RequestHeader(name="Authorization") String token) {
+
         return principal.getTokenAttributes().get("userId");
         
     }

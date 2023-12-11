@@ -98,7 +98,7 @@ public class UserControllerIntegrationTest {
     void testFindUserByIdSuccess() throws Exception {
 
         //When and then
-        this.mockMvc.perform(get(this.baseUrl + "/users/2").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/users/1").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))

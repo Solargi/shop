@@ -9,9 +9,16 @@ import com.example.shop.models.Order;
 import com.example.shop.services.OrderService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.util.http.parser.Authorization;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -36,7 +43,7 @@ public class OrderController {
 
     }
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponseDTO> findOrderById(@PathVariable("orderId") int orderId){
+    public ResponseEntity<?> findOrderById(@PathVariable("orderId") int orderId){
         Order foundOrder = this.orderService.findById(orderId);
         return ResponseEntity.ok(this.orderToOrderDTOConverter.convert(foundOrder));
     }
@@ -57,14 +64,13 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable Integer orderId, @Valid @RequestBody OrderRequestDTO orderRequestDTO){
+    public ResponseEntity<?> updateOrder(@PathVariable Integer orderId,
+                                         @Valid @RequestBody OrderRequestDTO orderRequestDTO){
         Order order = this.orderRequestDTOToOrderConverter.convert(orderRequestDTO);
         Order updatedOrder = this.orderService.update(orderId,order);
         OrderResponseDTO updatedOrderResponseDTO = this.orderToOrderDTOConverter.convert(updatedOrder);
         return ResponseEntity.ok(updatedOrderResponseDTO);
     }
-
-    //TODO: TEST THIS ENDPOINT
 
     @DeleteMapping("/{orderId}")
     public ResponseEntity<String> deleteOrder (@PathVariable Integer orderId){

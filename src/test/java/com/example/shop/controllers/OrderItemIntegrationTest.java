@@ -4,11 +4,9 @@ import com.example.shop.Embeddables.OrderItemId;
 import com.example.shop.dtos.OrderItemRequestDTO;
 import com.example.shop.models.OrderItem;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
+import com.example.shop.utils.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,11 +52,19 @@ public class OrderItemIntegrationTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    Login login;
 
     @Value("${api.endpoint.base-url}")
     String baseUrl;
 
     OrderItemId oid1 = new OrderItemId(1,2);
+
+    String token;
+    @BeforeEach
+    public void setup() throws Exception {
+        this.token = this.login.getJWTToken("u1","q");
+    }
 
     @Test
     @Order(1)
@@ -70,9 +76,13 @@ public class OrderItemIntegrationTest {
     @Test
     @Order(2)
     void testCreateOrder()throws Exception{
-        this.mockMvc.perform(post(this.baseUrl + "/orders/1").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(post(this.baseUrl + "/orders/1")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        this.mockMvc.perform(post(this.baseUrl + "/orders/2").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(post(this.baseUrl + "/orders/2")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
     }
@@ -81,7 +91,9 @@ public class OrderItemIntegrationTest {
     @Order(3)
     void testFindOrderItemByIdSuccess() throws Exception {
         //When and then
-        this.mockMvc.perform(get(this.baseUrl + "/orderItems/1/1").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/orderItems/1/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.orderId").value(1))
@@ -94,7 +106,9 @@ public class OrderItemIntegrationTest {
     @Test
     @Order(4)
     void testFindOrderItemByIdNotFound() throws Exception {
-        this.mockMvc.perform(get(this.baseUrl + "/orderItems/1/5").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/orderItems/1/5")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find orderItem with id OrderItemId(orderId=1, itemId=5)"));
@@ -103,7 +117,9 @@ public class OrderItemIntegrationTest {
     @Test
     @Order(5)
     void testFindAllOrderItemSuccess() throws Exception {
-        this.mockMvc.perform(get(this.baseUrl + "/orderItems").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/orderItems")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(new OrderItemId(1,1)))
@@ -119,7 +135,8 @@ public class OrderItemIntegrationTest {
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
 
-        this.mockMvc.perform(post(this.baseUrl + "/orderItems")
+        this.mockMvc.perform(post(this.baseUrl + "/orderItems/" + oid1.getOrderId() +"/" + oid1.getItemId())
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -138,7 +155,8 @@ public class OrderItemIntegrationTest {
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
-        this.mockMvc.perform(post(this.baseUrl + "/orderItems")
+        this.mockMvc.perform(post(this.baseUrl + "/orderItems/42/0" )
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -155,6 +173,7 @@ public class OrderItemIntegrationTest {
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
         this.mockMvc.perform(put(this.baseUrl + "/orderItems/1/2")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -174,6 +193,7 @@ public class OrderItemIntegrationTest {
 
 
         this.mockMvc.perform(put(this.baseUrl + "/orderItems/32/12")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -185,6 +205,7 @@ public class OrderItemIntegrationTest {
     @Order(9)
     void testDeleteOrderItemSuccess () throws Exception{
         this.mockMvc.perform(delete(this.baseUrl + "/orderItems/1/1")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -195,6 +216,7 @@ public class OrderItemIntegrationTest {
     @Order(10)
     void testDeleteOrderItemNotFound () throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/orderItems/1/1")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())

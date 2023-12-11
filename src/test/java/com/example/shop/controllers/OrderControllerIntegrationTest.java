@@ -105,7 +105,6 @@ public class OrderControllerIntegrationTest {
     @Order(4)
     void testFindOrderByIdSuccess() throws Exception {
         //When and then
-        this.token = this.login.getJWTToken("u2","f");
         this.mockMvc.perform(get(this.baseUrl + "/orders/1")
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
@@ -120,7 +119,9 @@ public class OrderControllerIntegrationTest {
     @Test
     @Order(5)
     void testFindAllOrderSuccess() throws Exception {
-        this.mockMvc.perform(get(this.baseUrl + "/orders").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/orders")
+                        .header("Authorization", token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(1));
@@ -131,6 +132,7 @@ public class OrderControllerIntegrationTest {
     void testAddOrderBadRequest() throws Exception {
 
         this.mockMvc.perform(post(this.baseUrl + "/orders/1")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
@@ -174,7 +176,8 @@ public class OrderControllerIntegrationTest {
 
         this.mockMvc.perform(put(this.baseUrl + "/orders/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(order.getId()))
@@ -185,7 +188,8 @@ public class OrderControllerIntegrationTest {
 
         //check it has been updated in db
         this.mockMvc.perform(get(this.baseUrl + "/orders/1")
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andExpect(jsonPath("$.shippingCost").value(30));
     }
     @Test
@@ -224,7 +228,8 @@ public class OrderControllerIntegrationTest {
 
         this.mockMvc.perform(put(this.baseUrl + "/orders/"+ 32)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id 32"));
@@ -233,7 +238,8 @@ public class OrderControllerIntegrationTest {
     @Test
     void testDeleteOrderSuccess () throws Exception{
         this.mockMvc.perform(delete(this.baseUrl + "/orders/1")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("Order deleted successfully!"));
@@ -242,7 +248,8 @@ public class OrderControllerIntegrationTest {
     @Test
     void testDeleteOrderNotFound () throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/orders/1")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id 1"));
