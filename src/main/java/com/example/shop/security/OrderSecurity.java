@@ -2,6 +2,7 @@ package com.example.shop.security;
 
 import com.example.shop.models.Order;
 import com.example.shop.repositories.OrderRepository;
+import com.example.shop.services.OrderService;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
 @Component
 @AllArgsConstructor
 public class OrderSecurity implements AuthorizationManager<RequestAuthorizationContext> {
-    OrderRepository orderRepository;
+    private final OrderService orderService;
     //returns true if authenticated user has role admin
     private boolean isAdmin(Authentication authentication) {
         //get list of granted authorities
@@ -71,12 +72,8 @@ public class OrderSecurity implements AuthorizationManager<RequestAuthorizationC
         System.out.println("CONTEXT OBJECTTTTTTTTTT: " + context);
 
         //fetch the order to and get owner id
-        Optional<Order> optOrder = this.orderRepository.findById(requestOrderId);
-        if (optOrder.isPresent()){
-            Integer orderOwnerId = optOrder.get().getUser().getId();
-            return new AuthorizationDecision(isUser(authentication,orderOwnerId));
-        }
-
-        return new AuthorizationDecision(false);
+        Order order = this.orderService.findById(requestOrderId);
+        Integer orderOwnerId = order.getUser().getId();
+        return new AuthorizationDecision(isUser(authentication,orderOwnerId));
     }
 }

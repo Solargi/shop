@@ -40,10 +40,12 @@ public class SecurityConfiguration {
     private final RSAPrivateKey privateKey;
     private final UserSecurity userSecurity;
     private final OrderSecurity orderSecurity;
+    private final AddressSecurity addressSecurity;
 
-    public SecurityConfiguration (UserSecurity userSecurity, OrderSecurity orderSecurity) throws NoSuchAlgorithmException {
+    public SecurityConfiguration (UserSecurity userSecurity, OrderSecurity orderSecurity, AddressSecurity addressSecurity) throws NoSuchAlgorithmException {
         this.userSecurity = userSecurity;
         this.orderSecurity = orderSecurity;
+        this.addressSecurity = addressSecurity;
         //generate public and private key pair for jwt using RSA algorithm
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         //set generated key size to 2048 bits
@@ -85,6 +87,17 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "**{userId}**")
                         .access(this.userSecurity)
 
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/address").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/address/{addressId}")
+                        .access(this.addressSecurity)
+                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/address/{userId}")
+                        .access(this.userSecurity)
+//                      //let only admin modify or delete orderItem for now
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/address/{addressId}**")
+                                .access(this.addressSecurity)
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/address/{addressId}**")
+                                .access(this.addressSecurity)
+
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/items").permitAll()
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/items/{itemId}").permitAll()
                                 .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
@@ -100,7 +113,7 @@ public class SecurityConfiguration {
 //                        //let only admin modify or delete order for now
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "**/orders/{orderId}/**").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/orders/{orderId}").hasAuthority("ROLE_admin")
-
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/orderItems").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "**/orderItems/{orderId}/{itemId}**")
                         .access(this.orderSecurity)
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/orderItems/{orderId}/{itemId}**")

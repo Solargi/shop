@@ -4,7 +4,9 @@ import com.example.shop.dtos.AddressDTO;
 import com.example.shop.dtos.converters.AddressToAddressDTOConverter;
 import com.example.shop.dtos.converters.AddressDTOToAddressConverter;
 import com.example.shop.models.Address;
+import com.example.shop.models.User;
 import com.example.shop.services.AddressService;
+import com.example.shop.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class AddressController {
     private AddressToAddressDTOConverter addressToAddressDTOConverter;
     private AddressDTOToAddressConverter addressDTOToAddressConverter;
     private AddressService addressService;
+    private UserService userService;
 
     @GetMapping("/{addressId}")
     ResponseEntity<AddressDTO> getAddress(@PathVariable Integer addressId){
@@ -34,9 +37,14 @@ public class AddressController {
                 .toList());
     }
 
-    @PostMapping("")
-    ResponseEntity<AddressDTO> saveAddress(@Valid @RequestBody AddressDTO addressDTO){
+    @PostMapping("/{userId}")
+    ResponseEntity<AddressDTO> saveAddress(@Valid @RequestBody AddressDTO addressDTO,
+                                           @PathVariable Integer userId){
         Address address = this.addressDTOToAddressConverter.convert(addressDTO);
+        //TODO rework address save controller and service fetch user in service save
+        // remove user dto use userId is enough
+        User foundUser = this.userService.findById(userId);
+        address.setUser(foundUser);
         Address savedAddress = this.addressService.save(address);
         return ResponseEntity.ok(this.addressToAddressDTOConverter.convert(savedAddress));
     }
