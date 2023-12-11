@@ -86,6 +86,8 @@ public class SecurityConfiguration {
                         .access(this.userSecurity)
 
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/items").permitAll()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/items/{itemId}").permitAll()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "/items").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/items").hasAuthority("ROLE_admin")

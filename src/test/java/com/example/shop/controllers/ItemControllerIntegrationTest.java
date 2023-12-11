@@ -3,12 +3,10 @@ package com.example.shop.controllers;
 import com.example.shop.dtos.ItemDTO;
 import com.example.shop.models.Item;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
+import com.example.shop.utils.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,10 +70,17 @@ public class ItemControllerIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    Login login;
 
     @Value("${api.endpoint.base-url}")
     String baseUrl;
 
+    String token;
+    @BeforeEach
+    public void setup() throws Exception {
+        this.token = this.login.getJWTToken("u1","q");
+    }
 
     @Test
     @Order(1)
@@ -142,6 +147,7 @@ public class ItemControllerIntegrationTest {
         item3.setAvailableQuantity(new BigDecimal("3"));
 
         this.mockMvc.perform(post(this.baseUrl + "/items")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -188,6 +194,7 @@ public class ItemControllerIntegrationTest {
 
         this.mockMvc.perform(post(this.baseUrl + "/items")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
 //                .andDo(print())
@@ -211,6 +218,7 @@ public class ItemControllerIntegrationTest {
 
 
         this.mockMvc.perform(post(this.baseUrl + "/items")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -236,6 +244,7 @@ public class ItemControllerIntegrationTest {
 
 
         this.mockMvc.perform(put(this.baseUrl + "/items/1")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -269,6 +278,7 @@ public class ItemControllerIntegrationTest {
         String jsonItem = this.objectMapper.writeValueAsString(itemDTO);
 
         this.mockMvc.perform(put(this.baseUrl + "/items/3232")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -282,11 +292,12 @@ public class ItemControllerIntegrationTest {
         //check child entities dimension before deleting item
         // this should be separated in another test but this saves time
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
-                .accept(MediaType.APPLICATION_JSON))
-//                .andDo(print())
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
 
         this.mockMvc.perform(delete(this.baseUrl + "/items/1")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
 //                .andDo(print())
                 .andExpect(status().isOk())
@@ -294,6 +305,7 @@ public class ItemControllerIntegrationTest {
         //check child entities dimensions after deleting items
         //cart items should be deleted as well when deleting item
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
 //                .andDo(print())
                 .andExpect(jsonPath("$", hasSize(1)));
@@ -303,6 +315,7 @@ public class ItemControllerIntegrationTest {
     @Order(12)
     void testDeleteItemNotFound () throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/items/4")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
