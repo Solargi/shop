@@ -6,11 +6,9 @@ import com.example.shop.dtos.CartItemResponseDTO;
 import com.example.shop.dtos.converters.CartItemToCartItemResponseDTOConverter;
 import com.example.shop.models.CartItem;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
+import com.example.shop.utils.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,15 +58,26 @@ public class CartItemControllerIntegrationTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    Login login;
+
+    String token;
+
 
     @Value("${api.endpoint.base-url}")
     String baseUrl;
 
+    @BeforeEach
+    public void setup() throws Exception {
+        this.token = this.login.getJWTToken("u1","q");
+    }
     @Test
     @Order(1)
     void testFindCartItemByIdSuccess() throws Exception {
         //When and then
-        this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.userId").value(1))
@@ -81,7 +90,9 @@ public class CartItemControllerIntegrationTest {
     @Test
     @Order(2)
     void testFindCartItemByIdNotFound() throws Exception {
-        this.mockMvc.perform(get(this.baseUrl + "/cartItems/3/108").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/3/108")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=3, itemId=108)"));
@@ -90,7 +101,9 @@ public class CartItemControllerIntegrationTest {
     @Test
     @Order(3)
     void testFindAllCartItemSuccess() throws Exception {
-        this.mockMvc.perform(get(this.baseUrl + "/cartItems").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id.userId").value(1))
@@ -113,7 +126,8 @@ public class CartItemControllerIntegrationTest {
 
 
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems")
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/"+ ci3.getId().getUserId())
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -136,7 +150,8 @@ public class CartItemControllerIntegrationTest {
         String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
 
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems")
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/54444")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -158,6 +173,7 @@ public class CartItemControllerIntegrationTest {
 
         this.mockMvc.perform(put(this.baseUrl + "/cartItems/1/1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -169,6 +185,7 @@ public class CartItemControllerIntegrationTest {
                 .andExpect(jsonPath("$.id.itemId").value(1))
                 .andExpect(jsonPath("$.totalCost").value(642));
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.quantity").value(20));
     }
@@ -184,6 +201,7 @@ public class CartItemControllerIntegrationTest {
 
         this.mockMvc.perform(put(this.baseUrl + "/cartItems/3233/2222")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -194,12 +212,15 @@ public class CartItemControllerIntegrationTest {
     @Order(8)
     void testDeleteCartItemSuccess () throws Exception{
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/1/2")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("CartItem deleted successfully!"));
         //check for deletion
-        this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/2").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/2")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=1, itemId=2)"));
@@ -209,6 +230,7 @@ public class CartItemControllerIntegrationTest {
     @Order(9)
     void testDeleteCartItemNotFound () throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/32/12")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())

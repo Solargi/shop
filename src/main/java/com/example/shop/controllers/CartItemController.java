@@ -7,7 +7,9 @@ import com.example.shop.dtos.converters.CartItemRequestDTOToCartItemConverter;
 import com.example.shop.dtos.converters.CartItemResponseDTOToCartItemConverter;
 import com.example.shop.dtos.converters.CartItemToCartItemResponseDTOConverter;
 import com.example.shop.models.CartItem;
+import com.example.shop.models.User;
 import com.example.shop.services.CartItemService;
+import com.example.shop.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ public class CartItemController {
     CartItemToCartItemResponseDTOConverter cartItemToCartItemResponseDTOConverter;
     CartItemResponseDTOToCartItemConverter cartItemResponseDTOToCartItemConverter;
     CartItemRequestDTOToCartItemConverter cartItemRequestDTOToCartItemConverter;
+    UserService userService;
     @GetMapping("")
     public ResponseEntity<List<CartItemResponseDTO>> getCartItems(){
         List<CartItem> foundCartItems = this.cartItemService.findAll();
@@ -43,13 +46,24 @@ public class CartItemController {
 
     //TODO: ADD A TEST ENDPOINT TO FETCH ALL CARTITEMS BELONGING TO A USER USING USERID
 
-    @PostMapping("")
+    @PostMapping("/{userId}")
     //valid checks for validity of fields defined in ItemDto class with annotation
     // request body takes
-    public ResponseEntity<CartItemResponseDTO> addCartItem(@Valid @RequestBody CartItemRequestDTO cartItemRequestDTO){
+    public ResponseEntity<CartItemResponseDTO> addCartItem(@Valid @RequestBody CartItemRequestDTO cartItemRequestDTO,
+                                                           @PathVariable Integer userId){
         //convert dto to object
         CartItem cartItem = this.cartItemRequestDTOToCartItemConverter.convert(cartItemRequestDTO);
-
+        //overwrite user and id for security reasons
+        // found user
+        User foundUser = this.userService.findById(userId);
+        //insert correct user into carItem object before saving for security reasons
+        // user can't be null since we would have an exception
+        // and if user is not logged in security won't allow post
+        cartItem.setUser(foundUser);
+        //create new cartItem id for security reasons
+        CartItemId cId = new CartItemId(userId,cartItem.getId().getItemId());
+        //substitue cartItemId
+        cartItem.setId(cId);
         //save cartItem
         CartItem savedItem = this.cartItemService.save(cartItem);
 

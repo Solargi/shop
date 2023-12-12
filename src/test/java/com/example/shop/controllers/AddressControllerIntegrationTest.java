@@ -1,29 +1,27 @@
 package com.example.shop.controllers;
 
 import com.example.shop.dtos.AddressDTO;
+import com.example.shop.dtos.AddressRequestDTO;
 import com.example.shop.dtos.converters.UserToUserDTOConverter;
 import com.example.shop.models.Address;
 import com.example.shop.models.User;
-import com.example.shop.services.AddressService;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
+import com.example.shop.utils.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -37,32 +35,49 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@WebMvcTest(value = AddressController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@ActiveProfiles({"test","dev"})
+@SpringBootTest
 @AutoConfigureMockMvc
-class AddressControllerTest {
-    @Value("${api.endpoint.base-url}")
-    String baseUrl;
+@Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class AddressControllerIntegrationTest {
+    @Container
+    //create container
+    private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
+
+    @DynamicPropertySource
+    //overwrite propreties in applicaiton.yml at runtime
+    public static void overrideProperties(DynamicPropertyRegistry registry) {
+        //overwrite data source with the url of the container that is generated at random
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+    }
+
     @Autowired
     MockMvc mockMvc;
+
     @Autowired
     ObjectMapper objectMapper;
+
     @Autowired
     UserToUserDTOConverter userToUserDTOConverter;
 
-    @MockBean
-    AddressService addressService;
+    @Autowired
+    Login login;
 
+    @Value("${api.endpoint.base-url}")
+    String baseUrl;
 
     Address a1 = new Address();
-    Address a2 = new Address();
-
-    List<Address> addressesList = new ArrayList<Address>();
-
     User u1 = new User();
 
+    String token;
+
+
     @BeforeEach
-    void setUp() {
+    public void setup() throws Exception {
+        this.token = this.login.getJWTToken("u1","q");
         u1.setId(1);
         u1.setName("a");
         u1.setSurname("b");
@@ -71,10 +86,6 @@ class AddressControllerTest {
         u1.setEmail("c");
         u1.setRoles("admin");
         u1.setBirthDate("yay");
-        //TODO: ASSIGN THEM TO ACTUAL OBJECTS
-        u1.setAddresses(null);
-        u1.setOrderList(null);
-        u1.setCartItems(null);
 
         a1.setId(1);
         a1.setCountry("a");
@@ -84,30 +95,23 @@ class AddressControllerTest {
         a1.setZipCode(56);
         a1.setUser(u1);
 
-        a2.setId(2);
-        a2.setCountry("e");
-        a2.setCity("f");
-        a2.setStreet("g");
-        a2.setState("h");
-        a2.setZipCode(57);
-        a2.setUser(u1);
-
-        addressesList.add(a1);
-        addressesList.add(a2);
-
-        u1.setAddresses(addressesList);
     }
 
-    @AfterEach
-    void tearDown() {
-    }
     @Test
-    void testFindAddressByIdSuccess() throws Exception {
-        //Given
-        given(this.addressService.findById(1)).willReturn(this.a1);
+    @Order(1)
+    void testIfContainerIsThere() {
+        assertThat(postgreSQLContainer.isCreated()).isTrue();
+        assertThat(postgreSQLContainer.isRunning()).isTrue();
+    }
 
-        //When and then
-        this.mockMvc.perform(get(this.baseUrl + "/addresses/1").accept(MediaType.APPLICATION_JSON))
+
+
+    @Test
+    @Order(2)
+    void testFindAddressByIdSuccess() throws Exception {
+        this.mockMvc.perform(get(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a1.getId()))
@@ -120,29 +124,69 @@ class AddressControllerTest {
     }
 
     @Test
+    @Order(3)
     void testFindAddressByIdNotFound() throws Exception {
-        given(this.addressService.findById(123)).willThrow(new ObjectNotFoundException("address",123));
-
-        this.mockMvc.perform(get(this.baseUrl + "/addresses/123").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/addresses/123")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 123"));
     }
 
     @Test
+    @Order(4)
     void testFindAllAddressSuccess() throws Exception {
-        given(this.addressService.findAll()).willReturn(this.addressesList);
-
-        this.mockMvc.perform(get(this.baseUrl + "/addresses").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/addresses")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$", hasSize(this.addressesList.size())))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(this.a1.getId()))
-                .andExpect(jsonPath("$[1].id").value(this.a2.getId()));
+                .andExpect(jsonPath("$[1].id").value(2));
     }
-//
+
     @Test
+    @Order(5)
     void testAddAddressSuccess() throws Exception {
-        //given
+        //id shoud be set correctly by db
+        AddressRequestDTO addressDTO = new AddressRequestDTO(
+                "a",
+                "d",
+                "b",
+                "c",
+                56);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonAddress = this.objectMapper.writeValueAsString(addressDTO);
+
+        Address a3 = new Address();
+        a3.setId(3);
+        a3.setCountry("a");
+        a3.setCity("b");
+        a3.setStreet("c");
+        a3.setState("d");
+        a3.setZipCode(56);
+        a3.setUser(u1);
+
+
+        this.mockMvc.perform(post(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(a3.getId()))
+                .andExpect(jsonPath("$.street").value(a3.getStreet()))
+                .andExpect(jsonPath("$.city").value(a3.getCity()))
+                .andExpect(jsonPath("$.state").value(a3.getState()))
+                .andExpect(jsonPath("$.country").value(a3.getCountry()))
+                .andExpect(jsonPath("$.zipCode").value(a3.getZipCode()))
+                .andExpect(jsonPath("$.userDTO.id").value(u1.getId()));
+    }
+
+    @Test
+    @Order(6)
+    void testFindAddedAddressByIdSuccess() throws Exception {
         AddressDTO addressDTO = new AddressDTO(3,
                 this.userToUserDTOConverter.convert(u1),
                 "a",
@@ -162,12 +206,9 @@ class AddressControllerTest {
         a3.setZipCode(56);
         a3.setUser(u1);
 
-
-        given(this.addressService.save(Mockito.any(Address.class),Mockito.any(Integer.class))).willReturn(a3);
-
-        this.mockMvc.perform(post(this.baseUrl + "/addresses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl + "/addresses/3")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a3.getId()))
@@ -179,11 +220,11 @@ class AddressControllerTest {
                 .andExpect(jsonPath("$.userDTO.id").value(u1.getId()));
     }
 
+
     @Test
+    @Order(7)
     void testAddAddressBadRequest() throws Exception {
-        //given
-        AddressDTO addressDTO = new AddressDTO(null,
-                this.userToUserDTOConverter.convert(u1),
+        AddressRequestDTO addressDTO = new AddressRequestDTO(
                 "a",
                 "",
                 null,
@@ -202,9 +243,8 @@ class AddressControllerTest {
         a3.setUser(u1);
 
 
-        given(this.addressService.save(Mockito.any(Address.class),Mockito.any(Integer.class))).willReturn(a3);
-
-        this.mockMvc.perform(post(this.baseUrl + "/addresses")
+        this.mockMvc.perform(post(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -213,6 +253,7 @@ class AddressControllerTest {
                 .andExpect(jsonPath("$.city").value("must not be empty"));
     }
     @Test
+    @Order(8)
     void testUpdateAddressSuccess() throws Exception {
         //given
         AddressDTO addressDTO = new AddressDTO(1,
@@ -234,9 +275,8 @@ class AddressControllerTest {
         a3.setZipCode(56);
         a3.setUser(u1);
 
-        given(this.addressService.update(eq(1),Mockito.any(Address.class))).willReturn(a3);
-
         this.mockMvc.perform(put(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -250,6 +290,7 @@ class AddressControllerTest {
                 .andExpect(jsonPath("$.userDTO.id").value(u1.getId()));
     }
     @Test
+    @Order(9)
     void testUpdateAddressNotFound () throws Exception{
         //given
         AddressDTO addressDTO = new AddressDTO(1,
@@ -262,11 +303,9 @@ class AddressControllerTest {
         //convert dto to json mockmvc can't send the DTO object
         String jsonAddress = this.objectMapper.writeValueAsString(addressDTO);
 
-
-        given(this.addressService.update(eq(3232),Mockito.any(Address.class))).willThrow(new ObjectNotFoundException("address", 3232));
-
         this.mockMvc.perform(put(this.baseUrl + "/addresses/3232")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -274,10 +313,20 @@ class AddressControllerTest {
     }
 
     @Test
-    void testDeleteAddressSuccess () throws Exception{
-        doNothing().when(this.addressService).delete(1);
+    @Order(10)
+    void test3TotalAddressesBeforeDeleting() throws Exception {
+        this.mockMvc.perform(get(this.baseUrl + "/addresses")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$", hasSize(3)));
+    }
 
+    @Test
+    @Order(11)
+    void testDeleteAddressSuccess () throws Exception{
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -285,10 +334,20 @@ class AddressControllerTest {
     }
 
     @Test
-    void testDeleteAddressNotFound () throws Exception {
-        doThrow(new ObjectNotFoundException("address", 4)).when(this.addressService).delete(4);
+    @Order(12)
+    void test2TotalAddressesAfterDeleting() throws Exception {
+        this.mockMvc.perform(get(this.baseUrl + "/addresses")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
 
+    @Test
+    @Order(13)
+    void testDeleteAddressNotFound () throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/4")
+                        .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())

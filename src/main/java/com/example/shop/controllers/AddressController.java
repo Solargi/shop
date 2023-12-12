@@ -1,6 +1,8 @@
 package com.example.shop.controllers;
 
 import com.example.shop.dtos.AddressDTO;
+import com.example.shop.dtos.AddressRequestDTO;
+import com.example.shop.dtos.converters.AddressRequestDTOToAddressConverter;
 import com.example.shop.dtos.converters.AddressToAddressDTOConverter;
 import com.example.shop.dtos.converters.AddressDTOToAddressConverter;
 import com.example.shop.models.Address;
@@ -20,6 +22,7 @@ import java.util.List;
 public class AddressController {
     private AddressToAddressDTOConverter addressToAddressDTOConverter;
     private AddressDTOToAddressConverter addressDTOToAddressConverter;
+    private AddressRequestDTOToAddressConverter addressRequestDTOToAddressConverter;
     private AddressService addressService;
     private UserService userService;
 
@@ -38,14 +41,12 @@ public class AddressController {
     }
 
     @PostMapping("/{userId}")
-    ResponseEntity<AddressDTO> saveAddress(@Valid @RequestBody AddressDTO addressDTO,
+    ResponseEntity<AddressDTO> saveAddress(@Valid @RequestBody AddressRequestDTO addressRequestDTO,
                                            @PathVariable Integer userId){
-        Address address = this.addressDTOToAddressConverter.convert(addressDTO);
+        Address address = this.addressRequestDTOToAddressConverter.convert(addressRequestDTO);
         //TODO rework address save controller and service fetch user in service save
         // remove user dto use userId is enough
-        User foundUser = this.userService.findById(userId);
-        address.setUser(foundUser);
-        Address savedAddress = this.addressService.save(address);
+        Address savedAddress = this.addressService.save(address, userId);
         return ResponseEntity.ok(this.addressToAddressDTOConverter.convert(savedAddress));
     }
 

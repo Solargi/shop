@@ -1,7 +1,9 @@
 package com.example.shop.services;
 
 import com.example.shop.models.Address;
+import com.example.shop.models.User;
 import com.example.shop.repositories.AddressRepository;
+import com.example.shop.repositories.UserRepository;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -12,9 +14,11 @@ import java.util.List;
 @Transactional
 public class AddressService {
     private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
 
-    public AddressService (AddressRepository addressRepository){
+    public AddressService (AddressRepository addressRepository, UserRepository userRepository){
         this.addressRepository = addressRepository;
+        this.userRepository = userRepository;
     }
 
     public Address findById (Integer addressId){
@@ -26,7 +30,10 @@ public class AddressService {
         return this.addressRepository.findAll();
     }
 
-    public Address save (Address address){
+    public Address save (Address address, Integer userId){
+        User foundUser = this.userRepository.findById(userId)
+                .orElseThrow(()->new ObjectNotFoundException("user", userId));
+        address.setUser(foundUser);
         return this.addressRepository.save(address);
     }
 
@@ -38,7 +45,7 @@ public class AddressService {
         oldAddress.setZipCode(address.getZipCode());
         oldAddress.setState(address.getState());
         oldAddress.setUser(address.getUser());
-        return save(oldAddress);
+        return save(oldAddress, oldAddress.getUser().getId());
     }
 
     public void delete(Integer addressId){
