@@ -130,7 +130,7 @@ public class OrderItemIntegrationTest {
     @Order(6)
     void testAddOrderItemSuccess() throws Exception {
 
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(oid1,10);
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(10);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
@@ -149,9 +149,10 @@ public class OrderItemIntegrationTest {
     }
 
     @Test
+    @Order(7)
     void testAddOrderItemBadRequest() throws Exception {
         //given
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(null,0);
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(0);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
@@ -161,18 +162,18 @@ public class OrderItemIntegrationTest {
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("$.id").value("must not be null"))
+                .andExpect(jsonPath("$.id").doesNotExist())
                 .andExpect(jsonPath("$.quantity").value("must be greater than 0"));
     }
     @Test
     @Order(8)
     void testUpdateOrderItemSuccess() throws Exception {
         //given
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(oid1,1);
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(1);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
-        this.mockMvc.perform(put(this.baseUrl + "/orderItems/1/2")
+        this.mockMvc.perform(put(this.baseUrl + "/orderItems/" + oid1.getOrderId() + "/" + oid1.getItemId())
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
@@ -185,9 +186,10 @@ public class OrderItemIntegrationTest {
                 .andExpect(jsonPath("$.quantity").value(1));
     }
     @Test
+    @Order(9)
     void testUpdateOrderItemNotFound () throws Exception{
         //given
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(new OrderItemId(32,12),1);
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(1);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
@@ -202,7 +204,7 @@ public class OrderItemIntegrationTest {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     void testDeleteOrderItemSuccess () throws Exception{
         this.mockMvc.perform(delete(this.baseUrl + "/orderItems/1/1")
                         .header("Authorization", this.token)
@@ -213,7 +215,7 @@ public class OrderItemIntegrationTest {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     void testDeleteOrderItemNotFound () throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/orderItems/1/1")
                         .header("Authorization", this.token)

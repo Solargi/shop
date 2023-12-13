@@ -3,6 +3,7 @@ package com.example.shop.services;
 import com.example.shop.models.Address;
 import com.example.shop.models.User;
 import com.example.shop.repositories.AddressRepository;
+import com.example.shop.repositories.UserRepository;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,8 @@ import static org.mockito.Mockito.*;
 class AddressServiceTest {
     @Mock
     AddressRepository addressRepository;
+    @Mock
+    UserRepository userRepository;
 
     @InjectMocks
     AddressService addressService;
@@ -139,6 +142,7 @@ class AddressServiceTest {
         a3.setUser(u1);
 
         given(addressRepository.save(a3)).willReturn(a3);
+        given(userRepository.findById(1)).willReturn(Optional.of(u1));
 
         Address savedAddress = addressService.save(a3,1);
         assertThat(savedAddress.getId()).isEqualTo(a3.getId());
@@ -163,6 +167,7 @@ class AddressServiceTest {
         given(addressRepository.findById(1)).willReturn(Optional.of(a1));
         //when savind address 1 already has the new values
         given(addressRepository.save(a1)).willReturn(a1);
+        given(userRepository.findById(1)).willReturn(Optional.of(u1));
 
 
 

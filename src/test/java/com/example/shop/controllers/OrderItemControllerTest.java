@@ -250,13 +250,13 @@ class OrderItemControllerTest {
     @Test
     void testAddOrderItemSuccess() throws Exception {
         //given
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(oi1.getId(),oi1.getQuantity());
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(oi1.getQuantity());
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
         given(this.orderItemService.save(Mockito.any(OrderItem.class))).willReturn(oi1);
 
-        this.mockMvc.perform(post(this.baseUrl + "/orderItems")
+        this.mockMvc.perform(post(this.baseUrl + "/orderItems/" + oi1.getId().getOrderId() + "/" + oi1.getId().getItemId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -271,28 +271,28 @@ class OrderItemControllerTest {
     @Test
     void testAddOrderItemBadRequest() throws Exception {
         //given
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(null,0);
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(0);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
         given(this.orderItemService.save(Mockito.any(OrderItem.class))).willReturn(oi1);
 
-        this.mockMvc.perform(post(this.baseUrl + "/orderItems")
+        this.mockMvc.perform(post(this.baseUrl + "/orderItems/41/23")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("$.id").value("must not be null"))
+                .andExpect(jsonPath("$.id").doesNotExist())
                 .andExpect(jsonPath("$.quantity").value("must be greater than 0"));
     }
     @Test
     void testUpdateOrderItemSuccess() throws Exception {
         //given
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(oi1.getId(),1);
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(1);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
-        given(this.orderItemService.update(eq(oi1.getId()),Mockito.any(OrderItem.class))).willReturn(oi1);
+        given(this.orderItemService.update(Mockito.any(OrderItem.class))).willReturn(oi1);
 
         this.mockMvc.perform(put(this.baseUrl + "/orderItems/1/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -308,11 +308,11 @@ class OrderItemControllerTest {
     @Test
     void testUpdateOrderItemNotFound () throws Exception{
         //given
-        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(oi1.getId(),1);
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(1);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
 
-        given(this.orderItemService.update(eq(oi1.getId()),Mockito.any(OrderItem.class))).willThrow(new ObjectNotFoundException("orderItem", oi1.getId()));
+        given(this.orderItemService.update(Mockito.any(OrderItem.class))).willThrow(new ObjectNotFoundException("orderItem", oi1.getId()));
 
         this.mockMvc.perform(put(this.baseUrl + "/orderItems/1/1")
                         .contentType(MediaType.APPLICATION_JSON)

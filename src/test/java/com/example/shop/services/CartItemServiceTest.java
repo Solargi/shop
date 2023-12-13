@@ -200,21 +200,22 @@ class CartItemServiceTest {
     @Test
     void testUpdateSuccess(){
        CartItem ci3 = new CartItem();
-       CartItemId cid3 = new CartItemId(u1.getId(),i2.getId());
+       CartItemId cid3 = new CartItemId(ci1.getId().getUserId(),ci1.getId().getItemId());
        ci3.setId(cid3);
-       ci3.setItem(i2);
+       ci3.setItem(ci1.getItem());
        ci3.setUser(u1);
-       ci3.setQuantity(1);
+       ci3.setQuantity(20);
+        ci3.setTotalCost(ci3.computeTotalCost());
 
-        given(cartItemRepository.findById(ci1.getId())).willReturn(Optional.of(ci1));
+        given(cartItemRepository.findById(ci3.getId())).willReturn(Optional.of(ci1));
 //        given(userRepository.findById(u1.getId())).willReturn(Optional.of(u1));
 //        given(itemRepository.findById(i2.getId())).willReturn(Optional.of(i2));
         //when savind address 1 already has the new values
-        given(cartItemRepository.save(ci1)).willReturn(ci1);
+        given(cartItemRepository.save(ci3)).willReturn(ci1);
 
         CartItem updated1 = cartItemService.update(ci3);
         // check that it doesn't allow to modify id
-        assertThat(updated1.getId()).isEqualTo(ci1.getId());
+        assertThat(updated1.getId()).isEqualTo(ci3.getId());
         assertThat(updated1.getQuantity()).isEqualTo(ci3.getQuantity());
         verify(cartItemRepository, times(1)).findById(id1);
         verify(cartItemRepository, times(1)).save(ci1);
@@ -223,13 +224,12 @@ class CartItemServiceTest {
 
     @Test
     void testUpdateNotFound(){
-        given(cartItemRepository.findById(id2)).willReturn(Optional.empty());
-
+        given(cartItemRepository.findById(id1)).willReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, ()->{
             cartItemService.update(ci1);
         });
 
-        verify(cartItemRepository,times(1)).findById(id2);
+        verify(cartItemRepository,times(1)).findById(id1);
 
     }
     @Test

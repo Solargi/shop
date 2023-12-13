@@ -27,8 +27,6 @@ public class OrderItemController {
     OrderItemToOrderItemResponseDTOConverter orderItemToOrderItemResponseDTOConverter;
     OrderItemResponseDTOToOrderItemConverter orderItemResponseDTOToOrderItemConverter;
     OrderItemRequestDTOToOrderItemConverter orderItemRequestDTOToOrderItemConverter;
-    ItemService itemService;
-    OrderService orderService;
 
     @GetMapping("")
     public ResponseEntity<List<OrderItemResponseDTO>> getOrderItems(){
@@ -54,17 +52,9 @@ public class OrderItemController {
     public ResponseEntity<OrderItemResponseDTO> addOrderItem(@Valid @RequestBody OrderItemRequestDTO orderItemRequestDTO,
                                                              @PathVariable("orderId") Integer orderId,
                                                              @PathVariable("itemId") Integer itemId){
-
-        OrderItemId orderItemId = new OrderItemId(orderId, itemId);
         //convert dto to object
-        OrderItem orderItem = this.orderItemRequestDTOToOrderItemConverter.convert(orderItemRequestDTO);
-        //overwrite orderItemId for security reasons not ideal since prone to errors:
-        //in parameters TODO REFACTOR THIS:
-        //find items and order to ensure correctness of url parameters (services throws exceptions if not found
-        // so orderItem.setId won't return null pointer)
-        Item foundItem = this.itemService.findById(itemId);
-        Order foundOrder = this.orderService.findById(orderId);
-        orderItem.setId(new OrderItemId(orderId,itemId));
+        OrderItem orderItem = this.orderItemRequestDTOToOrderItemConverter.convert(orderItemRequestDTO, orderId, itemId);
+
         //save orderItem
         OrderItem savedItem = this.orderItemService.save(orderItem);
 
@@ -76,9 +66,8 @@ public class OrderItemController {
     @PutMapping("/{orderId}/{itemId}")
     public ResponseEntity<OrderItemResponseDTO> updateOrderItem(@PathVariable Integer orderId,
                                                                @PathVariable Integer itemId, @Valid @RequestBody OrderItemRequestDTO orderItemRequestDTO){
-        OrderItemId orderItemId = new OrderItemId(orderId, itemId);
-        OrderItem orderItem = this.orderItemRequestDTOToOrderItemConverter.convert(orderItemRequestDTO);
-        OrderItem updatedItem = this.orderItemService.update(orderItemId,orderItem);
+        OrderItem orderItem = this.orderItemRequestDTOToOrderItemConverter.convert(orderItemRequestDTO,orderId,itemId);
+        OrderItem updatedItem = this.orderItemService.update(orderItem);
         OrderItemResponseDTO updatedItemDTO = this.orderItemToOrderItemResponseDTOConverter.convert(updatedItem);
         return ResponseEntity.ok(updatedItemDTO);
     }

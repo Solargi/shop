@@ -6,8 +6,6 @@ import jakarta.validation.constraints.Positive;
 
 public record OrderItemRequestDTO(
         @NotNull
-        OrderItemId id,
-        @NotNull
         @Positive
         Integer quantity
 
