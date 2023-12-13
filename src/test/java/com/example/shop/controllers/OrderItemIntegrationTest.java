@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -61,9 +62,11 @@ public class OrderItemIntegrationTest {
     OrderItemId oid1 = new OrderItemId(1,2);
 
     String token;
+    String token2;
     @BeforeEach
     public void setup() throws Exception {
         this.token = this.login.getJWTToken("u1","q");
+        this.token2 = this.login.getJWTToken("u2","f");
     }
 
     @Test
@@ -225,5 +228,114 @@ public class OrderItemIntegrationTest {
                 .andExpect(content().string("could not find orderItem with id " + new OrderItemId(1,1)));
     }
 
+
+    @Test
+    @Order(12)
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void testResetOrder()throws Exception{
+        this.mockMvc.perform(post(this.baseUrl + "/orders/1")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        this.mockMvc.perform(post(this.baseUrl + "/orders/2")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @Order(13)
+    void testFindOrderItemByIdNotAllowedIfNotOwner() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/orderItems/1/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(14)
+    void testFindOrderItemByIdAllowedIfOwnerAndNotAdmin() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/orderItems/2/2")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.orderId").value(2))
+                .andExpect(jsonPath("$.id.itemId").value(2))
+                .andExpect(jsonPath("$.orderResponseDTO.shippingCost").value(10))
+                .andExpect(jsonPath("$.totalCost").value(64.2))
+                .andExpect(jsonPath("$.quantity").value(2));
+    }
+
+    @Test
+    @Order(15)
+    void testFindOrderItemByIdAllowedIfNotOwnerButAdmin() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/orderItems/2/2")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.orderId").value(2))
+                .andExpect(jsonPath("$.id.itemId").value(2))
+                .andExpect(jsonPath("$.orderResponseDTO.shippingCost").value(10))
+                .andExpect(jsonPath("$.totalCost").value(64.2))
+                .andExpect(jsonPath("$.quantity").value(2));
+    }
+    @Test
+    @Order(16)
+    void testFindAllOrderItemNotAllowedIfNotAdmin() throws Exception {
+        this.mockMvc.perform(get(this.baseUrl + "/orderItems")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(17)
+    void testAddOrderItemNotAllowedIfNotAdmin() throws Exception {
+
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(10);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
+
+
+        this.mockMvc.perform(post(this.baseUrl + "/orderItems/2/2" )
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(18)
+    void testUpdateOrderItemNotAllowedIfNotAdmin() throws Exception {
+        //given
+        OrderItemRequestDTO orderItemRequestDTO = new OrderItemRequestDTO(1);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(orderItemRequestDTO);
+
+        this.mockMvc.perform(put(this.baseUrl + "/orderItems/2/2")
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(19)
+    void testDeleteOrderItemNotAllowedIfNotAdmin () throws Exception {
+        this.mockMvc.perform(delete(this.baseUrl + "/orderItems/2/2")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
 
 }
