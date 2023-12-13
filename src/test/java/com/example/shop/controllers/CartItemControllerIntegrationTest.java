@@ -62,14 +62,17 @@ public class CartItemControllerIntegrationTest {
     Login login;
 
     String token;
+    String token2;
 
 
     @Value("${api.endpoint.base-url}")
     String baseUrl;
 
+
     @BeforeEach
     public void setup() throws Exception {
         this.token = this.login.getJWTToken("u1","q");
+        this.token2 = this.login.getJWTToken("u2","f");
     }
     @Test
     @Order(1)
@@ -238,4 +241,235 @@ public class CartItemControllerIntegrationTest {
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=32, itemId=12)"));
     }
 
+    @Test
+    @Order(10)
+    void testFindOtherUsersCartItemByIdNotAllowedIfNotOwnerOrAdmin() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(11)
+    void testFindOtherUsersCartItemByIdAllowedIfOwner() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.userId").value(2))
+                .andExpect(jsonPath("$.id.itemId").value(2))
+                .andExpect(jsonPath("$.userDTO.id").value(2))
+                .andExpect(jsonPath("$.itemDTO.id").value(2))
+                .andExpect(jsonPath("$.quantity").value("2"));
+    }
+
+    @Test
+    @Order(12)
+    void testFindOtherUsersCartItemByIdAllowedIfAdmin() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.userId").value(2))
+                .andExpect(jsonPath("$.id.itemId").value(2))
+                .andExpect(jsonPath("$.userDTO.id").value(2))
+                .andExpect(jsonPath("$.itemDTO.id").value(2))
+                .andExpect(jsonPath("$.quantity").value("2"));
+    }
+    @Test
+    @Order(13)
+    void testFindAllCartItemNotAllowedIfNotAdmin() throws Exception {
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(14)
+    void testAddCartItemNotAllowedIfNotOwner() throws Exception {
+        CartItem ci3 = new CartItem();
+        CartItemId cid3 = new CartItemId(1,2);
+        ci3.setId(cid3);
+        ci3.setQuantity(1);
+        //given
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(10);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
+
+
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/1/2")
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(15)
+    void testAddCartItemNotAllowedIfNotSignInUserInDTOButObjectIsCorrectedBeforeSaving() throws Exception {
+        CartItem ci3 = new CartItem();
+        CartItemId cid3 = new CartItemId(1,2);
+        ci3.setId(cid3);
+        ci3.setQuantity(1);
+        //given
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(10);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
+
+
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.userId").value(2))
+                .andExpect(jsonPath("$.userDTO.id").value(2));
+    }
+
+    @Test
+    @Order(16)
+    void testAddCartItemAllowedIfNotOwnerButAdmin() throws Exception {
+        CartItem ci3 = new CartItem();
+        CartItemId cid3 = new CartItemId(2,2);
+        ci3.setId(cid3);
+        ci3.setQuantity(1);
+        //given
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(10);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
+
+
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.userId").value(2))
+                .andExpect(jsonPath("$.userDTO.id").value(2));
+    }
+
+    @Test
+    @Order(17)
+    void testUpdateCartItemNotAllowedIfNotOwner() throws Exception {
+        CartItemId cid3 = new CartItemId(1,1);
+
+        //given
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(20);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
+
+        this.mockMvc.perform(put(this.baseUrl + "/cartItems/1/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.quantity").value(20));
+    }
+
+    @Test
+    @Order(18)
+    void testUpdateCartItemAllowedIfNotOwnerButAdmin() throws Exception {
+        CartItemId cid3 = new CartItemId(2,2);
+
+        //given
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(20);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
+
+        this.mockMvc.perform(put(this.baseUrl + "/cartItems/2/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(cid3))
+                .andExpect(jsonPath("$.itemDTO.id").value(2))
+                .andExpect(jsonPath("$.userDTO.id").value(2))
+                .andExpect(jsonPath("$.quantity").value(20))
+                .andExpect(jsonPath("$.id.userId").value(2))
+                .andExpect(jsonPath("$.id.itemId").value(2))
+                .andExpect(jsonPath("$.totalCost").value(642));
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.quantity").value(20));
+    }
+
+    @Test
+    @Order(19)
+    void testUpdateCartItemAllowedIfOwner() throws Exception {
+        CartItemId cid3 = new CartItemId(2,2);
+
+        //given
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(20);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
+
+        this.mockMvc.perform(put(this.baseUrl + "/cartItems/2/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(cid3))
+                .andExpect(jsonPath("$.itemDTO.id").value(2))
+                .andExpect(jsonPath("$.userDTO.id").value(2))
+                .andExpect(jsonPath("$.quantity").value(20))
+                .andExpect(jsonPath("$.id.userId").value(2))
+                .andExpect(jsonPath("$.id.itemId").value(2))
+                .andExpect(jsonPath("$.totalCost").value(642));
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.quantity").value(20));
+    }
+
+    @Test
+    @Order(20)
+    void testDeleteCartItemNotAllowedIfNotOwnerOrAdmin () throws Exception{
+        this.mockMvc.perform(delete(this.baseUrl + "/cartItems/1/1")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+        //check for deletion
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(21)
+    void testDeleteAllowedIfOwner () throws Exception{
+        this.mockMvc.perform(delete(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+        //check for deletion
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("could not find cartItem with id CartItemId(userId=2, itemId=2)"));
+    }
+    //delete if admin already done in normal delete
 }

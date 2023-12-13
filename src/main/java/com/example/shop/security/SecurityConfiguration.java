@@ -108,7 +108,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/cartItems").hasAuthority("ROLE_admin")
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/cartItems/{userId}/{itemId}")
                                 .access(this.userSecurity)
-                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/cartItems/{userId}")
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/cartItems/{userId}/{itemID}")
                                 .access(this.userSecurity)
                                 .requestMatchers(HttpMethod.PUT, this.baseUrl + "/cartItems//{userId}/{itemId}").access(this.userSecurity)
                                 .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/cartItems//{userId}/{itemId}").access(this.userSecurity)
