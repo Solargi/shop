@@ -196,7 +196,7 @@ class CartItemControllerTest {
                 .andExpect(jsonPath("$[0].id.userId").value(this.u1.getId()))
                 .andExpect(jsonPath("$[1].id.userId").value(this.u2.getId()));
     }
-//
+    //
     @Test
     void testAddCartItemSuccess() throws Exception {
         CartItem ci3 = new CartItem();
@@ -207,12 +207,12 @@ class CartItemControllerTest {
         ci3.setUser(u1);
         ci3.setQuantity(1);
         ci3.setTotalCost(new BigDecimal(10));
-        
+
         //given
         CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
-        
+
 
 
         given(this.cartItemService.save(Mockito.any(CartItem.class))).willReturn(ci3);
@@ -230,7 +230,7 @@ class CartItemControllerTest {
                 .andExpect(jsonPath("$.id.itemId").value(ci3.getId().getItemId()))
                 .andExpect(jsonPath("$.totalCost").value(ci3.getTotalCost()));
     }
-//
+    //
     @Test
     void testAddCartItemBadRequest() throws Exception {
         //given
@@ -278,7 +278,7 @@ class CartItemControllerTest {
         String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
-        given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willReturn(ci3);
+        given(this.cartItemService.update(Mockito.any(CartItem.class))).willReturn(ci3);
 
         this.mockMvc.perform(put(this.baseUrl + "/cartItems/3/2")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -311,7 +311,7 @@ class CartItemControllerTest {
         String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
-        given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willThrow(new ObjectNotFoundException("cartItem", ci3.getId()));
+        given(this.cartItemService.update(Mockito.any(CartItem.class))).willThrow(new ObjectNotFoundException("cartItem", ci3.getId()));
 
         this.mockMvc.perform(put(this.baseUrl + "/cartItems/3/2")
                         .contentType(MediaType.APPLICATION_JSON)

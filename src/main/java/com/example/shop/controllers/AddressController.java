@@ -24,7 +24,6 @@ public class AddressController {
     private AddressDTOToAddressConverter addressDTOToAddressConverter;
     private AddressRequestDTOToAddressConverter addressRequestDTOToAddressConverter;
     private AddressService addressService;
-    private UserService userService;
 
     @GetMapping("/{addressId}")
     ResponseEntity<AddressDTO> getAddress(@PathVariable Integer addressId){

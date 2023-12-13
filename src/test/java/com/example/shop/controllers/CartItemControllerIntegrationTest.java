@@ -118,7 +118,7 @@ public class CartItemControllerIntegrationTest {
         ci3.setId(cid3);
         ci3.setQuantity(1);
         //given
-        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(cid3,10);
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(10);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
 
@@ -126,7 +126,9 @@ public class CartItemControllerIntegrationTest {
 
 
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems/"+ ci3.getId().getUserId())
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/"
+                        + ci3.getId().getUserId() + "/"
+                        + ci3.getId().getItemId())
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
@@ -145,19 +147,18 @@ public class CartItemControllerIntegrationTest {
     @Order(5)
     void testAddCartItemBadRequest() throws Exception {
         //given
-        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(null,0);
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(0);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
 
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems/54444")
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/54444/34")
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
-                .andExpect(jsonPath("$.quantity").value("must be greater than 0"))
-                .andExpect(jsonPath("$.id").value("must not be null"));
+                .andExpect(jsonPath("$.quantity").value("must be greater than 0"));
     }
 //
 //    //TODO add test for adding items with invalid item id , user id
@@ -167,7 +168,7 @@ public class CartItemControllerIntegrationTest {
         CartItemId cid3 = new CartItemId(1,1);
 
         //given
-        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(cid3,20);
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(20);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
 
@@ -195,7 +196,7 @@ public class CartItemControllerIntegrationTest {
         CartItemId cid3 = new CartItemId(1,1);
 
         //given
-        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(cid3,20);
+        CartItemRequestDTO cartItemRequestDTO = new CartItemRequestDTO(20);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(cartItemRequestDTO);
 

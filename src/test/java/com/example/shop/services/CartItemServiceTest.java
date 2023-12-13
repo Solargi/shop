@@ -30,6 +30,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CartItemServiceTest {
+
     @Mock
     CartItemRepository cartItemRepository;
     @Mock
@@ -211,7 +212,7 @@ class CartItemServiceTest {
         //when savind address 1 already has the new values
         given(cartItemRepository.save(ci1)).willReturn(ci1);
 
-        CartItem updated1 = cartItemService.update(ci1.getId(),ci3);
+        CartItem updated1 = cartItemService.update(ci3);
         // check that it doesn't allow to modify id
         assertThat(updated1.getId()).isEqualTo(ci1.getId());
         assertThat(updated1.getQuantity()).isEqualTo(ci3.getQuantity());
@@ -225,7 +226,7 @@ class CartItemServiceTest {
         given(cartItemRepository.findById(id2)).willReturn(Optional.empty());
 
         assertThrows(ObjectNotFoundException.class, ()->{
-            cartItemService.update(id2,ci1);
+            cartItemService.update(ci1);
         });
 
         verify(cartItemRepository,times(1)).findById(id2);

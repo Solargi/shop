@@ -74,7 +74,8 @@ public class CartItemService {
     }
 
 //    only update allowed is quantity
-    public CartItem update(CartItemId cartItemId,  CartItem update){
+    public CartItem update(CartItem update){
+        CartItemId cartItemId = update.getId();
         CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartItem",cartItemId));
         // make sure update cart item id is valid
 //        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
