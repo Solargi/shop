@@ -49,7 +49,6 @@ class AddressControllerTest {
     ObjectMapper objectMapper;
     @Autowired
     UserToUserDTOConverter userToUserDTOConverter;
-
     @MockBean
     AddressService addressService;
 
@@ -165,7 +164,7 @@ class AddressControllerTest {
 
         given(this.addressService.save(Mockito.any(Address.class),Mockito.any(Integer.class))).willReturn(a3);
 
-        this.mockMvc.perform(post(this.baseUrl + "/addresses")
+        this.mockMvc.perform(post(this.baseUrl + "/addresses/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -204,7 +203,7 @@ class AddressControllerTest {
 
         given(this.addressService.save(Mockito.any(Address.class),Mockito.any(Integer.class))).willReturn(a3);
 
-        this.mockMvc.perform(post(this.baseUrl + "/addresses")
+        this.mockMvc.perform(post(this.baseUrl + "/addresses/34")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

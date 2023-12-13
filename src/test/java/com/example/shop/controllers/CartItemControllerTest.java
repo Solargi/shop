@@ -217,7 +217,7 @@ class CartItemControllerTest {
 
         given(this.cartItemService.save(Mockito.any(CartItem.class))).willReturn(ci3);
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems")
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/" + cid3.getUserId() + "/" + cid3.getItemId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -251,13 +251,13 @@ class CartItemControllerTest {
 
         given(this.cartItemService.save(Mockito.any(CartItem.class))).willReturn(ci3);
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems")
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/32/62")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andDo(print())
                 .andExpect(jsonPath("$.quantity").value("must be greater than 0"))
-                .andExpect(jsonPath("$.id").value("must not be null"));
+                .andExpect(jsonPath("$.id").doesNotExist());
     }
 
     //TODO add test for adding items with invalid item id , user id
