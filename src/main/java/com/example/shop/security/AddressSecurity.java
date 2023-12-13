@@ -56,7 +56,7 @@ public class AddressSecurity implements AuthorizationManager<RequestAuthorizatio
 
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authenticationSupplier, RequestAuthorizationContext context) {
-        System.out.println("HELLO INSIDE ORDER SECURITYYYYYYYYYYYYY");
+        System.out.println("HELLO INSIDE address SECURITYYYYYYYYYYYYY");
         //get authentication
         Authentication authentication = authenticationSupplier.get();
 //        System.out.println("authentication: object " + authentication);
@@ -65,12 +65,12 @@ public class AddressSecurity implements AuthorizationManager<RequestAuthorizatio
             return new AuthorizationDecision(true);
         }
         // get order id from context
-        System.out.println("HELLO INSIDE ORDER IDDDDDDDDDDDDDDDDD: " + context.getVariables());
-        Integer requestOrderId = Integer.parseInt(context.getVariables().get("orderId"));
+        System.out.println("HELLO INSIDE address IDDDDDDDDDDDDDDDDD: " + context.getVariables());
+        Integer requestAddressId = Integer.parseInt(context.getVariables().get("addressId"));
         System.out.println("CONTEXT OBJECTTTTTTTTTT: " + context);
 
         //fetch the order to and get owner id
-        Address address = this.addressService.findById(requestOrderId);
+        Address address = this.addressService.findById(requestAddressId);
         Integer orderOwnerId = address.getUser().getId();
         return new AuthorizationDecision(isUser(authentication,orderOwnerId));
     }

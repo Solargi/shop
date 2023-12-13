@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -71,13 +72,16 @@ public class AddressControllerIntegrationTest {
 
     Address a1 = new Address();
     User u1 = new User();
+    User u2 = new User();
 
     String token;
+    String token2;
 
 
     @BeforeEach
     public void setup() throws Exception {
         this.token = this.login.getJWTToken("u1","q");
+        this.token2 = this.login.getJWTToken("u2","f");
         u1.setId(1);
         u1.setName("a");
         u1.setSurname("b");
@@ -86,6 +90,15 @@ public class AddressControllerIntegrationTest {
         u1.setEmail("c");
         u1.setRoles("admin");
         u1.setBirthDate("yay");
+
+        u2.setId(2);
+        u2.setName("d");
+        u2.setSurname("e");
+        u2.setUsername("u2");
+        u2.setPassword("f");
+        u2.setEmail("g");
+        u2.setRoles("user");
+        u2.setBirthDate("yay2");
 
         a1.setId(1);
         a1.setCountry("a");
@@ -353,4 +366,195 @@ public class AddressControllerIntegrationTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 4"));
     }
+
+    @Test
+    @Order(14)
+    //resets db
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void testOwnerCantAccessOtherUsersAddresses () throws Exception{
+
+        this.mockMvc.perform(get(this.baseUrl + "/addresses/1")
+                        .header("Authorization", token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    @Order(15)
+    void testOwnerCanAccessOwnAddresses () throws Exception{
+        this.mockMvc.perform(get(this.baseUrl + "/addresses/2")
+                        .header("Authorization", token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(2));
+
+    }
+
+    @Test
+    @Order(16)
+    void testIfNotAdminCantFindAllAddress() throws Exception {
+        this.mockMvc.perform(get(this.baseUrl + "/addresses")
+                        .header("Authorization", token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(17)
+    void testCantAddAddressToOtherUserIfNotAdmin() throws Exception {
+        //id shoud be set correctly by db
+        AddressRequestDTO addressDTO = new AddressRequestDTO(
+                "a",
+                "d",
+                "b",
+                "c",
+                56);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonAddress = this.objectMapper.writeValueAsString(addressDTO);
+
+        Address a3 = new Address();
+        a3.setId(3);
+        a3.setCountry("a");
+        a3.setCity("b");
+        a3.setStreet("c");
+        a3.setState("d");
+        a3.setZipCode(56);
+        a3.setUser(u1);
+
+
+        this.mockMvc.perform(post(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(18)
+    void testCanUpdateHisOwmAddressIfNotAdmin() throws Exception {
+        //id shoud be set correctly by db
+        AddressRequestDTO addressDTO = new AddressRequestDTO(
+                "a",
+                "d",
+                "b",
+                "c",
+                56);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonAddress = this.objectMapper.writeValueAsString(addressDTO);
+
+        Address a3 = new Address();
+        a3.setId(3);
+        a3.setCountry("a");
+        a3.setCity("b");
+        a3.setStreet("c");
+        a3.setState("d");
+        a3.setZipCode(56);
+        a3.setUser(u2);
+
+
+        this.mockMvc.perform(post(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(a3.getId()))
+                .andExpect(jsonPath("$.street").value(a3.getStreet()))
+                .andExpect(jsonPath("$.city").value(a3.getCity()))
+                .andExpect(jsonPath("$.state").value(a3.getState()))
+                .andExpect(jsonPath("$.country").value(a3.getCountry()))
+                .andExpect(jsonPath("$.zipCode").value(a3.getZipCode()))
+                .andExpect(jsonPath("$.userDTO.id").value(u1.getId()));
+    }
+
+    @Test
+    @Order(19)
+    void testCantUpdateNotOwnedAddressIfNotAdmin() throws Exception {
+        //given
+        AddressDTO addressDTO = new AddressDTO(1,
+                this.userToUserDTOConverter.convert(u1),
+                "a",
+                "d",
+                "b",
+                "c",
+                56);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonAddress = this.objectMapper.writeValueAsString(addressDTO);
+
+        Address a3 = new Address();
+        a3.setId(1);
+        a3.setCountry("a");
+        a3.setCity("b");
+        a3.setStreet("c");
+        a3.setState("d");
+        a3.setZipCode(56);
+        a3.setUser(u1);
+
+        this.mockMvc.perform(put(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(19)
+    void testCanUpdateNotOwnedAddressIfAdmin() throws Exception {
+        //given
+        AddressDTO addressDTO = new AddressDTO(1,
+                this.userToUserDTOConverter.convert(u1),
+                "a",
+                "d",
+                "b",
+                "c",
+                56);
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonAddress = this.objectMapper.writeValueAsString(addressDTO);
+
+        Address a3 = new Address();
+        a3.setId(1);
+        a3.setCountry("a");
+        a3.setCity("b");
+        a3.setStreet("c");
+        a3.setState("d");
+        a3.setZipCode(56);
+        a3.setUser(u2);
+
+        this.mockMvc.perform(put(this.baseUrl + "/addresses/2")
+                        .header("Authorization", this.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(20)
+    void testCantDeleteOthersAddressIfNotAdmin () throws Exception{
+        this.mockMvc.perform(delete(this.baseUrl + "/addresses/1")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(21)
+    void testCanDeleteOtherAddressIfAdmin () throws Exception{
+        this.mockMvc.perform(delete(this.baseUrl + "/addresses/2")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("Address deleted successfully!"));
+    }
+
+
+
 }
