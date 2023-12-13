@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -67,23 +68,12 @@ public class UserControllerIntegrationTest {
     @Autowired
     Login login;
     String token ;
+    String token2;
 
     @BeforeEach
     void setUp() throws Exception {
-//        //since spring security is enabled we need to login to get a valid token
-//        //make login request and save results in result action
-//        ResultActions resultActions = this.mockMvc
-//                .perform(post(this.baseUrl + "/users/login")
-//                        .with(httpBasic("u1","q")));
-//        //convertAction to mvcResult
-//        MvcResult mvcResult = resultActions.andDo(print()).andReturn();
-//        //get response from mvcResult and convert to string
-//        String responseString = mvcResult.getResponse().getContentAsString();
-//        //convert string to json object
-//        JSONObject jsonResponse = new JSONObject(responseString);
-//        //finally save token in token field
-//        this.token = "Bearer " + jsonResponse.getString("token");
         this.token = login.getJWTToken("u1","q");
+        this.token2 = this.login.getJWTToken("u2","f");
     }
 
     @Test
@@ -211,7 +201,7 @@ public class UserControllerIntegrationTest {
     void testUpdateUserSuccess() throws Exception{
         UserDTO userDTO = new UserDTO(
                 4, "u1","a","k",
-                "a@a.com","yay","user");
+                "a@a.com","yay","admin");
 
         String jsonUser = this.objectMapper.writeValueAsString(userDTO);
 
@@ -222,7 +212,8 @@ public class UserControllerIntegrationTest {
         u3.setUsername("u1");
         u3.setPassword("q");
         u3.setEmail("a@a.com");
-        u3.setRoles("user");
+        u3.setRoles("admin");
+        u3.setRoles("admin");
         u3.setBirthDate("yay");
         u3.setAddresses(null);
         u3.setOrderList(null);
@@ -301,6 +292,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Order(10)
     void testDeleteUserNotFound() throws Exception {
         this.mockMvc.perform(delete(this.baseUrl + "/users/6")
@@ -309,5 +301,235 @@ public class UserControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 6"));
+    }
+
+    //sercurity tests
+
+    @Test
+    @Order(11)
+    void testFindUserByIdNotAllowedIfNotDataOwner() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/users/1").header("Authorization", this.token2).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(12)
+    void testFindUserByIdNotAllowedIfNotDataOwnerAndADMIN() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/users/2").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(13)
+    void testFindUserByAllowedIfDataOwnerAndNotADMIN() throws Exception {
+        //When and then
+        this.mockMvc.perform(get(this.baseUrl + "/users/2").header("Authorization", this.token2).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(14)
+    void testFindAllUsersNotAllowedIfNotADMIN() throws Exception{
+        this.mockMvc.perform(get(this.baseUrl + "/users").header("Authorization", this.token2).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(15)
+    void testCantUpdateOtherUsersIfNotADMIN() throws Exception{
+        UserDTO userDTO = new UserDTO(
+                4, "u1","a","k",
+                "a@a.com","yay","user");
+
+        String jsonUser = this.objectMapper.writeValueAsString(userDTO);
+
+        User u3 = new User();
+        u3.setId(1);
+        u3.setName("a");
+        u3.setSurname("k");
+        u3.setUsername("u1");
+        u3.setPassword("q");
+        u3.setEmail("a@a.com");
+        u3.setRoles("user");
+        u3.setBirthDate("yay");
+        u3.setAddresses(null);
+        u3.setOrderList(null);
+        u3.setCartItems(null);
+
+
+        this.mockMvc.perform(put(this.baseUrl + "/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2)
+                        .content(jsonUser)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+        //check update has been saved
+        this.mockMvc.perform(get(this.baseUrl + "/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.username").value("u1"));
+
+    }
+
+    @Test
+    @Order(16)
+    void testCanUpdateOtherUsersIfADMIN() throws Exception{
+        UserDTO userDTO = new UserDTO(
+                4, "u5","a","k",
+                "a@a.com","yay","user");
+
+        String jsonUser = this.objectMapper.writeValueAsString(userDTO);
+
+        User u3 = new User();
+        u3.setId(1);
+        u3.setName("a");
+        u3.setSurname("k");
+        u3.setUsername("u5");
+        u3.setPassword("q");
+        u3.setEmail("a@a.com");
+        u3.setRoles("user");
+        u3.setBirthDate("yay");
+        u3.setAddresses(null);
+        u3.setOrderList(null);
+        u3.setCartItems(null);
+
+
+        this.mockMvc.perform(put(this.baseUrl + "/users/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2)
+                        .content(jsonUser)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.addresses").doesNotExist())
+                .andExpect(jsonPath("$.cartItems").doesNotExist())
+                .andExpect(jsonPath("$.orderList").doesNotExist())
+                .andExpect(jsonPath("$.name").value(u3.getName()))
+                .andExpect(jsonPath("$.surname").value(u3.getSurname()))
+                .andExpect(jsonPath("$.username").value(u3.getUsername()))
+                .andExpect(jsonPath("$.email").value(u3.getEmail()))
+                .andExpect(jsonPath("$.password").doesNotExist())
+                .andExpect(jsonPath("$.birthDate").value(u3.getBirthDate()));
+        //check update has been saved
+        this.mockMvc.perform(get(this.baseUrl + "/users/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.username").value(u3.getUsername()));
+
+    }
+
+    @Test
+    @Order(17)
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    void testCanUpdateOwnUserIfLoggedIn() throws Exception{
+        UserDTO userDTO = new UserDTO(
+                4, "u15","a","k",
+                "a@a.com","yay","user");
+
+        String jsonUser = this.objectMapper.writeValueAsString(userDTO);
+
+        User u3 = new User();
+        u3.setId(1);
+        u3.setName("a");
+        u3.setSurname("k");
+        u3.setUsername("u15");
+        u3.setPassword("q");
+        u3.setEmail("a@a.com");
+        u3.setRoles("user");
+        u3.setBirthDate("yay");
+        u3.setAddresses(null);
+        u3.setOrderList(null);
+        u3.setCartItems(null);
+
+
+        this.mockMvc.perform(put(this.baseUrl + "/users/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2)
+                        .content(jsonUser)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.addresses").doesNotExist())
+                .andExpect(jsonPath("$.cartItems").doesNotExist())
+                .andExpect(jsonPath("$.orderList").doesNotExist())
+                .andExpect(jsonPath("$.name").value(u3.getName()))
+                .andExpect(jsonPath("$.surname").value(u3.getSurname()))
+                .andExpect(jsonPath("$.username").value(u3.getUsername()))
+                .andExpect(jsonPath("$.email").value(u3.getEmail()))
+                .andExpect(jsonPath("$.password").doesNotExist())
+                .andExpect(jsonPath("$.birthDate").value(u3.getBirthDate()));
+        //check update has been saved
+        this.mockMvc.perform(get(this.baseUrl + "/users/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.username").value(u3.getUsername()));
+
+    }
+
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    @Order(18)
+    void testDeleteOtherUsersNotAllowedIFNOtAdmin () throws Exception {
+        //check that cartItems before deleting related user
+        this.mockMvc.perform(get(this.baseUrl+"/cartItems")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
+//                .andDo(print())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+        this.mockMvc.perform(delete(this.baseUrl + "/users/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+        //check that cartItems are deleted after the related user is deleted
+        this.mockMvc.perform(get(this.baseUrl+"/cartItems")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
+//                .andDo(print())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    @Order(19)
+    void testDeleteOwnUsersNotAllowedIFLoggedIn () throws Exception {
+        //check that cartItems before deleting related user
+        this.mockMvc.perform(get(this.baseUrl+"/cartItems")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
+//                .andDo(print())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+        this.mockMvc.perform(delete(this.baseUrl + "/users/2")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token2))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("user deleted successfully!"));;
+        //check that cartItems are deleted after the related user is deleted
+        this.mockMvc.perform(get(this.baseUrl+"/cartItems")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Authorization", this.token))
+//                .andDo(print())
+                .andExpect(jsonPath("$", hasSize(1)));
+
     }
 }
