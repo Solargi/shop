@@ -100,10 +100,9 @@ public class SecurityConfiguration {
 
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "/items").permitAll()
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/items/{itemId}").permitAll()
-                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/items").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/items").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/items/{itemId}").hasAuthority("ROLE_admin")
+                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/items/{itemId}").hasAuthority("ROLE_admin")
 
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/cartItems").hasAuthority("ROLE_admin")
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/cartItems/{userId}/{itemId}")

@@ -99,7 +99,7 @@ class ItemControllerTest {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/items/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.orderItem").doesNotExist())
@@ -116,7 +116,7 @@ class ItemControllerTest {
         given(this.itemService.findById(123)).willThrow(new ObjectNotFoundException("item",123));
 
         this.mockMvc.perform(get(this.baseUrl + "/items/123").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find item with id 123"));
     }
@@ -126,7 +126,7 @@ class ItemControllerTest {
         given(this.itemService.findAll()).willReturn(this.itemList);
 
         this.mockMvc.perform(get(this.baseUrl + "/items").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(this.itemList.size())))
                 .andExpect(jsonPath("$[0].id").value(this.item1.getId()))
                 .andExpect(jsonPath("$[1].id").value(this.item2.getId()));
@@ -160,7 +160,7 @@ class ItemControllerTest {
         this.mockMvc.perform(post(this.baseUrl + "/items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item3.getId()))
                 .andExpect(jsonPath("$.orderItem").doesNotExist())
@@ -201,7 +201,7 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.name").value("should not be empty/null"))
                 .andExpect(jsonPath("$.price").value("should not be empty/null"));
     }
@@ -233,7 +233,7 @@ class ItemControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/items/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item3.getId()))
                 .andExpect(jsonPath("$.orderItem").doesNotExist())
@@ -262,7 +262,7 @@ class ItemControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/items/3232")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find item with id 3232"));
     }
@@ -273,7 +273,7 @@ class ItemControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/items/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("Item deleted successfully!"));
     }
@@ -284,7 +284,7 @@ class ItemControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/items/4")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find item with id 4"));
     }

@@ -324,6 +324,71 @@ public class ItemControllerIntegrationTest {
                 .andExpect(content().string("could not find item with id 4"));
     }
 
+    @Test
+    @Order(13)
+    void testAddItemNotAllowedIfNotAdmin() throws Exception {
+        ItemDTO itemDTO = new ItemDTO(null,
+                "i3",
+                "yay3",
+                new BigDecimal("43"),
+                "image",
+                new BigDecimal(3));
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(itemDTO);
+
+        Item item3 = new Item();
+        item3.setName("i3");
+        item3.setCartItems(null);
+        item3.setOrderItems(null);
+        item3.setDescription("yay3");
+        item3.setPrice(new BigDecimal("43"));
+        item3.setImageUrl("image");
+        item3.setAvailableQuantity(new BigDecimal("3"));
+
+        this.mockMvc.perform(post(this.baseUrl + "/items")
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(14)
+    void testUpdateItemNotAllowedIfNotAdmin() throws Exception {
+        //given
+        //notice that even if the id is wrong in the dto
+        //the item should be updated correctly keeping original id
+        ItemDTO itemDTO = new ItemDTO(43,
+                "i3",
+                "yay3",
+                new BigDecimal("43"),
+                "image",
+                new BigDecimal(3));
+        //convert dto to json mockmvc can't send the DTO object
+        String jsonItem = this.objectMapper.writeValueAsString(itemDTO);
 
 
+        this.mockMvc.perform(put(this.baseUrl + "/items/1")
+                        .header("Authorization", this.token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonItem).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(15)
+    void testDeleteItemNotAllowedIfNotAdmin () throws Exception {
+        //check child entities dimension before deleting item
+        // this should be separated in another test but this saves time
+        this.mockMvc.perform(get(this.baseUrl + "/cartItems")
+                        .header("Authorization", this.token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)));
+
+        this.mockMvc.perform(delete(this.baseUrl + "/items/1")
+                        .header("Authorization", this.token2)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
 }

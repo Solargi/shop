@@ -21,8 +21,6 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemToItemDTOConverter itemToItemDTOConverter;
     private final ItemDTOToItemConverter itemDTOToItemConverter;
-    private final UserService userService;
-
 
 
     @GetMapping("")

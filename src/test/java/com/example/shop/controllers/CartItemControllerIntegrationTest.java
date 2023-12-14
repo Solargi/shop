@@ -81,7 +81,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.userId").value(1))
                 .andExpect(jsonPath("$.id.itemId").value(1))
@@ -96,7 +96,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/3/108")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=3, itemId=108)"));
     }
@@ -107,7 +107,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/cartItems")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id.userId").value(1))
                 .andExpect(jsonPath("$[1].id.userId").value(2));
@@ -135,7 +135,7 @@ public class CartItemControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ci3.getId()))
                 .andExpect(jsonPath("$.itemDTO.id").value(2))
@@ -160,7 +160,7 @@ public class CartItemControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.quantity").value("must be greater than 0"));
     }
 //
@@ -179,7 +179,7 @@ public class CartItemControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(cid3))
                 .andExpect(jsonPath("$.itemDTO.id").value(1))
@@ -207,7 +207,7 @@ public class CartItemControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=3233, itemId=2222)"));
     }
@@ -218,14 +218,14 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/1/2")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("CartItem deleted successfully!"));
         //check for deletion
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/2")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=1, itemId=2)"));
     }
@@ -236,7 +236,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/32/12")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=32, itemId=12)"));
     }
@@ -248,7 +248,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
                         .header("Authorization", this.token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -259,7 +259,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")
                         .header("Authorization", this.token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.userId").value(2))
                 .andExpect(jsonPath("$.id.itemId").value(2))
@@ -275,7 +275,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.userId").value(2))
                 .andExpect(jsonPath("$.id.itemId").value(2))
@@ -289,7 +289,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/cartItems")
                         .header("Authorization", this.token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -310,7 +310,7 @@ public class CartItemControllerIntegrationTest {
                         .header("Authorization", this.token2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -331,7 +331,7 @@ public class CartItemControllerIntegrationTest {
                         .header("Authorization", this.token2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.userId").value(2))
                 .andExpect(jsonPath("$.userDTO.id").value(2));
@@ -354,7 +354,7 @@ public class CartItemControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.userId").value(2))
                 .andExpect(jsonPath("$.userDTO.id").value(2));
@@ -374,7 +374,7 @@ public class CartItemControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token2)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
                         .header("Authorization", this.token)
@@ -396,7 +396,7 @@ public class CartItemControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(cid3))
                 .andExpect(jsonPath("$.itemDTO.id").value(2))
@@ -425,7 +425,7 @@ public class CartItemControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token2)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(cid3))
                 .andExpect(jsonPath("$.itemDTO.id").value(2))
@@ -446,13 +446,13 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/1/1")
                         .header("Authorization", this.token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
         //check for deletion
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/1/1")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk());
     }
 
@@ -462,7 +462,7 @@ public class CartItemControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/2/2")
                         .header("Authorization", this.token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk());
         //check for deletion
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/2/2")

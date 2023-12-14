@@ -89,7 +89,7 @@ public class UserControllerIntegrationTest {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/users/1").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -108,7 +108,7 @@ public class UserControllerIntegrationTest {
     @Order(3)
     void TestFindUserByIdNotFound() throws Exception {
         this.mockMvc.perform(get(this.baseUrl + "/users/123").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 123"));
     }
@@ -117,7 +117,7 @@ public class UserControllerIntegrationTest {
     @Order(4)
     void testFindAllUsersSuccess() throws Exception{
         this.mockMvc.perform(get(this.baseUrl + "/users").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[1].id").value(2));
@@ -152,7 +152,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(u3.getId()))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -191,7 +191,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.password").value("must not be empty"))
                 .andExpect(jsonPath("$.email").value("must not be empty"));
     }
@@ -225,7 +225,7 @@ public class UserControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(u3.getId()))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -242,7 +242,7 @@ public class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token)
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.username").value(u3.getUsername()));
 
     }
@@ -262,7 +262,7 @@ public class UserControllerIntegrationTest {
                         .content(jsonUser)
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 3232"));
     }
@@ -273,20 +273,20 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-//                .andDo(print())
+//                
                 .andExpect(jsonPath("$", hasSize(2)));
 
         this.mockMvc.perform(delete(this.baseUrl + "/users/2")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("user deleted successfully!"));
         //check that cartItems are deleted after the related user is deleted
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-//                .andDo(print())
+//                
                 .andExpect(jsonPath("$", hasSize(1)));
 
     }
@@ -298,7 +298,7 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/users/6")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 6"));
     }
@@ -310,7 +310,7 @@ public class UserControllerIntegrationTest {
     void testFindUserByIdNotAllowedIfNotDataOwner() throws Exception {
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/users/1").header("Authorization", this.token2).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -319,7 +319,7 @@ public class UserControllerIntegrationTest {
     void testFindUserByIdNotAllowedIfNotDataOwnerAndADMIN() throws Exception {
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/users/2").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk());
     }
 
@@ -328,7 +328,7 @@ public class UserControllerIntegrationTest {
     void testFindUserByAllowedIfDataOwnerAndNotADMIN() throws Exception {
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/users/2").header("Authorization", this.token2).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk());
     }
 
@@ -336,7 +336,7 @@ public class UserControllerIntegrationTest {
     @Order(14)
     void testFindAllUsersNotAllowedIfNotADMIN() throws Exception{
         this.mockMvc.perform(get(this.baseUrl + "/users").header("Authorization", this.token2).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -368,14 +368,14 @@ public class UserControllerIntegrationTest {
                         .header("Authorization", this.token2)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
         //check update has been saved
         this.mockMvc.perform(get(this.baseUrl + "/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.username").value("u1"));
 
     }
@@ -408,7 +408,7 @@ public class UserControllerIntegrationTest {
                         .header("Authorization", this.token2)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -425,7 +425,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.username").value(u3.getUsername()));
 
     }
@@ -459,7 +459,7 @@ public class UserControllerIntegrationTest {
                         .header("Authorization", this.token2)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -476,7 +476,7 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.username").value(u3.getUsername()));
 
     }
@@ -490,19 +490,19 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-//                .andDo(print())
+//                
                 .andExpect(jsonPath("$", hasSize(2)));
 
         this.mockMvc.perform(delete(this.baseUrl + "/users/1")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token2))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
         //check that cartItems are deleted after the related user is deleted
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-//                .andDo(print())
+//                
                 .andExpect(jsonPath("$", hasSize(2)));
 
     }
@@ -515,20 +515,20 @@ public class UserControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-//                .andDo(print())
+//                
                 .andExpect(jsonPath("$", hasSize(2)));
 
         this.mockMvc.perform(delete(this.baseUrl + "/users/2")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token2))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("user deleted successfully!"));;
         //check that cartItems are deleted after the related user is deleted
         this.mockMvc.perform(get(this.baseUrl+"/cartItems")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-//                .andDo(print())
+//                
                 .andExpect(jsonPath("$", hasSize(1)));
 
     }

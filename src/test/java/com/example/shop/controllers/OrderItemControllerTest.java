@@ -217,7 +217,7 @@ class OrderItemControllerTest {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/orderItems/1/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.orderId").value(oi1.getId().getOrderId()))
                 .andExpect(jsonPath("$.id.itemId").value(oi1.getId().getItemId()))
@@ -231,7 +231,7 @@ class OrderItemControllerTest {
         given(this.orderItemService.findById(oi1.getId())).willThrow(new ObjectNotFoundException("orderItem",oi1.getId()));
 
         this.mockMvc.perform(get(this.baseUrl + "/orderItems/1/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find orderItem with id " + oi1.getId()));
     }
@@ -241,7 +241,7 @@ class OrderItemControllerTest {
         given(this.orderItemService.findAll()).willReturn(this.orderItemList);
 
         this.mockMvc.perform(get(this.baseUrl + "/orderItems").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(this.orderItemList.size())))
                 .andExpect(jsonPath("$[0].id").value(this.oi1.getId()))
                 .andExpect(jsonPath("$[1].id").value(this.oi2.getId()));
@@ -259,7 +259,7 @@ class OrderItemControllerTest {
         this.mockMvc.perform(post(this.baseUrl + "/orderItems/" + oi1.getId().getOrderId() + "/" + oi1.getId().getItemId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.orderId").value(oi1.getId().getOrderId()))
                 .andExpect(jsonPath("$.id.itemId").value(oi1.getId().getItemId()))
@@ -281,7 +281,7 @@ class OrderItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.id").doesNotExist())
                 .andExpect(jsonPath("$.quantity").value("must be greater than 0"));
     }
@@ -297,7 +297,7 @@ class OrderItemControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/orderItems/1/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.orderId").value(oi1.getId().getOrderId()))
                 .andExpect(jsonPath("$.id.itemId").value(oi1.getId().getItemId()))
@@ -317,7 +317,7 @@ class OrderItemControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/orderItems/1/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find orderItem with id " + oi1.getId()));
     }
@@ -328,7 +328,7 @@ class OrderItemControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/orderItems/1/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("OrderItem deleted successfully!"));
     }
@@ -339,7 +339,7 @@ class OrderItemControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/orderItems/1/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find orderItem with id " + oi1.getId()));
     }

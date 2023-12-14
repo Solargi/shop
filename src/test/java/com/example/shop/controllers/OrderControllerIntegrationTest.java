@@ -81,7 +81,7 @@ public class OrderControllerIntegrationTest {
     @Order(2)
     void testFindOrderByIdNotFound() throws Exception {
         this.mockMvc.perform(get(this.baseUrl + "/orders/1").header("Authorization", this.token).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id " + 1));
     }
@@ -93,7 +93,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(post(this.baseUrl + "/orders/1")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.totalCost").value(170.5))
@@ -111,7 +111,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/orders/1")
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.totalCost").value(170.5))
@@ -125,7 +125,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/orders")
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(1));
     }
@@ -138,7 +138,7 @@ public class OrderControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$").value("User's cart has no items in it"));
     }
 
@@ -181,7 +181,7 @@ public class OrderControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(order.getId()))
                 .andExpect(jsonPath("$.status").value(order.getStatus()))
@@ -234,7 +234,7 @@ public class OrderControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id 32"));
     }
@@ -245,7 +245,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/orders/1")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("Order deleted successfully!"));
     }
@@ -256,7 +256,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/orders/1")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id 1"));
     }
@@ -278,7 +278,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(post(this.baseUrl + "/orders/2")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.totalCost").value(74.2))
@@ -296,7 +296,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(post(this.baseUrl + "/orders/1")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.totalCost").value(170.5))
@@ -314,7 +314,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/orders/1")
                         .header("Authorization", token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -325,7 +325,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/orders/2")
                         .header("Authorization", token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.totalCost").value(74.2))
@@ -382,7 +382,7 @@ public class OrderControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token2))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -392,7 +392,7 @@ public class OrderControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/orders/2")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token2))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 

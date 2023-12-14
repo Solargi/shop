@@ -125,7 +125,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses/1")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a1.getId()))
                 .andExpect(jsonPath("$.street").value(a1.getStreet()))
@@ -142,7 +142,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses/123")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 123"));
     }
@@ -153,7 +153,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(this.a1.getId()))
                 .andExpect(jsonPath("$[1].id").value(2));
@@ -186,7 +186,7 @@ public class AddressControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a3.getId()))
                 .andExpect(jsonPath("$.street").value(a3.getStreet()))
@@ -222,7 +222,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses/3")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a3.getId()))
                 .andExpect(jsonPath("$.street").value(a3.getStreet()))
@@ -261,7 +261,7 @@ public class AddressControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.state").value("must not be empty"))
                 .andExpect(jsonPath("$.city").value("must not be empty"));
     }
@@ -292,7 +292,7 @@ public class AddressControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a3.getId()))
                 .andExpect(jsonPath("$.street").value(a3.getStreet()))
@@ -320,7 +320,7 @@ public class AddressControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", this.token)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 3232"));
     }
@@ -331,7 +331,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(3)));
     }
 
@@ -341,7 +341,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/1")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("Address deleted successfully!"));
     }
@@ -352,7 +352,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
@@ -362,7 +362,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/4")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 4"));
     }
@@ -376,7 +376,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses/1")
                         .header("Authorization", token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isForbidden());
 
     }
@@ -387,7 +387,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses/2")
                         .header("Authorization", token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2));
 
@@ -399,7 +399,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(get(this.baseUrl + "/addresses")
                         .header("Authorization", token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isForbidden());
     }
 
@@ -430,7 +430,7 @@ public class AddressControllerIntegrationTest {
                         .header("Authorization", this.token2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isForbidden());
     }
 
@@ -461,7 +461,7 @@ public class AddressControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a3.getId()))
                 .andExpect(jsonPath("$.street").value(a3.getStreet()))
@@ -499,7 +499,7 @@ public class AddressControllerIntegrationTest {
                         .header("Authorization", this.token2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isForbidden());
     }
 
@@ -530,7 +530,7 @@ public class AddressControllerIntegrationTest {
                         .header("Authorization", this.token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isOk());
     }
 
@@ -540,7 +540,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/1")
                         .header("Authorization", this.token2)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isForbidden());
     }
 
@@ -550,7 +550,7 @@ public class AddressControllerIntegrationTest {
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/2")
                         .header("Authorization", this.token)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+//                
                 .andExpect(status().isOk())
                 .andExpect(content().string("Address deleted successfully!"));
     }

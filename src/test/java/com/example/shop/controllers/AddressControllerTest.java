@@ -107,7 +107,7 @@ class AddressControllerTest {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/addresses/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a1.getId()))
                 .andExpect(jsonPath("$.street").value(a1.getStreet()))
@@ -123,7 +123,7 @@ class AddressControllerTest {
         given(this.addressService.findById(123)).willThrow(new ObjectNotFoundException("address",123));
 
         this.mockMvc.perform(get(this.baseUrl + "/addresses/123").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 123"));
     }
@@ -133,7 +133,7 @@ class AddressControllerTest {
         given(this.addressService.findAll()).willReturn(this.addressesList);
 
         this.mockMvc.perform(get(this.baseUrl + "/addresses").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(this.addressesList.size())))
                 .andExpect(jsonPath("$[0].id").value(this.a1.getId()))
                 .andExpect(jsonPath("$[1].id").value(this.a2.getId()));
@@ -167,7 +167,7 @@ class AddressControllerTest {
         this.mockMvc.perform(post(this.baseUrl + "/addresses/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a3.getId()))
                 .andExpect(jsonPath("$.street").value(a3.getStreet()))
@@ -207,7 +207,7 @@ class AddressControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.state").value("must not be empty"))
                 .andExpect(jsonPath("$.city").value("must not be empty"));
     }
@@ -238,7 +238,7 @@ class AddressControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/addresses/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(a3.getId()))
                 .andExpect(jsonPath("$.street").value(a3.getStreet()))
@@ -267,7 +267,7 @@ class AddressControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/addresses/3232")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAddress).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 3232"));
     }
@@ -278,7 +278,7 @@ class AddressControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("Address deleted successfully!"));
     }
@@ -289,7 +289,7 @@ class AddressControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/addresses/4")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find address with id 4"));
     }
