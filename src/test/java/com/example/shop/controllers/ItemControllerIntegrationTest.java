@@ -77,9 +77,11 @@ public class ItemControllerIntegrationTest {
     String baseUrl;
 
     String token;
+    String token2;
     @BeforeEach
     public void setup() throws Exception {
         this.token = this.login.getJWTToken("u1","q");
+        this.token2 = this.login.getJWTToken("u2","f");
     }
 
     @Test

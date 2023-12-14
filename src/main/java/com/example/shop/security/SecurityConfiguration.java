@@ -121,11 +121,12 @@ public class SecurityConfiguration {
 //                        //let only admin modify or delete order for now
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "**/orders/{orderId}/**").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/orders/{orderId}").hasAuthority("ROLE_admin")
+
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/orderItems").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.GET, this.baseUrl + "**/orderItems/{orderId}/{itemId}**")
                         .access(this.orderSecurity)
+                                //let only admin add modify or delete orderItem for now
                         .requestMatchers(HttpMethod.POST, this.baseUrl + "/orderItems/{orderId}/{itemId}**").hasAuthority("ROLE_admin")
-//                      //let only admin add modify or delete orderItem for now
                         .requestMatchers(HttpMethod.PUT, this.baseUrl + "**/orderItems/{orderId}/{itemId}**").hasAuthority("ROLE_admin")
                         .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/orderItems/{orderId}/{itemId}").hasAuthority("ROLE_admin")
 
