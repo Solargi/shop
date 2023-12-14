@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 
 //exclude disable spring security for now to be removed
 //test
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication//(exclude = SecurityAutoConfiguration.class)
 public class ShopApplication {
 
 	public static void main(String[] args) {

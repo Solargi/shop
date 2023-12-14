@@ -167,7 +167,7 @@ class CartItemControllerTest {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/3/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id.userId").value(3))
                 .andExpect(jsonPath("$.id.itemId").value(1))
@@ -181,7 +181,7 @@ class CartItemControllerTest {
         given(this.cartItemService.findById(Mockito.any(CartItemId.class))).willThrow(new ObjectNotFoundException("cartItem",id1));
 
         this.mockMvc.perform(get(this.baseUrl + "/cartItems/3/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=3, itemId=1)"));
     }
@@ -191,12 +191,12 @@ class CartItemControllerTest {
         given(this.cartItemService.findAll()).willReturn(this.cartItemsList);
 
         this.mockMvc.perform(get(this.baseUrl + "/cartItems").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(this.cartItemsList.size())))
                 .andExpect(jsonPath("$[0].id.userId").value(this.u1.getId()))
                 .andExpect(jsonPath("$[1].id.userId").value(this.u2.getId()));
     }
-//
+    //
     @Test
     void testAddCartItemSuccess() throws Exception {
         CartItem ci3 = new CartItem();
@@ -207,20 +207,20 @@ class CartItemControllerTest {
         ci3.setUser(u1);
         ci3.setQuantity(1);
         ci3.setTotalCost(new BigDecimal(10));
-        
+
         //given
         CartItemResponseDTO cartItemResponseDTO = this.cartItemToCartItemResponseDTOConverter.convert(ci3);
         //convert dto to json mockmvc can't send the DTO object
         String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
-        
+
 
 
         given(this.cartItemService.save(Mockito.any(CartItem.class))).willReturn(ci3);
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems")
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/" + cid3.getUserId() + "/" + cid3.getItemId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ci3.getId()))
                 .andExpect(jsonPath("$.itemDTO.id").value(ci3.getItem().getId()))
@@ -230,7 +230,7 @@ class CartItemControllerTest {
                 .andExpect(jsonPath("$.id.itemId").value(ci3.getId().getItemId()))
                 .andExpect(jsonPath("$.totalCost").value(ci3.getTotalCost()));
     }
-//
+    //
     @Test
     void testAddCartItemBadRequest() throws Exception {
         //given
@@ -251,13 +251,13 @@ class CartItemControllerTest {
 
         given(this.cartItemService.save(Mockito.any(CartItem.class))).willReturn(ci3);
 
-        this.mockMvc.perform(post(this.baseUrl + "/cartItems")
+        this.mockMvc.perform(post(this.baseUrl + "/cartItems/32/62")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.quantity").value("must be greater than 0"))
-                .andExpect(jsonPath("$.id").value("must not be null"));
+                .andExpect(jsonPath("$.id").doesNotExist());
     }
 
     //TODO add test for adding items with invalid item id , user id
@@ -278,12 +278,12 @@ class CartItemControllerTest {
         String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
-        given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willReturn(ci3);
+        given(this.cartItemService.update(Mockito.any(CartItem.class))).willReturn(ci3);
 
         this.mockMvc.perform(put(this.baseUrl + "/cartItems/3/2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ci3.getId()))
                 .andExpect(jsonPath("$.itemDTO.id").value(ci3.getItem().getId()))
@@ -311,12 +311,12 @@ class CartItemControllerTest {
         String jsonItem = this.objectMapper.writeValueAsString(cartItemResponseDTO);
 
 
-        given(this.cartItemService.update(eq(ci3.getId()),Mockito.any(CartItem.class))).willThrow(new ObjectNotFoundException("cartItem", ci3.getId()));
+        given(this.cartItemService.update(Mockito.any(CartItem.class))).willThrow(new ObjectNotFoundException("cartItem", ci3.getId()));
 
         this.mockMvc.perform(put(this.baseUrl + "/cartItems/3/2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=3, itemId=2)"));
     }
@@ -327,7 +327,7 @@ class CartItemControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/3/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("CartItem deleted successfully!"));
     }
@@ -338,7 +338,7 @@ class CartItemControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/cartItems/3/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find cartItem with id CartItemId(userId=3, itemId=1)"));
     }

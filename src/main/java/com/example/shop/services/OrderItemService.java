@@ -47,10 +47,10 @@ public class OrderItemService {
     }
 
     //only allowed update is quantity
-    public OrderItem update(OrderItemId orderItemId,  OrderItem update){
+    public OrderItem update(OrderItem update){
+        OrderItemId orderItemId = update.getId();
         OrderItem oldOrderItem = this.orderItemRepository.findById(orderItemId)
                 .orElseThrow(()->new ObjectNotFoundException("orderItem",orderItemId));
-        //TODO might have to change this to avoid insertion of order fro non existing users, items
 //        oldOrderItem.setOrder(update.getOrder());
         oldOrderItem.setQuantity(update.getQuantity());
 //        oldOrderItem.setItem(update.getItem());

@@ -100,7 +100,7 @@ class UserControllerTest {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/users/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(u1.getId()))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -118,7 +118,7 @@ class UserControllerTest {
     void TestFindUserByIdNotFound() throws Exception {
         given(this.userService.findById(123)).willThrow(new ObjectNotFoundException("user",123));
         this.mockMvc.perform(get(this.baseUrl + "/users/123").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 123"));
     }
@@ -128,7 +128,7 @@ class UserControllerTest {
         given(this.userService.findAll()).willReturn(this.usersList);
 
         this.mockMvc.perform(get(this.baseUrl + "/users").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(this.usersList.size())))
                 .andExpect(jsonPath("$[0].id").value(this.u1.getId()))
                 .andExpect(jsonPath("$[1].id").value(this.u2.getId()));
@@ -167,7 +167,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(u3.getId()))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -207,7 +207,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$.password").value("must not be empty"))
                 .andExpect(jsonPath("$.email").value("must not be empty"));
     }
@@ -240,7 +240,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(u3.getId()))
                 .andExpect(jsonPath("$.addresses").doesNotExist())
@@ -282,7 +282,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUser)
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 3232"));
 
@@ -294,7 +294,7 @@ class UserControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/users/6")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("user deleted successfully!"));
     }
@@ -305,7 +305,7 @@ class UserControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/users/6")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find user with id 6"));
     }

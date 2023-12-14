@@ -9,6 +9,7 @@ import com.example.shop.repositories.AddressRepository;
 import com.example.shop.repositories.CartItemRepository;
 import com.example.shop.repositories.ItemRepository;
 import com.example.shop.repositories.UserRepository;
+import com.example.shop.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -23,6 +24,7 @@ import java.util.List;
 @Profile({"!prod"})
 public class DBDataInit implements CommandLineRunner {
     private final UserRepository userRepository;
+    private final UserService userService;
     private final ItemRepository itemRepository;
     private final CartItemRepository cartItemRepository;
     private final AddressRepository addressRepository;
@@ -52,7 +54,7 @@ public class DBDataInit implements CommandLineRunner {
 //        u3.setBirthDate("yay");
 
 
-        this.userRepository.save(u1);
+        this.userService.save(u1);
 
         u2.setId(2);
         u2.setName("d");
@@ -82,7 +84,7 @@ public class DBDataInit implements CommandLineRunner {
         a2.setZipCode(57);
         u2.addAddress(a2);
         this.addressRepository.save(a1);
-        this.userRepository.save(u2);
+        this.userService.save(u2);
 //        this.userRepository.save(u3);
         this.addressRepository.save(a1);
 

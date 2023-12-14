@@ -253,6 +253,7 @@ class OrderItemServiceTest {
     @Test
     void testUpdateSuccess(){
        OrderItem oi3 = new OrderItem();
+       oi3.setId(oi1.getId());
        oi3.setQuantity(5);
 
         given(orderItemRepository.findById(oi1.getId())).willReturn(Optional.of(oi1));
@@ -261,7 +262,7 @@ class OrderItemServiceTest {
 
 
 
-        OrderItem updated1 = orderItemService.update(oi1.getId(),oi3);
+        OrderItem updated1 = orderItemService.update(oi3);
 
         assertThat(updated1.getId()).isEqualTo(oi1.getId());
         assertThat(updated1.getQuantity()).isEqualTo(oi3.getQuantity());
@@ -275,7 +276,7 @@ class OrderItemServiceTest {
         given(orderItemRepository.findById(oi1.getId())).willReturn(Optional.empty());
 
         assertThrows(ObjectNotFoundException.class, ()->{
-            orderItemService.update(oi1.getId(),oi1);
+            orderItemService.update(oi1);
         });
 
         verify(orderItemRepository,times(1)).findById(oi1.getId());

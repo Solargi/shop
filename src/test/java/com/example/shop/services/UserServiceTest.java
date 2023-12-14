@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,8 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
     @Mock
     UserRepository userRepository;
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @InjectMocks
     UserService userService;
@@ -135,6 +138,7 @@ class UserServiceTest {
         u3.setCartItems(null);
 
         given(this.userRepository.save(u3)).willReturn(u3);
+        given(this.passwordEncoder.encode(u3.getPassword())).willReturn("encoded password");
 
         User savedUser = this.userService.save(u3);
         assertThat(savedUser.getId()).isEqualTo(u3.getId());

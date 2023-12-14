@@ -194,7 +194,7 @@ public class OrderControllerTest {
 
         //When and then
         this.mockMvc.perform(get(this.baseUrl + "/orders/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(o1.getId()))
                 .andExpect(jsonPath("$.totalCost").value(o1.getTotalCost()))
@@ -208,7 +208,7 @@ public class OrderControllerTest {
         given(this.orderService.findById(Mockito.any(Integer.class))).willThrow(new ObjectNotFoundException("order",o1.getId()));
 
         this.mockMvc.perform(get(this.baseUrl + "/orders/1").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id " + o1.getId()));
     }
@@ -218,7 +218,7 @@ public class OrderControllerTest {
         given(this.orderService.findAll()).willReturn(this.orderList);
 
         this.mockMvc.perform(get(this.baseUrl + "/orders").accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(jsonPath("$", hasSize(this.orderList.size())))
                 .andExpect(jsonPath("$[0].id").value(this.o1.getId()))
                 .andExpect(jsonPath("$[1].id").value(this.o2.getId()));
@@ -245,7 +245,7 @@ public class OrderControllerTest {
 
         this.mockMvc.perform(post(this.baseUrl + "/orders/" + u1.getId())
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(order.getId()))
                 .andExpect(jsonPath("$.totalCost").value(order.getTotalCost()))
@@ -276,7 +276,7 @@ public class OrderControllerTest {
         this.mockMvc.perform(post(this.baseUrl + "/orders/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andDo(print())
+                
                 .andExpect(jsonPath("$").value("User's cart has no items in it"));
     }
 
@@ -307,7 +307,7 @@ public class OrderControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/orders/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(order.getId()))
                 .andExpect(jsonPath("$.status").value(order.getStatus()))
@@ -343,7 +343,7 @@ public class OrderControllerTest {
         this.mockMvc.perform(put(this.baseUrl + "/orders/"+ order.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonItem).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id " + order.getId()));
     }
@@ -354,7 +354,7 @@ public class OrderControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/orders/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isOk())
                 .andExpect(content().string("Order deleted successfully!"));
     }
@@ -365,7 +365,7 @@ public class OrderControllerTest {
 
         this.mockMvc.perform(delete(this.baseUrl + "/orders/1")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
+                
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("could not find order with id " + o1.getId()));
     }

@@ -5,6 +5,7 @@ import com.example.shop.dtos.converters.ItemDTOToItemConverter;
 import com.example.shop.dtos.converters.ItemToItemDTOConverter;
 import com.example.shop.models.Item;
 import com.example.shop.services.ItemService;
+import com.example.shop.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,6 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemToItemDTOConverter itemToItemDTOConverter;
     private final ItemDTOToItemConverter itemDTOToItemConverter;
-
 
 
     @GetMapping("")
