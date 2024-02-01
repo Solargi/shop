@@ -5,6 +5,11 @@ import com.example.shop.dtos.converters.UserDTOToUserConverter;
 import com.example.shop.dtos.converters.UserToUserDTOConverter;
 import com.example.shop.models.User;
 import com.example.shop.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +25,7 @@ public class UserController {
     private final UserDTOToUserConverter userDTOToUserConverter;
     private final UserToUserDTOConverter userToUserDTOConverter;
 
-
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> getUser (@PathVariable("userId") int userId){
         User foundUser = this.userService.findById(userId);
@@ -33,6 +38,20 @@ public class UserController {
         List<UserDTO> usersDTO = users.stream().map(this.userToUserDTOConverter::convert).toList();
         return ResponseEntity.ok(usersDTO);
     }
+
+    @Operation(
+            summary = "Create a new user",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class),
+                            examples = {
+                                    @ExampleObject(name = "Admin User",
+                                            value = "{ \"username\": \"u2\", \"name\": \"a\", \"surname\": \"b\", \"addresses\": [null], \"email\": \"q@q.com\", \"password\": \"1\", \"birthDate\": \"yay\", \"cartItems\": [], \"orderList\": [], \"roles\": \"admin\" }")
+                            }
+                    )
+            )
+    )
 
     @PostMapping("")
     public ResponseEntity<UserDTO> addUser(@Valid @RequestBody User user){

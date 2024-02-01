@@ -14,7 +14,6 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Integer id;
     @NotEmpty
     @Column(unique = true)
