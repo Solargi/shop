@@ -36,11 +36,10 @@ public class AuthController {
 
     @Operation(
             summary = "Log in to obtain JWT token",
-            description = "in order to get the toke you must authorize yourself with a valid username and password  in the swagger ui, " +
-                    "using the authorize lock" +
-                    "before sending the request othrewise it won't work. This token can be use to authorize tourself useing the toke option" +
-                    "in the swagger ui." +
-                    "You might want to post a valid user first if there are no users in the database",
+            description = "in order to get the JWT you must authorize yourself with a valid username and password  in the swagger ui" +
+                    "using the authorize lock before sending the request otherwise it won't work. " +
+                    "This token can be used to authorize yourself using the toke option in the swagger ui." +
+                    "YOU HAVE TO POST A USER BEFORE TRYING TO LOGIN",
 
             responses = {
                     @ApiResponse(
@@ -88,13 +87,12 @@ public class AuthController {
         private Authentication auth;
     }
 
-    //just for test purposes
+//    just for test purposes (retreives userID):
 //    @Profile({"!prod"})
-
     @GetMapping("/info")
     public Object getInfo(Authentication auth, JwtAuthenticationToken principal, @RequestHeader(name="Authorization") String token) {
 
         return principal.getTokenAttributes().get("userId");
-        
+
     }
 }

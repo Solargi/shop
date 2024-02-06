@@ -6,6 +6,8 @@ import com.example.shop.dtos.converters.UserToUserDTOConverter;
 import com.example.shop.models.User;
 import com.example.shop.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,6 +29,100 @@ public class UserController {
     private final UserToUserDTOConverter userToUserDTOConverter;
 
     @SecurityRequirement(name = "bearerAuth")
+    @Parameters({
+            @Parameter(name = "userId", description = "The id of the target user", example = "1")
+    })
+    @Operation(
+            summary = "get user data",
+            description = "get user data, you can get the user data only of the currently logged in user" +
+                    "unless the logged user has an admin role, admins can get information about a specific user",
+
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDTO.class),
+                                    examples = {
+                                            @ExampleObject(name = "user data example",
+                                                    value = "{ \"id\": \"1\",\"username\": \"u34\", \"name\": \"paul\", \"surname\": \"surname\", \"email\": \"q@q.com\", \"birthDate\": \"3.1.1991\", \"roles\": \"admin\" }",
+                                                    description = "user's data"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "unauthorized",
+                                                    description = "you will get an unauthorized response if you are not " +
+                                                            "logged in, meaning that " +
+                                                            "you didn't provide a JWT or you provided an invalid/expired one"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "updating another user while having role user",
+                                                    description = "trying to update another user using a JWT with role user, " +
+                                                            "will result in an empty forbidden response"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Not Found",
+                            content = @Content(
+                                    mediaType = "text",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "user not found in database",
+                                                    value = "could not find user with id 1",
+                                                    description = "the user with the provided id does not exist"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "internal Server Error", content = {
+                            @Content(
+                                    mediaType = "text",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "some error",
+                                                    value = "either empty or a string with the error",
+                                                    description = "this response body can contain either the error text or be empty"
+                                            ),
+                                    }
+                            ),
+                            @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "empty",
+                                                    summary = "empty response"
+                                            ),
+                                    }
+                            )
+                    }
+                    )
+            }
+    )
+
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> getUser (@PathVariable("userId") int userId){
         User foundUser = this.userService.findById(userId);
@@ -34,6 +130,101 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+            summary = "get all users data",
+            description = "get an array containing all user's data (or an empty one if there is no user), you can get the users data only if " +
+                    "the currently logged in user has role admin otherwise the response will be" +
+                    " of type 401 unauthorized",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDTO.class),
+                                    examples = {
+                                            @ExampleObject(name = "User List Example",
+                                                    value = "[\n" +
+                                                            "    {\n" +
+                                                            "        \"id\": 1,\n" +
+                                                            "        \"username\": \"u1\",\n" +
+                                                            "        \"name\": \"a\",\n" +
+                                                            "        \"surname\": \"b\",\n" +
+                                                            "        \"email\": \"q@q.com\",\n" +
+                                                            "        \"birthDate\": \"yay\",\n" +
+                                                            "        \"roles\": \"admin\"\n" +
+                                                            "    },\n" +
+                                                            "    {\n" +
+                                                            "        \"id\": 2,\n" +
+                                                            "        \"username\": \"u2\",\n" +
+                                                            "        \"name\": \"a\",\n" +
+                                                            "        \"surname\": \"b\",\n" +
+                                                            "        \"email\": \"q@q.com\",\n" +
+                                                            "        \"birthDate\": \"yay\",\n" +
+                                                            "        \"roles\": \"user\"\n" +
+                                                            "    }\n" +
+                                                            "]",
+                                                    description = "array containing user's data"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "not admin or unauthorized",
+                                                    description = "you will get an unauthorized response if you are not " +
+                                                            "logged in, meaning that " +
+                                                            "you didn't provide a JWT or you provided an invalid/expired one"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "updating another user while having role user",
+                                                    description = "trying to update another user using a JWT with role user, " +
+                                                            "will result in an empty forbidden response"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "internal Server Error", content = {
+                            @Content(
+                                    mediaType = "text",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "some error",
+                                                    value = "either empty or a string with the error",
+                                                    description = "this response body can contain either the error text or be empty"
+                                            ),
+                                    }
+                            ),
+                            @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "empty",
+                                                    summary = "empty response"
+                                            ),
+                                    }
+                            )
+                    }
+                    )
+            }
+    )
+
     @GetMapping("")
     public ResponseEntity<List<UserDTO>> getUsers(){
         List<User> users = this.userService.findAll();
@@ -45,22 +236,37 @@ public class UserController {
             summary = "Create a new user",
             //need full qualifier for swagger otherwise it will overwrite spring's request body
             //since it has the same name
+
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = User.class),
                             examples = {
                                     @ExampleObject(name = "Admin",
-                                            value = "{ \"username\": \"u1\", \"name\": \"a\", \"surname\": \"b\", \"addresses\": [null], \"email\": \"q@q.com\", \"password\": \"1\", \"birthDate\": \"3.1.1991\", \"cartItems\": [], \"orderList\": [], \"roles\": \"admin\" }",
+                                            value = "{  \"id\": \"1\",\"username\": \"u1\", \"name\": \"a\", \"surname\": \"b\", \"addresses\": [], \"email\": \"q@q.com\", \"password\": \"1\", \"birthDate\": \"3.1.1991\", \"cartItems\": [], \"orderList\": [], \"roles\": \"admin\" }",
                                             description = "create an admin account"
                                     ),
                                     @ExampleObject(name = "User",
-                                            value = "{ \"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [null], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
+                                            value = "{  \"id\": \"2\",\"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
                                             description = "create normal user account")
                             }
                     )
             ),
             responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDTO.class),
+                                    examples = {
+                                            @ExampleObject(name = "created user",
+                                                    value = "{ \"id\": \"1\",\"username\": \"u34\", \"name\": \"paul\", \"surname\": \"surname\", \"email\": \"q@q.com\", \"birthDate\": \"3.1.1991\", \"roles\": \"admin\" }",
+                                                    description = "created user's data"
+                                            )
+                                    }
+                            )
+                    ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Bad Request",
@@ -127,16 +333,30 @@ public class UserController {
                             schema = @Schema(implementation = UserDTO.class),
                             examples = {
                                     @ExampleObject(name = "modify admin",
-                                            value = "{ \"username\": \"u34\", \"name\": \"paul\", \"surname\": \"surname\", \"email\": \"q@q.com\", \"birthDate\": \"3.1.1991\", \"roles\": \"admin\" }",
+                                            value = "{  \"id\": \"1\",\"username\": \"u34\", \"name\": \"paul\", \"surname\": \"surname\", \"email\": \"q@q.com\", \"birthDate\": \"3.1.1991\", \"roles\": \"admin\" }",
                                             description = "modifies user account"
                                     ),
                                     @ExampleObject(name = "Modify user",
-                                            value = "{ \"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [null], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
+                                            value = "{  \"id\": \"2\", \"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
                                             description = "create normal user account")
                             }
                     )
             ),
             responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = UserDTO.class),
+                                    examples = {
+                                            @ExampleObject(name = "modified user's data example",
+                                                    value = "{  \"id\": \"1\",\"username\": \"u34\", \"name\": \"paul\", \"surname\": \"surname\", \"email\": \"q@q.com\", \"birthDate\": \"3.1.1991\", \"roles\": \"admin\" }",
+                                                    description = "modified user's data"
+                                            )
+                                    }
+                            )
+                    ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Bad Request",
@@ -158,6 +378,59 @@ public class UserController {
 
                                     }
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "not admin or unauthorized",
+                                                    description = "you will get an unauthorized response if you are not " +
+                                                            "logged in, meaning that " +
+                                                            "you didn't provide a JWT or you provided an invalid/expired one"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "updating another user while having role user",
+                                                    description = "trying to update another user using a JWT with role user, " +
+                                                            "will result in an empty forbidden response"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "internal Server Error", content = {
+                            @Content(
+                                    mediaType = "text",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "some error",
+                                                    value = "either empty or a string with the error",
+                                                    description = "this response body can contain either the error text or be empty"
+                                            ),
+                                    }
+                            ),
+                            @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "empty",
+                                                    summary = "empty response"
+                                            ),
+                                    }
+                            )
+                    }
                     )
             }
     )
@@ -172,6 +445,99 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @Parameters({
+            @Parameter(name = "userId", description = "The id of the target user", example = "1")
+    })
+    @Operation(
+            summary = "Delete User",
+            description = "you can only delete the currently logged in user unless the logged in users has " +
+                    "role admin, admins can delete whoever. trying to delete another user with an account having role user" +
+                    "will cause a 403 forbidden response.",
+
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = @Content(
+                                    mediaType = "text",
+                                    schema = @Schema(implementation = UserDTO.class),
+                                    examples = {
+                                            @ExampleObject(name = "successful delete",
+                                                    value = "user deleted successfully!"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "not admin or unauthorized",
+                                                    description = "you will get an unauthorized response if you are not " +
+                                                            "logged in, meaning that " +
+                                                            "you didn't provide a JWT or you provided an invalid/expired one"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "deleting another user while having role user",
+                                                    description = "trying to delete another user using a JWT with role user, " +
+                                                            "will result in an empty forbidden response"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Not Found",
+                            content = @Content(
+                                    mediaType = "text",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "user not found in database",
+                                                    value = "could not find user with id 1",
+                                                    description = "the user with the provided id does not exist"
+                                            )
+
+                                    }
+                            )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "internal Server Error", content = {
+                            @Content(
+                                    mediaType = "text",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "some error",
+                                                    value = "either empty or a string with the error",
+                                                    description = "this response body can contain either the error text or be empty"
+                                            ),
+                                    }
+                            ),
+                            @Content(
+                                    mediaType = "*/*",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "empty",
+                                                    summary = "empty response"
+                                            ),
+                                    }
+                            )
+                    }
+                    )
+            }
+    )
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer userId){
         this.userService.delete(userId);
