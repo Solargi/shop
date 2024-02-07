@@ -8,6 +8,7 @@ import com.example.shop.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -243,11 +244,11 @@ public class UserController {
                             schema = @Schema(implementation = User.class),
                             examples = {
                                     @ExampleObject(name = "Admin",
-                                            value = "{  \"id\": \"1\",\"username\": \"u1\", \"name\": \"a\", \"surname\": \"b\", \"addresses\": [], \"email\": \"q@q.com\", \"password\": \"1\", \"birthDate\": \"3.1.1991\", \"cartItems\": [], \"orderList\": [], \"roles\": \"admin\" }",
+                                            value = "{  \"username\": \"u1\", \"name\": \"a\", \"surname\": \"b\", \"addresses\": [], \"email\": \"q@q.com\", \"password\": \"1\", \"birthDate\": \"3.1.1991\", \"cartItems\": [], \"orderList\": [], \"roles\": \"admin\" }",
                                             description = "create an admin account"
                                     ),
                                     @ExampleObject(name = "User",
-                                            value = "{  \"id\": \"2\",\"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
+                                            value = "{  \"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
                                             description = "create normal user account")
                             }
                     )
@@ -333,11 +334,11 @@ public class UserController {
                             schema = @Schema(implementation = UserDTO.class),
                             examples = {
                                     @ExampleObject(name = "modify admin",
-                                            value = "{  \"id\": \"1\",\"username\": \"u34\", \"name\": \"paul\", \"surname\": \"surname\", \"email\": \"q@q.com\", \"birthDate\": \"3.1.1991\", \"roles\": \"admin\" }",
+                                            value = "{  \"username\": \"u34\", \"name\": \"paul\", \"surname\": \"surname\", \"email\": \"q@q.com\", \"birthDate\": \"3.1.1991\", \"roles\": \"admin\" }",
                                             description = "modifies user account"
                                     ),
                                     @ExampleObject(name = "Modify user",
-                                            value = "{  \"id\": \"2\", \"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
+                                            value = "{  \"username\": \"u2\", \"name\": \"b\", \"surname\": \"c\", \"addresses\": [], \"email\": \"a@a.com\", \"password\": \"2\", \"birthDate\": \"11.12.1992\", \"cartItems\": [], \"orderList\": [], \"roles\": \"user\" }",
                                             description = "create normal user account")
                             }
                     )
@@ -446,7 +447,8 @@ public class UserController {
 
     @SecurityRequirement(name = "bearerAuth")
     @Parameters({
-            @Parameter(name = "userId", description = "The id of the target user", example = "1")
+            @Parameter(name = "userId", description = "The id of the target user", example = "1",
+                    in = ParameterIn.PATH)
     })
     @Operation(
             summary = "Delete User",
@@ -459,7 +461,7 @@ public class UserController {
                             responseCode = "200",
                             description = "OK",
                             content = @Content(
-                                    mediaType = "text",
+                                    mediaType = "*/*",
                                     schema = @Schema(implementation = UserDTO.class),
                                     examples = {
                                             @ExampleObject(name = "successful delete",
