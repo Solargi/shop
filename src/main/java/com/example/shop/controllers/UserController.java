@@ -134,8 +134,7 @@ public class UserController {
     @Operation(
             summary = "get all users data",
             description = "get an array containing all user's data (or an empty one if there is no user), you can get the users data only if " +
-                    "the currently logged in user has role admin otherwise the response will be" +
-                    " of type 401 unauthorized",
+                    "the currently logged in user has role admin",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -152,7 +151,7 @@ public class UserController {
                                                             "        \"name\": \"a\",\n" +
                                                             "        \"surname\": \"b\",\n" +
                                                             "        \"email\": \"q@q.com\",\n" +
-                                                            "        \"birthDate\": \"yay\",\n" +
+                                                            "        \"birthDate\": \"3.1.1991\",\n" +
                                                             "        \"roles\": \"admin\"\n" +
                                                             "    },\n" +
                                                             "    {\n" +
@@ -161,7 +160,7 @@ public class UserController {
                                                             "        \"name\": \"a\",\n" +
                                                             "        \"surname\": \"b\",\n" +
                                                             "        \"email\": \"q@q.com\",\n" +
-                                                            "        \"birthDate\": \"yay\",\n" +
+                                                            "        \"birthDate\": \"3.1.1991\",\n" +
                                                             "        \"roles\": \"user\"\n" +
                                                             "    }\n" +
                                                             "]",
