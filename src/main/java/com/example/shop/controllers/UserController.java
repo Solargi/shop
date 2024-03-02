@@ -28,7 +28,6 @@ public class UserController {
     private final UserService userService;
     private final UserDTOToUserConverter userDTOToUserConverter;
     private final UserToUserDTOConverter userToUserDTOConverter;
-
     @SecurityRequirement(name = "bearerAuth")
     @Parameters({
             @Parameter(name = "userId", description = "The id of the target user", example = "1")
@@ -286,7 +285,6 @@ public class UserController {
                                                             "}",
                                                     description = "(the response can either be empty or contain one or more of the listed elements)"
                                             )
-
                                     }
                             )
                     ),
@@ -313,7 +311,6 @@ public class UserController {
                     }
                     )
             }
-
     )
 
     @PostMapping("")
