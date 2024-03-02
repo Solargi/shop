@@ -61,7 +61,15 @@ public class OrderService {
             // find cartItems list to convert to orderItems (assumes that cartItemlist of fetched user
             // is a valid list of valid items with valid total prices)
             for (CartItem cartItem : user.getCartItems()){
-                order.addOrderItem(new OrderItem(order, cartItem));
+                //we have to decrease item available quantity after creating orderItem
+                Item item = itemRepository.findById(cartItem.getItem().getId()).orElseThrow(() ->
+                        new ObjectNotFoundException("item", cartItem.getItem().getId()));
+                int cartItemQuantity = cartItem.getQuantity();
+                if(cartItemQuantity > 0 && cartItemQuantity <= item.getAvailableQuantity().intValue()){
+                    order.addOrderItem(new OrderItem(order, cartItem));
+                    item.modifyQuantity(-cartItemQuantity);
+                    itemRepository.save(item);
+                }
             }
 
 
