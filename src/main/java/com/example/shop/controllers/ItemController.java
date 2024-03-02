@@ -1,13 +1,10 @@
 package com.example.shop.controllers;
 
 import com.example.shop.dtos.ItemDTO;
-import com.example.shop.dtos.UserDTO;
 import com.example.shop.dtos.converters.ItemDTOToItemConverter;
 import com.example.shop.dtos.converters.ItemToItemDTOConverter;
 import com.example.shop.models.Item;
-import com.example.shop.models.User;
 import com.example.shop.services.ItemService;
-import com.example.shop.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -22,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.endpoint.base-url}/items")
@@ -32,7 +28,7 @@ public class ItemController {
     private final ItemToItemDTOConverter itemToItemDTOConverter;
     private final ItemDTOToItemConverter itemDTOToItemConverter;
     @Parameters({
-            @Parameter(name = "ItemId", description = "The id of the target item", example = "1")
+            @Parameter(name = "itemId", description = "The id of the target item", example = "1")
     })
     @Operation(
             summary = "get target item data",
@@ -431,7 +427,7 @@ public class ItemController {
 
     @SecurityRequirement(name = "bearerAuth")
     @Parameters({
-            @Parameter(name = "ItemId", description = "The id of the target item", example = "1")
+            @Parameter(name = "itemId", description = "The id of the target item", example = "1")
     })
     @Operation(
             summary = "delete an Item",
