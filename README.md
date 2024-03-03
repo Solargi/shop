@@ -63,7 +63,7 @@ to change this modify the ddl-auto: create-drop option in the application.yml fi
 To run the project you need to have docker and maven installed.
 The following ports must be available: 8080,8090 and 5432
 
-## run the project with Intellij
+## Run the project with Intellij
 
 1. Download the shop project:
 
@@ -73,7 +73,7 @@ The following ports must be available: 8080,8090 and 5432
 2. open the project with intellij and run it, you can then access the documentation from:
    http://localhost:8080/swagger-ui/index.html
 
-## run the project from shell
+## Run the project from shell
 1. Download the shop project:
 
     ```bash
@@ -100,7 +100,7 @@ http://localhost:8090/swagger-ui/index.html
     $ docker compose down
    ```
 
-# How to use the Swagger documentation
+# How to use Swagger documentation
 ## Documentation Access
 The documentation is made with Swagger (OpenAPI).
 It includes everything you need to use this API, you must however create a user with role admin,
