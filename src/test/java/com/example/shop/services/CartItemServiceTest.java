@@ -204,12 +204,12 @@ class CartItemServiceTest {
        ci3.setId(cid3);
        ci3.setItem(ci1.getItem());
        ci3.setUser(u1);
-       ci3.setQuantity(20);
+       ci3.setQuantity(2);
         ci3.setTotalCost(ci3.computeTotalCost());
 
         given(cartItemRepository.findById(ci3.getId())).willReturn(Optional.of(ci1));
 //        given(userRepository.findById(u1.getId())).willReturn(Optional.of(u1));
-//        given(itemRepository.findById(i2.getId())).willReturn(Optional.of(i2));
+        given(itemRepository.findById(i1.getId())).willReturn(Optional.of(i1));
         //when savind address 1 already has the new values
         given(cartItemRepository.save(ci3)).willReturn(ci1);
 

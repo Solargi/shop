@@ -583,7 +583,7 @@ OrderItemController {
                             examples = {
                                     @ExampleObject(name = "OrderItemRequest 1",
                                             value = "{\n" +
-                                                    " \"quantity\": 4,\n" +
+                                                    "\"quantity\": 4\n" +
                                                     "}",
                                             description = "update an orderItem associated to the order" +
                                                     " having id 1 and to the item having id 1"
@@ -657,6 +657,14 @@ OrderItemController {
                                     examples = {
                                             @ExampleObject(
                                                     name = "missing or empty requiered fields",
+                                                    value = "{\n" +
+                                                            "    \"quantity\": \"must not be null\",\n" +
+                                                            "    \"quantity\": \"must be greater than 0\",\n" +
+                                                            "}",
+                                                    description = "(the response can either be empty or contain one or more of the listed elements)"
+                                            ),
+                                            @ExampleObject(
+                                                    name = "Item quantity is lower than ordered quantity",
                                                     value = "{\n" +
                                                             "    \"quantity\": \"must not be null\",\n" +
                                                             "    \"quantity\": \"must be greater than 0\",\n" +

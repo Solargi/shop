@@ -115,7 +115,7 @@ public class ItemControllerIntegrationTest {
                 .andExpect(jsonPath("$.description").value("yay"))
                 .andExpect(jsonPath("$.price").value(32.1))
                 .andExpect(jsonPath("$.imageUrl").value("image"))
-                .andExpect(jsonPath("$.availableQuantity").value(2));
+                .andExpect(jsonPath("$.availableQuantity").value(40));
     }
 
     @Test

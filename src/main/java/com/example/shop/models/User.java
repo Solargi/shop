@@ -54,6 +54,12 @@ public class User {
         this.cartItems.remove(cartItem);
     }
 
+    public void removeCartItems(List<CartItem> cartItemsList){
+        for (CartItem cartItem : cartItemsList){
+            removeCartItem(cartItem);
+        }
+    }
+
     public void removeAllCartItems(){
         this.cartItems.clear();
     }

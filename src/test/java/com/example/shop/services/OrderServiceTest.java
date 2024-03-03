@@ -33,6 +33,9 @@ class OrderServiceTest {
     @Mock
     OrderRepository orderRepository;
 
+    @Mock
+    ItemRepository itemRepository;
+
     @InjectMocks
     OrderService orderService;
 
@@ -64,7 +67,7 @@ class OrderServiceTest {
         i1.setDescription("yay");
         i1.setPrice(new BigDecimal("32.1"));
         i1.setImageUrl("image");
-        i1.setAvailableQuantity(new BigDecimal("2"));
+        i1.setAvailableQuantity(new BigDecimal("30"));
 
 
         i2.setId(2);
@@ -225,6 +228,7 @@ class OrderServiceTest {
         // so not possible to mock otherwise
         given(orderRepository.save(Mockito.any(Order.class))).willReturn(order);
         given(userRepository.findById(u1.getId())).willReturn(Optional.of(u1));
+        given(itemRepository.findById(i1.getId())).willReturn(Optional.of(i1));
 
         Order savedOrder = orderService.save(u1.getId());
         assertThat(savedOrder.getId()).isEqualTo(order.getId());

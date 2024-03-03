@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -54,10 +55,9 @@ public class OrderService {
             order.setStatus("processing");
             order.setPaid(true);
             order.setShippingCost(new BigDecimal(10));
-            order.setTotalCost(order.computeTotalCost());
             order.setShippingAddress(user.getAddresses().get(0));
             order.setUser(user);
-
+            List<CartItem> cartItemsToRemove = new ArrayList<>();
             // find cartItems list to convert to orderItems (assumes that cartItemlist of fetched user
             // is a valid list of valid items with valid total prices)
             for (CartItem cartItem : user.getCartItems()){
@@ -69,12 +69,24 @@ public class OrderService {
                     order.addOrderItem(new OrderItem(order, cartItem));
                     item.modifyQuantity(-cartItemQuantity);
                     itemRepository.save(item);
+                    cartItemsToRemove.add(cartItem);
+                } else {
+                    cartItem.setQuantity(item.getAvailableQuantity().intValue());
+                    if (cartItem.getQuantity() <= 0 ){
+                        cartItemsToRemove.add(cartItem);
+                    }
                 }
             }
+            user.removeCartItems(cartItemsToRemove);
+            order.setTotalCost(order.computeTotalCost());
 
 
 
 //            saving order generates key for order and order items
+            if (order.getOrderItemList().isEmpty()){
+                throw new GenericException("no orderItems found in the order. Check available quantities before placing orders");
+            }
+
             Order savedOrder = orderRepository.save(order);
 
 
@@ -103,8 +115,8 @@ public class OrderService {
 //                //delete caritem from db
 //                this.cartItemRepository.delete(cartItem);
 //            }
-            // delete user cart items
-            user.removeAllCartItems();
+//            // delete user cart items
+//            user.removeAllCartItems();
 //
 //            //return saved order
             return savedOrder;
