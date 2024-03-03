@@ -361,6 +361,11 @@ public class CartItemController {
                                                             "    \"quantity\": \"must be greater than 0\"\n"+
                                                             "}",
                                                     description = "(the response can either be empty or contain one or more of the listed elements)"
+                                            ),
+                                            @ExampleObject(
+                                                    name = "cart item quantity exceeds item's available quantity",
+                                                    value = "requested item quantity: 5 available item quantity is 4.00 select lower quantity",
+                                                    description = "the quantity requested for user's cart was higher than the item's available quantity"
                                             )
 
                                     }
@@ -535,6 +540,11 @@ public class CartItemController {
                                                             "    \"quantity\": \"must be greater than 0\"\n"+
                                                             "}",
                                                     description = "(the response can either be empty or contain one or more of the listed elements)"
+                                            ),
+                                            @ExampleObject(
+                                                    name = "cart item quantity exceeds item's available quantity",
+                                                    value = "requested item quantity: 5 available item quantity is 4.00 select lower quantity",
+                                                    description = "the quantity requested for user's cart was higher than the item's available quantity"
                                             )
 
                                     }

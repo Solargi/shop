@@ -389,7 +389,19 @@ public class OrderController {
                                                     name = "no shipping address",
                                                     value = "User doesn't have a shipping address",
                                                     description = "the user has no associated address"
-                                            )
+                                            ),
+                                            @ExampleObject(
+                                                    name = "order quantity error",
+                                                    value = "no orderItems found in the order. Check available quantities before placing orders",
+                                                    description = "could not create orderItems for this order, this is probably due to " +
+                                                            "unavailable/wrong quantities in the user's cart (items with invalid quantities" +
+                                                            "won't be included in the order and will be left in the user's cart)"
+                                            ),
+                                            @ExampleObject(
+                                                    name = "empty cart",
+                                                    value = "User's cart has no items in it",
+                                                    description = "the user has no associated CartItems"
+                                            ),
                                     }
                             )
                     ),
@@ -433,11 +445,6 @@ public class OrderController {
                                                     name = "user not found in database",
                                                     value = "could not find user with id 1",
                                                     description = "the user with the provided id does not exist"
-                                            ),
-                                            @ExampleObject(
-                                                    name = "empty cart",
-                                                    value = "User's cart has no items in it",
-                                                    description = "the user has no associated CartItems"
                                             ),
                                             @ExampleObject(
                                                     name = "shipping address not found in database",
@@ -571,6 +578,23 @@ public class OrderController {
                                                             "}",
                                                     description = "order data"
                                             )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "order quantity error",
+                                                    value = "no orderItems found in the order. Check available quantities before placing orders",
+                                                    description = "could not create orderItems for this order, this is probably due to " +
+                                                            "unavailable/wrong quantities in the user's cart (items with invalid quantities" +
+                                                            "won't be included in the order and will be left in the user's cart)"
+                                            )
+
                                     }
                             )
                     ),
