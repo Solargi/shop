@@ -14,7 +14,6 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Integer id;
     @NotEmpty
     @Column(unique = true)
@@ -53,6 +52,12 @@ public class User {
     }
     public void removeCartItem(CartItem cartItem){
         this.cartItems.remove(cartItem);
+    }
+
+    public void removeCartItems(List<CartItem> cartItemsList){
+        for (CartItem cartItem : cartItemsList){
+            removeCartItem(cartItem);
+        }
     }
 
     public void removeAllCartItems(){

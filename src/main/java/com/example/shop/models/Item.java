@@ -79,9 +79,9 @@ public class Item {
                 this.setAvailableQuantity(this.availableQuantity.add(new BigDecimal(quantity)));
             } else { //else throw generic exception
                 throw new GenericException("Item " + this.getName()
-                        + "Out of stock, can't decrease available quantity of " +
+                        + " Out of stock, can't decrease available quantity of " +
                         quantity +
-                        "current available quantity is : " + this.availableQuantity);
+                        " current available quantity is : " + this.availableQuantity);
             }
         }
     }

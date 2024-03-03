@@ -8,6 +8,7 @@ import com.example.shop.models.User;
 import com.example.shop.repositories.CartItemRepository;
 import com.example.shop.repositories.ItemRepository;
 import com.example.shop.repositories.UserRepository;
+import com.example.shop.system.exceptions.GenericException;
 import com.example.shop.system.exceptions.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,14 @@ public class CartItemService {
     //TODO REWRITE SERVICE TESTS
     public CartItem save(CartItem cartItem){
         Optional<CartItem> foundCartItemOpt = this.cartItemRepository.findById(cartItem.getId());
+        Item item = this.itemRepository.findById(cartItem.getId().getItemId()).orElseThrow(() ->
+                new ObjectNotFoundException("item", cartItem.getId().getItemId()));
+        // if cart quantity unavailable throw exception
+        if (item.getAvailableQuantity().intValue() < cartItem.getQuantity()){
+            throw new GenericException("requested item quantity: " + cartItem.getQuantity()
+                    + " available item quantity is " + item.getAvailableQuantity() +
+                    " select lower quantity");
+        }
         // if cartItem already exist increase quantity and recompute cost
         if (foundCartItemOpt.isPresent()){
             CartItem foundCartItem = foundCartItemOpt.get();
@@ -59,8 +68,6 @@ public class CartItemService {
             // to make sure that CartItemId is valid
             User user = this.userRepository.findById(cartItem.getId().getUserId()).orElseThrow(() ->
                     new ObjectNotFoundException("user", cartItem.getId().getUserId()));
-            Item item = this.itemRepository.findById(cartItem.getId().getItemId()).orElseThrow(() ->
-                    new ObjectNotFoundException("item", cartItem.getId().getItemId()));
             //set right fields in cartItem
             cartItem.setItem(item);
             cartItem.setUser(user);
@@ -77,6 +84,8 @@ public class CartItemService {
     public CartItem update(CartItem update){
         CartItemId cartItemId = update.getId();
         CartItem oldItem = this.cartItemRepository.findById(cartItemId).orElseThrow(()->new ObjectNotFoundException("cartItem",cartItemId));
+        Item item = this.itemRepository.findById(update.getId().getItemId()).orElseThrow(() ->
+                new ObjectNotFoundException("item", update.getId().getItemId()));
         // make sure update cart item id is valid
 //        User user = this.userRepository.findById(update.getId().getUserId()).orElseThrow(() ->
 //                new ObjectNotFoundException("user", update.getId().getUserId()));
@@ -88,6 +97,12 @@ public class CartItemService {
 //        update.setTotalCost(update.computeTotalCost());
 //        // update old item and save
 //        oldItem.setItem(update.getItem());
+        // if cart quantity unavailable throw exception
+        if (item.getAvailableQuantity().intValue() < update.getQuantity()){
+            throw new GenericException("requested item quantity: " + update.getQuantity()
+                    + " available item quantity is " + item.getAvailableQuantity() +
+                    " select lower quantity");
+        }
         oldItem.setQuantity(update.getQuantity());
 //        oldItem.setUser(update.getUser());
         oldItem.setTotalCost(oldItem.computeTotalCost());

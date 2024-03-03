@@ -100,7 +100,7 @@ public class DBDataInit implements CommandLineRunner {
         i1.setDescription("yay");
         i1.setPrice(new BigDecimal("32.1"));
         i1.setImageUrl("image");
-        i1.setAvailableQuantity(new BigDecimal("2"));
+        i1.setAvailableQuantity(new BigDecimal("40"));
 //
 //
         i2.setId(2);
@@ -111,7 +111,7 @@ public class DBDataInit implements CommandLineRunner {
         i2.setDescription("yay2");
         i2.setPrice(new BigDecimal("32.1"));
         i2.setImageUrl("image");
-        i2.setAvailableQuantity(new BigDecimal("2"));
+        i2.setAvailableQuantity(new BigDecimal("40"));
 
         this.itemRepository.save(i1);
         this.itemRepository.save(i2);

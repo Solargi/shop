@@ -254,11 +254,13 @@ class OrderItemServiceTest {
     void testUpdateSuccess(){
        OrderItem oi3 = new OrderItem();
        oi3.setId(oi1.getId());
-       oi3.setQuantity(5);
+       oi3.setQuantity(2);
 
         given(orderItemRepository.findById(oi1.getId())).willReturn(Optional.of(oi1));
+        given(itemRepository.findById(i1.getId())).willReturn(Optional.of(i1));
         //when savind item 1 already has the new values
         given(orderItemRepository.save(oi1)).willReturn(oi1);
+        given(orderRepository.findById(oi3.getId().getOrderId())).willReturn(Optional.of(o1));
 
 
 
@@ -285,8 +287,9 @@ class OrderItemServiceTest {
     @Test
     void testDeleteSuccess(){
         given(orderItemRepository.findById(oi1.getId())).willReturn(Optional.of(oi1));
+        given(itemRepository.findById(i1.getId())).willReturn(Optional.of(i1));
+        given(orderRepository.findById(oi1.getId().getOrderId())).willReturn(Optional.of(o1));
         doNothing().when(orderItemRepository).deleteById(oi1.getId());
-
         orderItemService.delete(oi1.getId());
 
         verify(orderItemRepository, times(1)).deleteById(oi1.getId());

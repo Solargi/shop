@@ -49,6 +49,7 @@ public class UserService implements UserDetailsService {
         oldUser.setRoles(update.getRoles());
         oldUser.setBirthDate(update.getBirthDate());
         //better to handle update of sub/related entities differently
+        // eg to modify user's address you have to modify the addresses themselves
 //        oldUser.setAddresses(update.getAddresses());
 //        oldUser.setCartItems(update.getCartItems());
 //        oldUser.setOrderList(update.getOrderList());
