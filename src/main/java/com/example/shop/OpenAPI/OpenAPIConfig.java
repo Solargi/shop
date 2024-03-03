@@ -68,7 +68,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                         "to gain authorization to use all the other requests\n\n" +
                         "make the following post requests (you can use the default requests):\n\n " +
                         "address-controller post to add an address to the user, \n\n" +
-                        "item controller post to add an item, cart-item post to add an item to the user's cart, \n\n" +
+                        "item controller post to add an item, \n\n cart-item post to add an item to the user's cart, \n\n" +
                         "order-controller post to create an order for the current user, containing the cart items. " +
                         "This is the basic workflow the rest is up to you. Good Luck!.",
 
