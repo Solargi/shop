@@ -20,7 +20,7 @@ Classes and Interfaces have been implemented using lombok to avoid a lot of boil
 
 This is a stateless session application that uses JWT tokens for authentication and authorization.
 
-The Database is a dockerized instance of Postgress SQL,
+The Database is a dockerized instance of PostgreSQL,
 the tables and relationship of the entities have been created using Hibernate.
 The relationships are bidirectional and some weak entities use composite keys.
 The Entity relation diagram can be found in the github repository.
