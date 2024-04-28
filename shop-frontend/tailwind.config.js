@@ -1,8 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./src/**/*.{html,js,vue,ts,jsx,tsx}"],
+  darkMode: 'class',
+  content: ["./src/**/*.{html,vue,js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors:{
+        primary: '',
+        secondary: {
+
+        }
+      }
+    },
+    fontFamily: {
+      roboto: ['Roboto','sans-serif']
+    }
   },
   plugins: [],
 }
