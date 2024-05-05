@@ -4,6 +4,7 @@
     import cart from './Cart.vue';
     import darkMode from './DarkMode.vue';
     
+    
 </script>
 
 <template>
@@ -14,7 +15,7 @@
                 <p class="text-2xl">Home</p>
             </div>
         </RouterLink>
-
+        
         <searchbar class="w-1/2"/> 
         
         <RouterLink :to="{name: 'login'}">
