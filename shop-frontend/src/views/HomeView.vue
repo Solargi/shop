@@ -1,5 +1,6 @@
 <script setup>
 import ItemCard from '@/components/ItemCard.vue';
+const baseUrl = import.meta.env.VITE_API_URL;
 
 
 // import TheWelcome from '../components/TheWelcome.vue'

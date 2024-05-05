@@ -16,12 +16,6 @@
 
             <div class="mt-2 mb-5 flex items-center ">
                 <p class="line-clamp-3">
-                    asdjlkasdjklasjdjsad
-                    asdkjlsajdlsakdjlaskdjlaskdlsakdj
-                    sajldjaslkd
-                    jasldkasjdaslk
-                    ajlskdjklasdjlasjd
-                    jaslkdjlaskd
                     {{ descriprion }}
                 </p>
             </div>
@@ -68,15 +62,19 @@ function subQuantity() {
 
 defineProps(
     {
+        id: Number,
+        name: String,
+        descriprion: String,
+        price: Number,
         imageUrl:{
             type: String,
             default:"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
         },
-        name: String,
-        price: Number,
-        descriprion: String,
         availableQuantity: Number,
-        discount:Boolean
+        discount:{
+            type:Boolean,
+            default:false
+        }
     }
 );
 
