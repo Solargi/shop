@@ -23,6 +23,11 @@
                 <p class="text-2xl">Login/Signup then profile</p>
             </div>
         </RouterLink>
+        <RouterLink :to="{name: 'profile'}">
+            <div class="flex items-center">
+                <p class="text-2xl"> profile</p>
+            </div>
+        </RouterLink>
         
         <RouterLink :to="{name: 'login'}">
             <div class="flex items-center">
