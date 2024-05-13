@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.KeyPair;
@@ -41,11 +42,13 @@ public class SecurityConfiguration {
     private final UserSecurity userSecurity;
     private final OrderSecurity orderSecurity;
     private final AddressSecurity addressSecurity;
+    private final AuthenticationEntryPointNoPopUp authenticationEntryPointNoPopUp;
 
-    public SecurityConfiguration (UserSecurity userSecurity, OrderSecurity orderSecurity, AddressSecurity addressSecurity) throws NoSuchAlgorithmException {
+    public SecurityConfiguration (UserSecurity userSecurity, OrderSecurity orderSecurity, AddressSecurity addressSecurity, AuthenticationEntryPointNoPopUp authenticationEntryPointNoPopUp) throws NoSuchAlgorithmException {
         this.userSecurity = userSecurity;
         this.orderSecurity = orderSecurity;
         this.addressSecurity = addressSecurity;
+        this.authenticationEntryPointNoPopUp= authenticationEntryPointNoPopUp;
         //generate public and private key pair for jwt using RSA algorithm
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         //set generated key size to 2048 bits
@@ -59,50 +62,52 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //overwrite default authentication
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/api/v1/auth/**",
-                                "/v2/api-docs",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "configuration/ui",
-                                "configuration/security",
-                                "/swagger-ui/**",
-                                "/webjars/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui.html/**",
-                                "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/users").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/users/login**").permitAll()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/login**").permitAll()
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/users").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/{userId}")
-                        .access(this.userSecurity)
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/{userId}")
-                        .access(this.userSecurity)
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/{userId}**")
-                        .access(this.userSecurity)
+                                .requestMatchers("/api/v1/auth/**",
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "configuration/ui",
+                                        "configuration/security",
+                                        "/swagger-ui/**",
+                                        "/webjars/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui.html/**",
+                                        "/v3/api-docs/**")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/users").permitAll()
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/users/login").permitAll()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/login").permitAll()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/login").permitAll()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/users").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/users/{userId}")
+                                .access(this.userSecurity)
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/users/{userId}")
+                                .access(this.userSecurity)
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/users/{userId}**")
+                                .access(this.userSecurity)
 
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/addresses").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/addresses/{addressId}")
-                        .access(this.addressSecurity)
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/addresses/{userId}")
-                        .access(this.userSecurity)
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/addresses").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/addresses/{addressId}")
+                                .access(this.addressSecurity)
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/addresses/{userId}")
+                                .access(this.userSecurity)
 //                      //let only admin modify or delete orderItem for now
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/addresses/{addressId}**")
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/addresses/{addressId}**")
                                 .access(this.addressSecurity)
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/addresses/{addressId}**")
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/addresses/{addressId}**")
                                 .access(this.addressSecurity)
 
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "/items").permitAll()
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "/items").permitAll()
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/items/{itemId}").permitAll()
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "/items/{itemId}").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/items/{itemId}").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/items").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "/items/{itemId}").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/items/{itemId}").hasAuthority("ROLE_admin")
 
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/cartItems").hasAuthority("ROLE_admin")
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/cartItems/{userId}/{itemId}")
@@ -113,36 +118,40 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/cartItems//{userId}/{itemId}").access(this.userSecurity)
 
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/orders").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "**/orders/{orderId}/**")
-                        .access(this.orderSecurity)
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/orders/{userId}/**")
-                        .access(this.userSecurity)
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "**/orders/{orderId}/**")
+                                .access(this.orderSecurity)
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/orders/{userId}/**")
+                                .access(this.userSecurity)
 //                        //let only admin modify or delete order for now
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "**/orders/{orderId}/**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/orders/{orderId}").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "**/orders/{orderId}/**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/orders/{orderId}").hasAuthority("ROLE_admin")
 
                                 .requestMatchers(HttpMethod.GET, this.baseUrl + "/orderItems").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.GET, this.baseUrl + "**/orderItems/{orderId}/{itemId}**")
-                        .access(this.orderSecurity)
+                                .requestMatchers(HttpMethod.GET, this.baseUrl + "**/orderItems/{orderId}/{itemId}**")
+                                .access(this.orderSecurity)
                                 //let only admin add modify or delete orderItem for now
-                        .requestMatchers(HttpMethod.POST, this.baseUrl + "/orderItems/{orderId}/{itemId}**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.PUT, this.baseUrl + "**/orderItems/{orderId}/{itemId}**").hasAuthority("ROLE_admin")
-                        .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/orderItems/{orderId}/{itemId}").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.POST, this.baseUrl + "/orderItems/{orderId}/{itemId}**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.PUT, this.baseUrl + "**/orderItems/{orderId}/{itemId}**").hasAuthority("ROLE_admin")
+                                .requestMatchers(HttpMethod.DELETE, this.baseUrl + "/orderItems/{orderId}/{itemId}").hasAuthority("ROLE_admin")
 
 
-                        //everything else you need to be authenticated
-                        .anyRequest().authenticated()
+                                //everything else you need to be authenticated
+                                .anyRequest().authenticated()
 
                 )
                 //enable when deploying in prod
                 .csrf(AbstractHttpConfigurer::disable)
+                //enable cors
+                .cors(Customizer.withDefaults())
                 //let spring security know the client is using basic
                 //authorization (user, password)
-                .httpBasic(Customizer.withDefaults())
+                //customize basic auth to remove popup, but still allows login
+                .httpBasic(customizer->customizer.authenticationEntryPoint(authenticationEntryPointNoPopUp))
                 //enable jwt verification/login for authorization and authentication
                 //jwt will help verify the authenticity of the token
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 //turn off sessions for requests, we don't need it anymore
+
                 // since we use jwt
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -189,4 +198,9 @@ public class SecurityConfiguration {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
     }
+
+    @Bean BearerTokenResolver bearerTokenResolver(){
+        return new CustomBearerTokenResolver();
+    }
+
 }

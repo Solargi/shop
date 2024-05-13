@@ -1,9 +1,12 @@
 package com.example.shop.system.exceptions;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,6 +48,19 @@ public class ExceptionHandlerAdvice {
    ResponseEntity<Object> handleAuthenticationException(Exception ex){
       return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
    }
+
+   @ExceptionHandler(OAuth2AuthenticationException.class)
+   @ResponseStatus(HttpStatus.UNAUTHORIZED)
+   ResponseEntity<Object> handleOAuth2AuthenticationException(Exception ex, HttpServletResponse response){
+      Cookie cookie = new Cookie("token", null);
+      cookie.setMaxAge(0);
+      cookie.setSecure(true); // Set the same attributes as the original cookie
+      cookie.setHttpOnly(true);
+      cookie.setPath("/"); // Make sure to set the correct path
+      response.addCookie(cookie);
+      return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+   }
+
 
    @ExceptionHandler(GenericException.class)
    ResponseEntity<Object> handlerGenericException (GenericException ex){
