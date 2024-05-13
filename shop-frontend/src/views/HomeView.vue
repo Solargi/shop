@@ -1,29 +1,46 @@
-<script setup>
+<script>
+import axios from 'axios';
 import ItemCard from '@/components/ItemCard.vue';
-const baseUrl = import.meta.env.VITE_API_URL;
 
-
-// import TheWelcome from '../components/TheWelcome.vue'
-let image = "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60";
+export default {
+  components: {
+    ItemCard
+  },
+  data() {
+    return {
+      items: [] // Corrected the declaration of items in data
+    };
+  },
+  mounted() {
+    const baseUrl = import.meta.env.VITE_API_URL; // Moved baseUrl inside mounted
+    axios.get(baseUrl + "/items",{ withCredentials: true}).then(response => {
+      console.log(response.data); // Changed index to 0, assuming you want to log the first item's name
+      response.data.forEach(item => {
+        console.log(item.name); // Corrected the way of accessing item.name
+      });
+      this.items = response.data;
+    }).catch(error => {
+      console.error('Error fetching items:', error);
+    });
+  }
+}
 </script>
 
 <template>
   <main>
-    <!-- <TheWelcome /> -->
-    <!-- cards container -->
-  <div class="flex flex-wrap felex-col sm:flex-row items-center" >
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-    <ItemCard/>
-  </div>
+    <div class="flex flex-wrap flex-col sm:flex-row items-center">
+      <div v-for="item in items" :key="item.id">
+      <ItemCard
+        :id="item.id"
+        :name="item.name"
+        :description="item.description"
+        :price="item.price"
+        :imageUrl="item.imageUrl"
+        :availableQuantity="item.availableQuantity"
+        :discount="item.discount"
+        @addItemToCart="addItemToCart(item)"
+      />
+    </div>
+    </div>
   </main>
 </template>
