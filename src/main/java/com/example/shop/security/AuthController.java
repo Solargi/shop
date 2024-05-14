@@ -85,7 +85,7 @@ public class AuthController {
                 //(it's using https)
                 .secure(false)
                 .httpOnly(true)
-                .sameSite("true")
+                .sameSite("Lax")
                 .maxAge(Duration.ofHours(2))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -100,7 +100,7 @@ public class AuthController {
                 //(it's using https)
                 .secure(false)
                 .httpOnly(true)
-                .sameSite("true")
+                .sameSite("Lax")
                 .maxAge(0)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
