@@ -26,17 +26,24 @@
        Register
       </RouterLink>
   </div>
+  <p v-if="authStore.auth === null">store is null</p>
+  <p v-if="authStore.auth !== null">store not null</p>
+  <p>{{authStore.auth}}</p>
+  <p v-if="authStore.user">{{authStore.user.id}}</p>
+  <button @click="authStore.logout()">{{authStore}}</button>
 </template>
 
 <script setup>
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import { useAuthStore } from "../stores/AuthStore"
 let username = ref('');
 let password = ref('');
 const router = useRouter();
 const errorMessage = ref('');
 const baseUrl = import.meta.env.VITE_API_URL;
+const authStore = useAuthStore();
 
 function login(){
   console.log(username,password)
@@ -52,8 +59,9 @@ function login(){
     },)
     .then(response => {
       console.log(response.data);
+      //set auth value in pinia store
+      authStore.login(response.data.userInfo)
       //redirict to restricted requested page if exist else to home page
-      // TODO move in pinia
       const nextUrl = localStorage.getItem('requestedUrl')
       if(nextUrl){
         router.push(nextUrl);
