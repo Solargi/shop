@@ -1,6 +1,6 @@
 <script>
-import axios from 'axios';
 import ItemCard from '@/components/ItemCard.vue';
+import axios from '../axios-config'
 
 export default {
   components: {
@@ -13,7 +13,7 @@ export default {
   },
   mounted() {
     const baseUrl = import.meta.env.VITE_API_URL; // Moved baseUrl inside mounted
-    axios.get(baseUrl + "/items",{ withCredentials: true}).then(response => {
+    axios.get("/items").then(response => {
       console.log(response.data); // Changed index to 0, assuming you want to log the first item's name
       response.data.forEach(item => {
         console.log(item.name); // Corrected the way of accessing item.name

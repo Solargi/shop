@@ -52,7 +52,14 @@ function login(){
     },)
     .then(response => {
       console.log(response.data);
-      router.go(-1); // Redirect to previous page on successful login
+      //redirict to restricted requested page if exist else to home page
+      // TODO move in pinia
+      const nextUrl = localStorage.getItem('requestedUrl')
+      if(nextUrl){
+        router.push(nextUrl);
+      } else{
+        router.push({name:'home'})
+      }
     })
     .catch(error => {
       console.error('Login failed:', error);

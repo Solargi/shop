@@ -31,9 +31,31 @@ const router = createRouter({
     {
       path:'/profile',
       name:'profile',
-      component:ProfileView
+      component:ProfileView,
+      meta: {
+        requiresAuth: true //lets router know that this route requires authentication
+      }
     },
   ]
+})
+
+//navigation guard to redirict to unauthorized requests to login a
+//and then back to desired page if login successfull
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = false; // TODO implement this when logic for login check ready ->pinia state
+
+  //if route requires authentication and the user is not authenticated redirict -> pinia srtore
+  if(to.meta.requiresAuth && isAuthenticated){
+    //store the page the user is trying to reach pinia or loaclstorage ->use pinia
+    localStorage.setItem('requestedUrl', to.fullPath);
+
+    //redirict to login
+    next({name : 'login'})
+  } else {
+    // if authenticated go on
+    next();
+  }
 })
 
 export default router

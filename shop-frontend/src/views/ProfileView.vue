@@ -4,17 +4,14 @@
 </template>
   
 <script setup>
-import axios from 'axios';
 import { ref } from 'vue';
-const baseUrl = import.meta.env.VITE_API_URL;
+import axios from '../axios-config'
 const data = ref("");
-axios.get(baseUrl + "/users/1", {
-    withCredentials: true
-}
-)
+axios.get("/users/1")
 .then(response=>{
     data.value = response.data;
 }) .catch(error => {
+    
       console.error('Login failed:', error);
       if (error.response) {
         // The request was made and the server responded with a status code
