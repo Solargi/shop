@@ -1,12 +1,22 @@
 <template>
     <p>{{data}}</p>
+    <p>{{authStore}}</p>
+    <p>{{authStore.getLocalStorage}} </p>
+    <button @click="authStore.getAuth()" class="bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded"> getter test</button>
+    <button @click="authStore.logout()" class="bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded"> Log Out</button>
 
 </template>
   
 <script setup>
 import { ref } from 'vue';
 import axios from '../axios-config'
+import { useAuthStore } from '@/stores/AuthStore';
+
+
+const authStore = useAuthStore();
 const data = ref("");
+
+
 axios.get("/users/1")
 .then(response=>{
     data.value = response.data;

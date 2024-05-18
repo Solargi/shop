@@ -3,7 +3,8 @@
     import searchbar from './SearchBar.vue';
     import cart from './Cart.vue';
     import darkMode from './DarkMode.vue';
-    
+    import { useAuthStore } from '@/stores/AuthStore';
+    const authStore = useAuthStore();
     
 </script>
 
@@ -18,18 +19,20 @@
         
         <searchbar class="w-1/2"/> 
         
-        <RouterLink :to="{name: 'login'}">
-            <div class="flex items-center">
-                <p class="text-2xl">Login/Signup then profile</p>
-            </div>
-        </RouterLink>
-        <RouterLink :to="{name: 'profile'}">
+        <RouterLink v-if="authStore.auth" :to="{name: 'profile'}">
             <div class="flex items-center">
                 <p class="text-2xl"> profile</p>
             </div>
         </RouterLink>
         
-        <RouterLink :to="{name: 'login'}">
+        <RouterLink v-else :to="{name: 'login'}">
+            <div class="flex items-center">
+                <p class="text-2xl">Login/Signup</p>
+            </div>
+        </RouterLink>
+
+        
+        <RouterLink :to="{name: 'cart'}">
             <div class="flex items-center">
                 <cart/>
             </div>

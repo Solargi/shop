@@ -4,6 +4,10 @@ import LoginView from '../views/LoginView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import OrdersView from '@/views/OrdersView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import CartView from '@/views/CartView.vue'
+import { useAuthStore } from '@/stores/AuthStore'
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +33,11 @@ const router = createRouter({
       component:OrdersView
     },
     {
+      path:'/cart',
+      name:'cart',
+      component:CartView
+    },
+    {
       path:'/profile',
       name:'profile',
       component:ProfileView,
@@ -43,13 +52,14 @@ const router = createRouter({
 //and then back to desired page if login successfull
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = false; // TODO implement this when logic for login check ready ->pinia state
+  const authStore = useAuthStore();
+  const isAuthenticated = authStore.auth; // TODO implement this when logic for login check ready ->pinia state
 
   //if route requires authentication and the user is not authenticated redirict -> pinia srtore
-  if(to.meta.requiresAuth && isAuthenticated){
+  console.log(to.meta.requiresAuth && isAuthenticated)
+  if(to.meta.requiresAuth && !isAuthenticated){
     //store the page the user is trying to reach pinia or loaclstorage ->use pinia
     localStorage.setItem('requestedUrl', to.fullPath);
-
     //redirict to login
     next({name : 'login'})
   } else {
