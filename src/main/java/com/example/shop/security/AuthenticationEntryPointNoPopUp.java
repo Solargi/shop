@@ -16,7 +16,8 @@ public class AuthenticationEntryPointNoPopUp implements AuthenticationEntryPoint
         // Set the HTTP status code to 401
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setHeader("WWW-Authenticate", ""); //remove popup header
+        response.setContentType("text/plain; charset=UTF-8");
         // set error message
-        response.getWriter().write("Unauthorized but hopefully no popups"); // Custom error message
+        response.getWriter().write("Unauthorized "); // Custom error message
     }
 }
