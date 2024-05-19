@@ -13,8 +13,8 @@ axios.interceptors.response.use(
     },
     function(error){
         //in case of error in response:
-        if(error.response && error.response.status == 401){
-            //redirict to login page
+        if(error.response && error.response.status == 401 && !error.config.url.endsWith('/login')){
+            //redirict to login page only if not failing login
             window.location.href = "/login";
         }
         //else pass error to next handler
