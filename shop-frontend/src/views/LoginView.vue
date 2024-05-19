@@ -3,22 +3,62 @@
   <div class="min-h-screen flex flex-col justify-center items-center">
     <h1 class="text-4xl font-bold text-center">LOG IN NOOOOW</h1>
     <form @submit.prevent="login"class="mt-5 w-full max-w-lg mx-auto flex flex-col">
-      <input
+      <Field
+      label="yay new field"
+      required
+      error="damn "
+      description="yay describing"
+      >
+      <FormInput 
+      v-model:model-value="username"
+      placeholder="username"
+      type="text"
+      >
+
+      </FormInput>
+
+      </Field>
+      <FormLabel for="Username" required>Username</FormLabel>
+      <FormInput
+      id="name"
+      v-model:model-value="username"
+      type="text"
+      placeholder ="username"
+      required
+      :invalid="!!errorMessage">
+      </FormInput>
+      <!-- <input
         class="p-3.5 rounded-t border-b border-gray-300 text-gray-900 outline-none"
         type="text"
         placeholder="Username"
-        v-model="username"
+        v-model="Username"
         required
-      />
-      <input
+      /> -->
+      <FormLabel  for="Password" required>Password</FormLabel>
+      <FormInput
+      id="password"
+      v-model:model-value="password"
+      type="password"
+      placeholder ="Password"
+      required
+      :invalid="!!errorMessage">
+
+      </FormInput>
+      <!-- <input
         class="p-3.5 rounded-b text-gray-900 outline-none"
         type="password"
         placeholder="Password"
         required
         v-model="password"
-      />
-       <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
-      <button @click="login()" class="bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded">
+      /> -->
+      <InputDescription>
+        you can choose whatever as a password 
+      </InputDescription>
+      <ErrorMessage v-if="errorMessage">
+        {{errorMessage}}
+      </ErrorMessage>
+       <!-- <p v-if="errorMessage.value" class="text-red-500 mt-2">{{ errorMessage }}</p> -->
+      <button  type="submit" class="bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded">
         Log in
       </button>
     </form>
@@ -34,6 +74,11 @@
 </template>
 
 <script setup>
+import FormLabel from "@/components/FormLabel.vue"
+import FormInput from "@/components/FormInput.vue"
+import ErrorMessage from "@/components/ErrorMessage.vue";
+import InputDescription from "@/components/InputDescription.vue";
+import Field from "@/components/Field.vue";
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
@@ -48,12 +93,14 @@ const authStore = useAuthStore();
 function login(){
   console.log(username,password)
  // Encode username and password in Base64 format
- const basicAuth = 'Basic ' + btoa(username.value+ ':' + password.value);
+ const basicAuth = "Basic" + btoa(username.value+ ":" + password.value);
 
   console.log(baseUrl + "/users/login");
   axios.post(baseUrl + "/users/login",null, {
       headers: {
-        'Authorization': basicAuth
+        'Authorization': basicAuth,
+        "Content-Type": "application/json",
+          Accept: "application/json",
       },
        withCredentials : true
     },)
