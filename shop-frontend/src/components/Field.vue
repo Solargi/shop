@@ -13,6 +13,7 @@ const props = defineProps({
   label: String,
   required: Boolean,
   errorMessage: String,
+  hideErrMessage: Boolean,
   description: String,
 });
 //give id to desc if present
@@ -43,8 +44,8 @@ provide('field', computed(() =>  {
     <InputDescription v-if="props.description" :id="descriptionFor">
       {{ props.description }}
     </InputDescription>
-    <ErrorMessage v-if="props.error">
-      {{ props.error }}
+    <ErrorMessage v-if="props.errorMessage && !props.hideErrMessage">
+      {{ props.errorMessage }}
     </ErrorMessage>
   </div>
 </template>

@@ -1,71 +1,42 @@
-//v bind not working porco dio
+
 <template>
   <div class="min-h-screen flex flex-col justify-center items-center">
     <h1 class="text-4xl font-bold text-center">LOG IN NOOOOW</h1>
     <form @submit.prevent="login"class="mt-5 w-full max-w-lg mx-auto flex flex-col">
       <Field
-      label="yay new field"
+      label="Username"
       required
-      error="damn "
-      description="yay describing"
-      >
-      <FormInput 
+      :error-message="errorMessage"
+      hide-err-message>
+      <FormInput
       v-model:model-value="username"
       placeholder="username"
-      type="text"
-      >
-
+      type="text">
       </FormInput>
-
       </Field>
-      <FormLabel for="Username" required>Username</FormLabel>
-      <FormInput
-      id="name"
-      v-model:model-value="username"
-      type="text"
-      placeholder ="username"
+
+      <Field
+      label="Password"
       required
-      :invalid="!!errorMessage">
-      </FormInput>
-      <!-- <input
-        class="p-3.5 rounded-t border-b border-gray-300 text-gray-900 outline-none"
-        type="text"
-        placeholder="Username"
-        v-model="Username"
-        required
-      /> -->
-      <FormLabel  for="Password" required>Password</FormLabel>
+      :error-message="errorMessage"
+      description="you can choose whatever as a password"
+      >
       <FormInput
-      id="password"
       v-model:model-value="password"
       type="password"
       placeholder ="Password"
-      required
-      :invalid="!!errorMessage">
+      ></FormInput>
+    </Field>
 
-      </FormInput>
-      <!-- <input
-        class="p-3.5 rounded-b text-gray-900 outline-none"
-        type="password"
-        placeholder="Password"
-        required
-        v-model="password"
-      /> -->
-      <InputDescription>
-        you can choose whatever as a password 
-      </InputDescription>
-      <ErrorMessage v-if="errorMessage">
-        {{errorMessage}}
-      </ErrorMessage>
-       <!-- <p v-if="errorMessage.value" class="text-red-500 mt-2">{{ errorMessage }}</p> -->
       <button  type="submit" class="bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded">
         Log in
       </button>
     </form>
-    <RouterLink class=" w-full max-w-lg justify:center allign-center bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded" :to="{name: 'SignUp'}">
+    <RouterLink class=" text-center w-full max-w-lg justify:center allign-center bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded" :to="{name: 'SignUp'}">
        Register
       </RouterLink>
   </div>
+  <p>{{ password }} {{ username }}</p>
   <p v-if="authStore.auth === null">store is null</p>
   <p v-if="authStore.auth !== null">store not null</p>
   <p>{{authStore.auth}}</p>
@@ -91,9 +62,9 @@ const baseUrl = import.meta.env.VITE_API_URL;
 const authStore = useAuthStore();
 
 function login(){
-  console.log(username,password)
+  console.log("datassssss: "+password.value)
  // Encode username and password in Base64 format
- const basicAuth = "Basic" + btoa(username.value+ ":" + password.value);
+ const basicAuth = "Basic " + btoa(username.value+ ":" + password.value);
 
   console.log(baseUrl + "/users/login");
   axios.post(baseUrl + "/users/login",null, {
