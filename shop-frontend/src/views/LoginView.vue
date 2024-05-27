@@ -33,7 +33,7 @@
       </button>
     </form>
     <RouterLink class=" text-center w-full max-w-lg justify:center allign-center bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded" :to="{name: 'SignUp'}">
-       Register
+       <button>Register</button>
       </RouterLink>
   </div>
   <p>{{ password }} {{ username }}</p>
