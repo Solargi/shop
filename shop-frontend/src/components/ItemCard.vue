@@ -1,7 +1,7 @@
 <template>
     <div
         class="relative m-10 flex w-full max-w-xs flex-col overflow-hidden justify-items-center rounded-lg border-2 border-black bg-white dark:bg-green-600 shadow-md shadow-black">
-        <a @click="gotoItem(id)" class="relative mx-3 mt-3 flex h-60 overflow-hidden justify-center rounded-xl" href="#">
+        <a @click="gotoItem(id)" class="relative mx-3 mt-3 flex h-60 overflow-hidden justify-center rounded-xl cursor-pointer">
             <img class="object-cover rounded-xl border-black"
                 :src="imageUrl"
                 alt="product image" />
@@ -96,7 +96,6 @@ function pasteOnlyNumbers(event) {
 
 function gotoItem(id){
     router.push({name: "item", params:{id}});
-
 }
 
 const props = defineProps(
