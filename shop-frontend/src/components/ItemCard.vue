@@ -1,8 +1,8 @@
 <template>
     <div
-        class="relative m-10 flex w-full max-w-xs flex-col overflow-hidden justify-items-center rounded-lg border border-gray-100 bg-white shadow-md">
-        <a class="relative mx-3 mt-3 flex h-60 overflow-hidden justify-center rounded-xl" href="#">
-            <img class="object-cover rounded-xl"
+        class="relative m-10 flex w-full max-w-xs flex-col overflow-hidden justify-items-center rounded-lg border-2 border-black bg-white dark:bg-green-600 shadow-md shadow-black">
+        <a @click="gotoItem(id)" class="relative mx-3 mt-3 flex h-60 overflow-hidden justify-center rounded-xl" href="#">
+            <img class="object-cover rounded-xl border-black"
                 :src="imageUrl"
                 alt="product image" />
             <span v-if="discount"
@@ -43,7 +43,8 @@
 </template>
 
 <script setup>
-
+import { useRouter } from 'vue-router';
+const router = useRouter();
 let quantity = defineModel({default:0});
 function addQuantity() {
     if (props.availableQuantity) {
@@ -90,6 +91,11 @@ function pasteOnlyNumbers(event) {
     if (!/^\d+$/.test(pastedText)) {
         event.preventDefault();
     }
+
+}
+
+function gotoItem(id){
+    router.push({name: "item", params:{id}});
 
 }
 

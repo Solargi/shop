@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-  <main>
+  <main class="dark:bg-zinc-800 bg-white">
     <div class="flex flex-wrap flex-col sm:flex-row items-center">
       <div v-for="item in items" :key="item.id">
       <ItemCard

@@ -2,11 +2,11 @@
 import navbar from './components/NavBar.vue'
 </script>
 
-<template>
+<template> 
   <!-- <RouterView/> -->
     <navbar/>
     <!-- <navbar class="sticky top-0 z-40"/> -->
-    <p class="bg-primary">poop</p>
+
 
   <!-- <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />

@@ -4,7 +4,7 @@
         <i class="fa-solid fa-cart-shopping fa-xl" style="color: white;"></i>
         <div class="relative inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-4 -start-3 dark:border-gray-900">
             <span class="text-white">
-                999
+                {{ cartLength }}
             </span>
         </div>
     </div>
@@ -20,3 +20,11 @@
 </div>
 </div> -->
 </template>
+
+<script setup>
+import { ref } from 'vue';
+
+
+const cartLength = ref('');
+
+</script>

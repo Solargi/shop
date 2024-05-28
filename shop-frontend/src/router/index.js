@@ -5,6 +5,7 @@ import SignUpView from '@/views/SignUpView.vue'
 import OrdersView from '@/views/OrdersView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import CartView from '@/views/CartView.vue'
+import ItemView from '@/views/ItemView.vue'
 import { useAuthStore } from '@/stores/AuthStore'
 
 
@@ -26,6 +27,13 @@ const router = createRouter({
       path:'/SingUp',
       name:'SignUp',
       component:SignUpView
+    },
+    {
+      path:'/item/:id',
+      name: 'item',
+      component:ItemView,
+      //pass route parameter as props to the component
+      props:true,
     },
     {
       path:'/myOrders',
