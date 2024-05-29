@@ -65,7 +65,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = authStore.auth; // TODO implement this when logic for login check ready ->pinia state
-
+  console.log('Navigating from:', from.fullPath, 'to:', to.fullPath);
   //if route requires authentication and the user is not authenticated redirict -> pinia srtore
   console.log(to.meta.requiresAuth && isAuthenticated)
   if(to.meta.requiresAuth && !isAuthenticated){

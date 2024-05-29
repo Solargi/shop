@@ -75,11 +75,12 @@
       required
       :error-message="RoleErrorMessage"
       >
-      <FormInput
-      v-model:model-value="user.roles"
-      placeholder="either USER or ADMIN"
-      type="text">
-      </FormInput>
+      <FormInput 
+      type="select" 
+      :options="['ADMIN','USER']" 
+      v-model:model-value="user.roles">
+    </FormInput>
+ 
       </Field>
 
       <Field
