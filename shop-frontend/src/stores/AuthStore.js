@@ -10,7 +10,7 @@ export const useAuthStore = defineStore("authStore", {
     //sto save to local storage reactively
     auth: useStorage("auth", null),//-> fucks up $resetfunction in pinia store
     userId: useStorage ("userId", null),
-    role: null,
+    roles: null,
   }),
   getters: {
     getAuth: (state) => state.auth 
@@ -19,7 +19,7 @@ export const useAuthStore = defineStore("authStore", {
     login(user) {
       this.auth = true;
       this.userId = user.id;
-      this.role = user.role
+      this.roles = user.roles;
       console.log("user " + user)
       // this.user = user; -> storing all user's data in localstroage not a good idea
     },

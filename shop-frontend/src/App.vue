@@ -4,7 +4,7 @@ import navbar from './components/NavBar.vue'
 
 <template> 
   <!-- <RouterView/> -->
-    <navbar/>
+    <navbar class="z-10"/>
     <!-- <navbar class="sticky top-0 z-40"/> -->
 
 

@@ -4,6 +4,7 @@
     import cart from './Cart.vue';
     import darkMode from './DarkMode.vue';
     import { useAuthStore } from '@/stores/AuthStore';
+    import DropDown from './DropDown.vue';
     const authStore = useAuthStore();
     
 </script>
@@ -37,6 +38,8 @@
                 <cart/>
             </div>
         </RouterLink>
+
+        <DropDown></DropDown>
 
         <div class="items-center justify-center" bg-white>
             <darkMode/>
