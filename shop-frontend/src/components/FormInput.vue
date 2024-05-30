@@ -37,6 +37,7 @@ const field = inject("field", props);
     :id="field.id"
     v-model="modelValue"
     :required="field.required"
+    :type="type"
     :class="[
       'p-3.5 border-2 border-gray-300 text-gray-900 outline-none w-full rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 ',
       field.invalid ? 'border-red-500' : 'border-gray-300',
