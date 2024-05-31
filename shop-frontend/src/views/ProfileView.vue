@@ -57,8 +57,12 @@
   <button
     @click="authStore.logout()"
     class="bg-blue-500 hover:bg-blue-600 mx-3 mt-2.5 py-2.5 rounded"
+  > Logout</button>
+  <button
+    @click=""
+    class="bg-red-500 hover:bg-blue-600 mx-3 mt-2.5 py-2.5 rounded"
   >
-    Log Out
+    Delete Profile
   </button>
     </div>
       <div class="flex flex-col">
