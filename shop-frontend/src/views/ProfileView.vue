@@ -1,4 +1,4 @@
-<template>
+<template class="bg-black">
   <!-- <p>{{ user }}</p>
   <p>{{ authStore }}</p>
   <p>{{ authStore.getLocalStorage }}</p>
@@ -37,7 +37,8 @@
   </div> -->
 
   <div class="flex justify-center mt-10">
-    <form class="flex flex-wrap">
+    <form class="flex flex-wrap justify-center">
+      <div class="flex flex-col">
       <a
         @click="gotoItem(id)"
         class="relative mx-3 h-40 w-40 flex overflow-hidden justify-center rounded-xl cursor-pointer"
@@ -45,8 +46,21 @@
         <img
           class="object-cover rounded-xl border-black"
           src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
-          alt="product image"
-      /></a>
+          alt="product image"/>
+        </a>
+        <button
+    @click="authStore.logout()"
+    class="bg-blue-500 hover:bg-blue-600 mx-3 mt-2.5 py-2.5 rounded"
+  >
+    Change Password
+  </button>
+  <button
+    @click="authStore.logout()"
+    class="bg-blue-500 hover:bg-blue-600 mx-3 mt-2.5 py-2.5 rounded"
+  >
+    Log Out
+  </button>
+    </div>
       <div class="flex flex-col">
         <p>Username: {{ data.username }}</p>
         <Field
@@ -80,7 +94,7 @@
       </Field>
 
       <Field label="BirthDate" required :error-message="BirthDateErrorMessage">
-        <FormInput v-model:model-value="user.birthDate" :type="date">
+        <FormInput v-model:model-value="user.birthDate" type="date">
         </FormInput>
       </Field>
 
@@ -106,19 +120,14 @@
     
   </div>
   <div class="flex justify-center">
-    <button @click="modifyUser()" class=" w-full max-w-lg  bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded">
+    <button @click="modifyUser()" class=" w-full max-w-xl mx-3 mb-2 bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded">
           Save
         </button>
   </div>
   
 
 
-  <button
-    @click="authStore.logout()"
-    class="bg-blue-500 hover:bg-blue-600 mt-2.5 py-2.5 rounded"
-  >
-    Log Out
-  </button>
+  
 </template>
 
 <script setup>
@@ -165,12 +174,12 @@ axios
     } else if (error.request) {
       // The request was made but no response was received
       console.error("No response received:", error.request);
-      errorMessage.value = "No response from server. Please try again later.";
+      //errorMessage.value = "No response from server. Please try again later.";
     } else {
       // Something happened in setting up the request that triggered an Error
       console.error("Error:", error.message);
-      errorMessage.value =
-        "An unexpected error occurred. Please try again later.";
+      //errorMessage.value =
+        //"An unexpected error occurred. Please try again later.";
     }
   });
 
@@ -185,12 +194,12 @@ axios
     .then(response => {
       console.log(response.data);
       //redirict to restricted requested page if exist else to home page
-      const nextUrl = localStorage.getItem('requestedUrl')
-      if(nextUrl && nextUrl !== "/profile"){
-        router.push(nextUrl);
-      } else{
-        router.push({name:'home'})
-      }
+      // const nextUrl = localStorage.getItem('requestedUrl')
+      // if(nextUrl && nextUrl !== "/profile"){
+      //   router.push(nextUrl);
+      // } else{
+      //   router.push({name:'home'})
+      // }
     })
     .catch(error => {
       if (error.response) {
@@ -208,19 +217,17 @@ axios
         BirthDateErrorMessage.value = data.birthDate ? `Birth Date ${data.birthDate}` : '';
         EmailErrorMessage.value = data.email ? `Email ${data.email}` : '';
         AddressErrorMessage.value = data.address ? `Address ${data.address}` : '';
-        RoleErrorMessage.value = data.roles ? `Role ${data.roles}` : '';
-        PasswordErrorMessage.value = data.password ? `Password ${data.password}` : '';
         console.error('Status:', error.response.status);
         console.error('Data:', error.response.data);
 
       } else if (error.request) {
         // The request was made but no response was received
         console.error('No response received:', error.request);
-        errorMessage.value = 'No response from server. Please try again later.';
+        //errorMessage.value = 'No response from server. Please try again later.';
       } else {
         // Something happened in setting up the request that triggered an Error
         console.error('Error:', error.message);
-        errorMessage.value = 'An unexpected error occurred. Please try again later.';
+        //errorMessage.value = 'An unexpected error occurred. Please try again later.';
       }
     });
 }
