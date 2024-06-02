@@ -2,7 +2,7 @@
   
     <a
       @click="gotoItem(id)"
-      class="relative mx-3 mt-3 mb-3 flex min-h-40 min-w-40 overflow-hidden justify-center rounded-xl cursor-pointer"
+      class="relative mx-3 mt-3 mb-3 flex min-h-28 min-w-28 max-h-40 max-w-40 overflow-hidden rounded-xl cursor-pointer"
     >
       <img
         class="object-cover rounded-xl border-black"

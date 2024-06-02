@@ -1,18 +1,27 @@
 <template>
-  <div class="flex flex-warp justify-center">
+  <div class="flex justify-center">
     <div
-      class="relative m-10 flex w-full max-w-2xl flexrow overflow-hidden justify-items-center rounded-lg border-2 border-black bg-white dark:bg-green-600 shadow-md shadow-black"
+      class="relative m-10 flex w-full flex-wrap  max-w-full  overflow-hidden justify-items-center rounded-lg border-2 border-black bg-white dark:bg-green-600 shadow-md shadow-black"
     >
-      <CartItemImage id="1" :imageUrl="imageUrl"> </CartItemImage>
-      <button class="absolute right-0 mr-2">x</button>
-      <p class="mt-5">dkslalkldsak dhashdgjhsg hjsdgjagd ahjs jhasgd hjsg dhjasg dhjsga djhsgdhjsgd jhal</p>
-      <p> sdjkalkdjaslk kjasdlkasjdklasj </p>
+      <CartItemImage id="1" :imageUrl="imageUrl" > </CartItemImage>
+      <button class="absolute right-0 mr-2">remove form cart</button>
+      <div class="flex flex-col ">
+        <Text> Title:</Text>
+        <Text> Price:</Text>
+        <Text> BLABLABLA:</Text>
+        <Text class="mt-5">dkslalkldsak dhashdgjhsg hjsdgjagd ahjs jhasgd hjsg dhjasg dhjsga djhsgdhjsgd jhal</Text>
+        <Text> sdjkalkdjaslk kjasdlkasjdklasj </Text>
+      </div>
+      <div class="flex grow justify-end">
+        <button class="mr-2">plus Quantity minus trallallaAAAAA</button>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
 import CText from "./Text.vue";
 import CartItemImage from "./CartItemImage.vue";
+import Text from "./Text.vue";
 const props = defineProps({
   imageUrl: {
     type: String,
