@@ -1,13 +1,16 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
 export default {
   darkMode: 'class',
   content: ["./src/**/*.{html,vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors:{
-        primary: '#59981A',
+        text: {
+          light: colors.black,
+          dark: colors.red,
+        },
         secondary: {
-
         }
       }
     },
