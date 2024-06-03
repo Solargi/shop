@@ -6,8 +6,8 @@
       <CartItemImage id="1" :imageUrl="imageUrl" > </CartItemImage>
       <button class="absolute right-0 mr-2">remove form cart</button>
       <div class="flex flex-col ">
-        <Text> Title:</Text>
-        <Text> Price:</Text>
+        <Text bold> {{props.name}}</Text>
+        <Text bold> USD: {{props.price}}</Text>
         <Text> BLABLABLA:</Text>
         <Text class="mt-5">dkslalkldsak dhashdgjhsg hjsdgjagd ahjs jhasgd hjsg dhjasg dhjsga djhsgdhjsgd jhal</Text>
         <Text> sdjkalkdjaslk kjasdlkasjdklasj </Text>
@@ -23,6 +23,10 @@ import CText from "./Text.vue";
 import CartItemImage from "./CartItemImage.vue";
 import Text from "./Text.vue";
 const props = defineProps({
+  id: Number,
+  name: String,
+  price: Number,
+  availableQuantity: Number,
   imageUrl: {
     type: String,
     default:
