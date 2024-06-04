@@ -13,7 +13,12 @@
         <Text> sdjkalkdjaslk kjasdlkasjdklasj </Text>
       </div>
       <div class="flex grow justify-end">
-        <button class="mr-2">plus Quantity minus trallallaAAAAA</button>
+        <div class="flex place-items-center">
+          <CButton class="" round text="+"></CButton>
+          <button class="mr-2">plus Quantity {{ props.quantity }} minus trallallaAAAAA</button>
+          <CButton round text="-"></CButton>
+        </div>
+
       </div>
     </div>
   </div>
@@ -21,12 +26,13 @@
 <script setup>
 import CText from "./Text.vue";
 import CartItemImage from "./CartItemImage.vue";
+import CButton from "./CButton.vue";
 import Text from "./Text.vue";
 const props = defineProps({
   id: Number,
   name: String,
   price: Number,
-  availableQuantity: Number,
+  quantity: Number,
   imageUrl: {
     type: String,
     default:

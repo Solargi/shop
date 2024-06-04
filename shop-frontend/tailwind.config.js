@@ -10,6 +10,10 @@ export default {
           light: colors.black,
           dark: colors.red,
         },
+        button:{
+          light: colors.blue,
+          dark: colors.green
+        },
         secondary: {
         }
       }
