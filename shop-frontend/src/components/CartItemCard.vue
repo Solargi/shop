@@ -1,3 +1,4 @@
+
 <template>
   <div class="flex justify-center">
     <div
@@ -13,9 +14,13 @@
         <Text> sdjkalkdjaslk kjasdlkasjdklasj </Text>
       </div>
       <div class="flex grow justify-end">
-        <div class="flex place-items-center">
+        <div class="flex place-items-center mx-4">
           <CButton class="" round text="+"></CButton>
-          <button class="mr-2">plus Quantity {{ props.quantity }} minus trallallaAAAAA</button>
+          <Field> <FormInput
+          v-model:model-value="quantity"
+          type="text"
+        ></FormInput></Field>
+          <button class="mr-2">plus Quantity {{ quantity }} minus trallallaAAAAA</button>
           <CButton round text="-"></CButton>
         </div>
 
@@ -25,14 +30,20 @@
 </template>
 <script setup>
 import CText from "./Text.vue";
+import Field from "./Field.vue";
+import FormInput from "./FormInput.vue";
 import CartItemImage from "./CartItemImage.vue";
 import CButton from "./CButton.vue";
 import Text from "./Text.vue";
+// tot parince + qunatity
+const quantity = defineModel("quantity");
+//use define model to pass the whole cartitem then cut it off in pieces for html
+// do action listener to update cart using put/post requests and refresh data with answer
 const props = defineProps({
-  id: Number,
+  id: {
+    type: Object},
   name: String,
   price: Number,
-  quantity: Number,
   imageUrl: {
     type: String,
     default:
