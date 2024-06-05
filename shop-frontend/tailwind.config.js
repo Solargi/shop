@@ -12,7 +12,7 @@ export default {
         },
         button:{
           light: colors.blue,
-          dark: colors.green
+          dark: colors.black
         },
         secondary: {
         }
