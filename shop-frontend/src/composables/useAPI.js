@@ -14,6 +14,7 @@ export default function useAPI() {
             this.data = null;
             this.response = null;
             this.error = null;
+            console.log("data: " + data)
 
             try {
                 this.response = await axios({
@@ -52,11 +53,13 @@ export default function useAPI() {
             await this.sendRequest("post", url, payload, headers)
         },
         async put (url, payload, headers = {}) {
+            console.log("composable put ")
             await this.sendRequest("put", url, payload, headers)
         },
-        async post (url, headers = {}) {
-            await this.sendRequest("delete", url, payload, headers)
+        async delete (url, headers = {}) {
+            await this.sendRequest("delete", url, null, headers)
         }
+        
         })
         
     }
