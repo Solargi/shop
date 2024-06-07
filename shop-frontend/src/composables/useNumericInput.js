@@ -1,5 +1,12 @@
-export default function useNumericInput (){
-    const KeysOnlyNumbers = (event)=> {
+export default function useOnlyNumericInput (){
+    //remember to pass event if used with conditional statement eg:
+    //@keydown="onlyNumbers? KeysOnlyNumbers($event) : null"
+    //this won't work at all it loses the event:
+    //@keydown="onlyNumbers? KeysOnlyNumbers: null"
+    // but this will work
+    //@keydown=KeysOnlyNumbers"
+    const keysOnlyNumbers = (event)=> {
+        console.log("in here")
         if ([46, 8, 9, 27, 13, 110].includes(event.keyCode) ||
         // Allow: Ctrl+A
         (event.keyCode === 65 && event.ctrlKey === true) ||
@@ -16,8 +23,18 @@ export default function useNumericInput (){
     }
     if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
         event.preventDefault();
-    }}
+    }};
+
+    const pasteOnlyNumbers = (event)=> {
+        const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+        if (!/^\d+$/.test(pastedText)) {
+            event.preventDefault();
+        }
+    
+    };
+
     return {
-        KeysOnlyNumbers
+        keysOnlyNumbers,
+        pasteOnlyNumbers
     }
 }

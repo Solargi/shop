@@ -11,7 +11,7 @@
         </a>
         <div class="mt-4 px-5 pb-5">
             <a href="#" class="mb-62">
-                <h5 class="text-xl text-center tracking-tight text-slate-900 line-clamp-1">{{ name }}</h5>
+                <CText bold class="text-xl text-center tracking-tight text-slate-900 line-clamp-1 ">{{ name }}</CText>
             </a>
 
             <div class="mt-2 mb-5 flex items-center max-h-12 min-h-12">
@@ -25,7 +25,7 @@
             </p>
             <div class="flex flex-row justify-center mb-2 flex-wrap">
                 <button @click="subQuantity()" class="bg-slate-900 text-white rounded "> <i class=" fa-xl fa-solid fa-minus" style="color: #ffffff;"></i></button>
-                <input @keydown="keysOnlyNumbers" @paste="pasteOnlyNumbers" inputmode="numeric" type="text" class="max-w-10 text-center" v-model.number="quantity"> </input>
+                <FormInput :only-numbers="true" type="text" class="max-w-10 max-h-10 text-center " v-model="quantity"> </FormInput>
                 <button @click="addQuantity()" class="bg-slate-900 text-white rounded "> <i class=" fa-xl fa-solid fa-plus" style="color: #ffffff;"></i></button>
             </div>
             <div class="flex flex-row justify-center">
@@ -44,6 +44,11 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import CText from './Text.vue';
+import FormInput from './FormInput.vue';
+import useOnlyNumericInput from '@/composables/useNumericInput';
+const {KeysOnlyNumbers, pasteOnlyNumbers} = useOnlyNumericInput();
+console.log(KeysOnlyNumbers)
 const router = useRouter();
 let quantity = defineModel({default:0});
 function addQuantity() {
@@ -59,39 +64,6 @@ function subQuantity() {
             quantity.value--;
         }
     }
-}
-
-//allows only numbers to be inserted
-function keysOnlyNumbers(event){
-       // Allow: backspace, delete, tab, escape, enter, and .
-       if ([46, 8, 9, 27, 13, 110].includes(event.keyCode) ||
-          // Allow: Ctrl+A
-          (event.keyCode === 65 && event.ctrlKey === true) ||
-          // Allow: Ctrl+C
-          (event.keyCode === 67 && event.ctrlKey === true) ||
-          // Allow: Ctrl+X
-          (event.keyCode === 88 && event.ctrlKey === true) ||
-          // Allow: Ctrl+V
-          (event.keyCode === 86 && event.ctrlKey === true) ||
-          // Allow: home, end, left, right
-          (event.keyCode >= 35 && event.keyCode <= 39)) {
-        // Let it happen, don't do anything
-        return;
-      }
-
-      // Prevent non-numeric input
-      if ((event.shiftKey || (event.keyCode < 48 || event.keyCode > 57)) && (event.keyCode < 96 || event.keyCode > 105)) {
-        event.preventDefault();
-      }
-}
-//allows only numbers to be pasted if there is a character that is not a number
-//the paste action is prevented
-function pasteOnlyNumbers(event) {
-    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-    if (!/^\d+$/.test(pastedText)) {
-        event.preventDefault();
-    }
-
 }
 
 function gotoItem(id){
