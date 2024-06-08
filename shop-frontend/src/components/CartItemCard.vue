@@ -9,20 +9,22 @@
       <div class="flex flex-col mt-5 ">
         <Text bold> {{props.name}}</Text>
         <Text bold> USD: {{price}}</Text>
-        <Text> BLABLABLA:</Text>
-        <Text class="mt-5">dkslalkldsak dhashdgjhsg hjsdgjagd ahjs jhasgd hjsg dhjasg dhjsga djhsgdhjsgd jhal</Text>
-        <Text> sdjkalkdjaslk kjasdlkasjdklasj </Text>
+        <!-- <Text> BLABLABLA:</Text>
+        <Text class="mt-5"></Text>
+        <Text>  </Text> -->
       </div>
       <div class="flex grow justify-end">
         <div class="flex place-items-center mx-4">
-          <CButton @click="addQuantity()" class="" round text="+"></CButton>
+          <CButton @click="addQuantity()" class=" w-6" round text=" + "></CButton>
           <Field> <FormInput
           v-model:model-value="quantity"
           type="text"
           only-numbers
+          class="text-center w-16"
+          @keyup="updateData"
         ></FormInput></Field>
-          <button class="mr-2">plus Quantity {{ quantity }} minus trallallaAAAAA</button>
-          <CButton @click="subQuantity" round text="-"></CButton>
+          <!-- <button class="mr-2">{{ quantity }}</button> -->
+          <CButton @click="subQuantity" class="w-6" round text="-"></CButton>
         </div>
 
       </div>
@@ -60,27 +62,32 @@ const props = defineProps({
 });
 
 async function updateData () {
+  if (quantity.value === 0 ){
+    deleteData();
+  }
   console.log("quantity in update data: " + quantity.value)
    await cartItem.put("/cartItems/" + props.id.userId + "/" + props.id.itemId, {quantity: quantity.value}, {
         "Content-Type": "application/json",
-          Accept: "application/json"} )
+        } )
     price.value = cartItem.data.totalCost
     quantity.value = cartItem.data.quantity
-}
+   }
 
-function addQuantity() {
+async function addQuantity() {
   console.log("works")
   console.log(props.availableQuantity)
     if (props.availableQuantity) {
         if (quantity.value < props.availableQuantity) {
-            quantity.value++;
+            await quantity.value++; // this has actually an effect
+            updateData();
         }
     }
 }
-function subQuantity() {
+async function subQuantity() {
     if (props.availableQuantity) {
         if (quantity.value > 0) {
-            quantity.value--;
+            await quantity.value--;
+            updateData(quantity.value);
         }
     }
 }
@@ -90,6 +97,9 @@ async function deleteData(){
   emit('remove');
 }
 
-watch(quantity, (newQuantity)=> {
-  newQuantity > 0? updateData() : deleteData()})
+// watch(quantity, (newQuantity)=> {
+//   if(newQuantity!== null && quantity !== null ){
+//     newQuantity === 0? updateData() : deleteData()
+//   }
+// })
 </script>
