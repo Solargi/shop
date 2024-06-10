@@ -1,32 +1,39 @@
-
 <template>
-  <div class="flex justify-center">
+  <div class="flex justify-center flex-wrap">
     <div
-      class="relative m-10 flex w-full flex-wrap  max-w-full  overflow-hidden justify-items-center rounded-lg border-2 border-black bg-white dark:bg-green-600 shadow-md shadow-black"
+      class="relative m-4 flex w-full flex-wrap max-w-full overflow-hidden justify-items-center rounded-lg border-2 border-black bg-white dark:bg-green-600 shadow-md shadow-black"
     >
-      <CartItemImage id="1" :imageUrl="imageUrl" > </CartItemImage>
-      <button class="absolute right-0 mr-2" @click="deleteData">remove form cart</button>
-      <div class="flex flex-col mt-5 ">
-        <Text bold> {{props.name}}</Text>
-        <Text bold> USD: {{price}}</Text>
+      <CartItemImage id="1" :imageUrl="imageUrl"> </CartItemImage>
+      <button class="absolute right-0 mr-2" @click="deleteData">
+        remove form cart
+      </button>
+      <div class="flex flex-col mt-5">
+        <Text bold> {{ props.name }}</Text>
+        <Text bold> USD: {{ price }}</Text>
         <!-- <Text> BLABLABLA:</Text>
         <Text class="mt-5"></Text>
         <Text>  </Text> -->
       </div>
-      <div class="flex grow justify-end">
+      <div class="flex grow justify-end flex-wrap">
         <div class="flex place-items-center mx-4">
-          <CButton @click="addQuantity()" class=" w-6" round text=" + "></CButton>
-          <Field> <FormInput
-          v-model:model-value="quantity"
-          type="text"
-          only-numbers
-          class="text-center w-16"
-          @keyup="updateData"
-        ></FormInput></Field>
+          <CButton
+            @click="addQuantity()"
+            class="w-6"
+            round
+            text=" + "
+          ></CButton>
+          <Field>
+            <FormInput
+              v-model:model-value="quantity"
+              type="text"
+              only-numbers
+              class="text-center w-16"
+              @keyup="updateData"
+            ></FormInput
+          ></Field>
           <!-- <button class="mr-2">{{ quantity }}</button> -->
           <CButton @click="subQuantity" class="w-6" round text="-"></CButton>
         </div>
-
       </div>
     </div>
   </div>
@@ -41,8 +48,7 @@ import Text from "./Text.vue";
 import useAPI from "@/composables/useAPI";
 import { watch } from "vue";
 const cartItem = useAPI();
-const emit = defineEmits(['remove'])
-
+const emit = defineEmits(["remove"]);
 
 // tot parince + qunatity
 let quantity = defineModel("quantity");
@@ -51,7 +57,8 @@ let price = defineModel("price");
 // do action listener to update cart using put/post requests and refresh data with answer
 const props = defineProps({
   id: {
-    type: Object},
+    type: Object,
+  },
   name: String,
   availableQuantity: Number,
   imageUrl: {
@@ -61,40 +68,46 @@ const props = defineProps({
   },
 });
 
-async function updateData () {
-  if (quantity.value === 0 ){
+async function updateData() {
+  if (quantity.value === 0) {
     deleteData();
   }
-  console.log("quantity in update data: " + quantity.value)
-   await cartItem.put("/cartItems/" + props.id.userId + "/" + props.id.itemId, {quantity: quantity.value}, {
-        "Content-Type": "application/json",
-        } )
-    price.value = cartItem.data.totalCost
-    quantity.value = cartItem.data.quantity
-   }
+  console.log("quantity in update data: " + quantity.value);
+  await cartItem.put(
+    "/cartItems/" + props.id.userId + "/" + props.id.itemId,
+    { quantity: quantity.value },
+    {
+      "Content-Type": "application/json",
+    }
+  );
+  price.value = cartItem.data.totalCost;
+  quantity.value = cartItem.data.quantity;
+}
 
 async function addQuantity() {
-  console.log("works")
-  console.log(props.availableQuantity)
-    if (props.availableQuantity) {
-        if (quantity.value < props.availableQuantity) {
-            await quantity.value++; // this has actually an effect
-            updateData();
-        }
+  console.log("works");
+  console.log(props.availableQuantity);
+  if (props.availableQuantity) {
+    if (quantity.value < props.availableQuantity) {
+      await quantity.value++; // this has actually an effect
+      updateData();
     }
+  }
 }
 async function subQuantity() {
-    if (props.availableQuantity) {
-        if (quantity.value > 0) {
-            await quantity.value--;
-            updateData(quantity.value);
-        }
+  if (props.availableQuantity) {
+    if (quantity.value > 0) {
+      await quantity.value--;
+      updateData(quantity.value);
     }
+  }
 }
 
-async function deleteData(){
-  await cartItem.delete("/cartItems/" + props.id.userId + "/" + props.id.itemId);
-  emit('remove');
+async function deleteData() {
+  await cartItem.delete(
+    "/cartItems/" + props.id.userId + "/" + props.id.itemId
+  );
+  emit("remove");
 }
 
 // watch(quantity, (newQuantity)=> {
