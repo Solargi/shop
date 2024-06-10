@@ -24,11 +24,11 @@
                 {{ shippingFee }} USD
             </Text>
         </div>
-        <div class="flex justify-start">
+        <div v-if="saved" class="flex justify-start">
             <Text bold>
                 Saved:
             </Text>
-            <div v-if="saved" class=" flex grow"></div>
+            <div  class=" flex grow"></div>
             <Text >
                 {{ saved }} USD
             </Text>
@@ -43,15 +43,18 @@
             </Text>
         </div>
         <div class="flex justify-center">
-            <CButton round-borders text="Checkout" class=" min-w-32"></CButton>
+            <CButton round-borders @click="placeOrder" text="Checkout" class=" min-w-32"></CButton>
         </div>
     </div>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import CButton from './CButton.vue';
 import Text from './Text.vue'
-
+import useAxios from "@/composables/useAPI";
+const api = useAxios();
+const router = useRouter();
 const props = defineProps({
     total: Number,
     subTotal: Number,
@@ -59,5 +62,15 @@ const props = defineProps({
     shippingFee: Number,
 
 });
+
+async function placeOrder()
+{
+  await api.post("/orders/" + localStorage.userId)
+
+  if (!api.error){
+    // let uid = localStorage.userId
+    router.push({name: "orders"});
+  }
+}
 
 </script>

@@ -18,9 +18,16 @@
     <div class="mt-4 px-5 pb-5"></div>
 </template>
 <script setup>
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const props = defineProps({
   id: String,
   imageUrl: String,
   discount: String,
 });
+
+function gotoItem(id){
+    router.push({name: "item", params:{id}});
+}
+
 </script>

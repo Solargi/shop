@@ -5,6 +5,7 @@
         <div class="" v-for="(cartItem, index) in getItems.data">
           <cartItemCard class="max-w-7xl"
             :id="cartItem.id"
+            :itemId="cartItem.id.itemId"
             :name="cartItem.itemDTO.name"
             v-model:price="cartItem.totalCost"
             :imageUrl="cartItem.itemDTO.imageUrl"
@@ -12,7 +13,7 @@
             :availableQuantity="cartItem.itemDTO.availableQuantity"
             @remove="getItems.data.splice(index, 1)"
           ></cartItemCard>
-          <!-- <p>{{ cartItem }}</p> -->
+          <!-- <p>{{ cartItem.id.itemId }}</p> -->
         </div>
       </div>
       <PriceSummary :subTotal="subTotal" :shippingFee="shippingFee" :total="subTotal + shippingFee" class="min-w-80 mt-3">
@@ -43,4 +44,6 @@ getItems.get("/cartItems/" + authStore.userId, {
   Accept: "application/json",
   withCredentials: true,
 });
+
+
 </script>

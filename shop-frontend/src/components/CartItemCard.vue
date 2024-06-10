@@ -3,7 +3,7 @@
     <div
       class="relative m-4 flex w-full flex-wrap max-w-full overflow-hidden justify-items-center rounded-lg border-2 border-black bg-white dark:bg-green-600 shadow-md shadow-black"
     >
-      <CartItemImage id="1" :imageUrl="imageUrl"> </CartItemImage>
+      <CartItemImage :id="itemId" :imageUrl="imageUrl"> </CartItemImage>
       <button class="absolute right-0 mr-2" @click="deleteData">
         remove form cart
       </button>
@@ -59,6 +59,7 @@ const props = defineProps({
   id: {
     type: Object,
   },
+  itemId: Number,
   name: String,
   availableQuantity: Number,
   imageUrl: {
