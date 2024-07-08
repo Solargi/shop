@@ -29,7 +29,7 @@
                 <button @click="addQuantity()" class="bg-slate-900 text-white rounded "> <i class=" fa-xl fa-solid fa-plus" style="color: #ffffff;"></i></button>
             </div>
             <div class="flex flex-row justify-center">
-                <button @click="$emit('addItemToChart')" href="#"
+                <button @click="addItemToChart()" href="#"
                     class="flex items-center justify-center rounded-md bg-slate-900 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
@@ -47,10 +47,17 @@ import { useRouter } from 'vue-router';
 import CText from './Text.vue';
 import FormInput from './FormInput.vue';
 import useOnlyNumericInput from '@/composables/useNumericInput';
+import useAPI from '@/composables/useAPI';
+import { useAuthStore } from '@/stores/AuthStore';
+import { useCartStore } from '@/stores/CartStore';
+const emit = defineEmits(['addItemToChart'])
+const request= useAPI();    
+const authStore = useAuthStore();
+const cartStore = useCartStore();
 const {KeysOnlyNumbers, pasteOnlyNumbers} = useOnlyNumericInput();
 console.log(KeysOnlyNumbers)
 const router = useRouter();
-let quantity = defineModel({default:0});
+let quantity = defineModel({default:1});
 function addQuantity() {
     if (props.availableQuantity) {
         if (quantity.value < props.availableQuantity) {
@@ -64,6 +71,15 @@ function subQuantity() {
             quantity.value--;
         }
     }
+}
+
+async function addItemToChart(){
+    if (authStore.auth && quantity.value > 0){
+        await request.post("/cartItems/" + authStore.userId + "/" + props.id, {quantity: quantity.value})
+        console.log('inside add cart item')
+        await cartStore.updateCart();
+        emit(addItemToChart);
+    } 
 }
 
 function gotoItem(id){

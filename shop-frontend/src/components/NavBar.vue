@@ -5,11 +5,25 @@
     import darkMode from './DarkMode.vue';
     import { useAuthStore } from '@/stores/AuthStore';
     import DropDown from './DropDown.vue';
+import { useCartStore } from '@/stores/CartStore';
+    // import useAPI from '@/composables/useAPI'
+    // const api = useAPI();
     const authStore = useAuthStore();
+    const cartStore = useCartStore();
+    //     if (localStorage.userID && localStorage.auth){
+    //         api.get("/cartItems/" + authStore.userId)
+    //         console.log("HERE")
+    //         console.log(api.data)}
+    localStorage.cartLegnth = 0;
+    //cartStore.updateCart();
+   
+    
+    
     
 </script>
 
 <template>
+    <!-- <p>{{ api.data }}</p> -->
   <header class="sticky .top-0 bg-black shadow-lg items-center width:100%">
     <nav class="flex flex-col sm:flex-row items-center text-white py-6 px-6 justify-center gap-3" >
         <RouterLink :to="{name: 'home'}">
@@ -35,7 +49,7 @@
         
         <RouterLink :to="{name: 'cart'}">
             <div class="flex items-center">
-                <cart/>
+                <cart v-model="cartStore.cartLegnth"/>
             </div>
         </RouterLink>
 

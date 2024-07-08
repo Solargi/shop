@@ -6,12 +6,12 @@ export default function useAPI() {
         processing: false,
         error: null,
         response:null,
-        data: null,
+        data: [],
 
         async sendRequest(method, url, data = null, headers={}) {
             if (this.processing) return;
             this.processing = true;
-            this.data = null;
+            this.data = [];
             this.response = null;
             this.error = null;
             console.log("data: " + data)
@@ -58,8 +58,7 @@ export default function useAPI() {
         },
         async delete (url, headers = {}) {
             await this.sendRequest("delete", url, null, headers)
-        }
-        
+        },
         })
         
     }

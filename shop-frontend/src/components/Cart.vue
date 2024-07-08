@@ -22,9 +22,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-
-const cartLength = ref('');
+const cartLength = defineModel();
 
 </script>
