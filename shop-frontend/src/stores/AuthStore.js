@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 //needed sto store pinia data in local storage reactively:
 import { useStorage } from "@vueuse/core"; 
+import { useRouter } from 'vue-router';
 import axios from "../axios-config";
 
 export const useAuthStore = defineStore("authStore", {
@@ -11,7 +12,8 @@ export const useAuthStore = defineStore("authStore", {
     auth: useStorage("auth", null),//-> fucks up $resetfunction in pinia store
     userId: useStorage ("userId", null),
     roles: null,
-  }),
+    router: useRouter()
+  } ),
   getters: {
     getAuth: (state) => state.auth 
   },
@@ -29,7 +31,9 @@ export const useAuthStore = defineStore("authStore", {
         this.user = null;
         this.userId = null;
         this.role = null;
-        axios.get('/users/logout');
+        //axios.get('/users/logout');
+        //TODO redirict to home page
+        this.router.push({name:'home'})
         //log out axios call
         //  delete value in localstorage (vueuse):
         // this.auth = null;
