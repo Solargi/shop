@@ -1,4 +1,4 @@
-<template class="bg-black">
+<template>
   <!-- <p>{{ user }}</p>
   <p>{{ authStore }}</p>
   <p>{{ authStore.getLocalStorage }}</p>
@@ -35,7 +35,6 @@
       </div>
     </div>
   </div> -->
-
   <div class="flex justify-center mt-10">
     <form class="flex flex-wrap justify-center">
       <div class="flex flex-col">
@@ -55,7 +54,7 @@
     Change Password
   </button>
   <button
-    @click="authStore.logout()"
+    @click="logout($event)"
     class="bg-blue-500 hover:bg-blue-600 mx-3 mt-2.5 py-2.5 rounded"
   > Logout</button>
   <button
@@ -66,7 +65,7 @@
   </button>
     </div>
       <div class="flex flex-col">
-        <p>Username: {{ data.username }}</p>
+        <Text bold >Username: {{ data.username }}</Text>
         <Field
           :label="'Username: ' + user.username"
           required
@@ -138,18 +137,11 @@
 import { ref, reactive, toRaw } from "vue";
 import axios from "../axios-config";
 import Field from "@/components/Field.vue";
+import Text from "@/components/Text.vue";
 import FormInput from "@/components/FormInput.vue";
 import { useAuthStore } from "@/stores/AuthStore";
-// let user = reactive({
-//   username: "",
-//   name: "",
-//   surname: "",
-//   address: "",
-//   email:"",
-//   password:"",
-//   birthDate:"",
-//   roles:'',
-// });
+
+
 let user = ref("");
 const UsernameErrorMessage = ref("");
 const NameErrorMessage = ref("");
@@ -234,5 +226,25 @@ axios
         //errorMessage.value = 'An unexpected error occurred. Please try again later.';
       }
     });
+}
+
+function logout(event){
+  event.preventDefault()
+  axios.get('/users/logout', {
+      headers: {
+        "Content-Type": "application/json",
+          Accept: "application/json",
+      },
+    },)
+    .then(response => {
+      console.log(response.data);
+      //redirict to restricted requested page if exist else to home page
+      // const nextUrl = localStorage.getItem('requestedUrl')
+      // if(nextUrl && nextUrl !== "/profile"){
+      //   router.push(nextUrl);
+      // } else{
+      //   router.push({name:'home'})
+      // }
+    }).catch(error => {console.log(error)}).finally(authStore.logout())
 }
 </script>
