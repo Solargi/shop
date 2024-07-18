@@ -53,8 +53,10 @@ import { useRouter } from 'vue-router';
 import CButton from './CButton.vue';
 import Text from './Text.vue'
 import useAxios from "@/composables/useAPI";
+import { useCartStore } from '@/stores/CartStore';
 const api = useAxios();
 const router = useRouter();
+const cartStore = useCartStore();
 const props = defineProps({
     total: Number,
     subTotal: Number,
@@ -66,7 +68,7 @@ const props = defineProps({
 async function placeOrder()
 {
   await api.post("/orders/" + localStorage.userId)
-
+  cartStore.updateCart();
   if (!api.error){
     // let uid = localStorage.userId
     router.push({name: "orders"});
