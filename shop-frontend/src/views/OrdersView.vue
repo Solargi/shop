@@ -25,7 +25,7 @@ import useAxios from "@/composables/useAPI";
 import Order from "@/components/Order.vue"
 const api = useAxios();
 
-api.get("/orders/1")
+api.get("/orders/user/" + localStorage.userId)
 
 
 </script>
