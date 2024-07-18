@@ -85,7 +85,11 @@ public class AuthController {
                 //(it's using https)
                 .secure(false)
                 .httpOnly(true)
-                .sameSite("true")
+                .sameSite("Lax")
+                //very important to set path to main path, otherwise the browser will send the cookie
+                //only on the specific part eg. /api/v1/users and not for /api/v1/orders
+                //causing  spring sec to set : Set SecurityContextHolder to anonymous SecurityContext failing authenitication
+                .path("/api/v1/")
                 .maxAge(Duration.ofHours(2))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -95,12 +99,13 @@ public class AuthController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/logout")
     public ResponseEntity<Object> logout(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("token", null)
+        ResponseCookie cookie = ResponseCookie.from("token")
                 //set secure to true in production so that the cookie is sent only if the connection is secure
                 //(it's using https)
                 .secure(false)
                 .httpOnly(true)
-                .sameSite("true")
+                .sameSite("Lax")
+                .path("/api/v1/")
                 .maxAge(0)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

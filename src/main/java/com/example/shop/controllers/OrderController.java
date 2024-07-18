@@ -1,13 +1,11 @@
 package com.example.shop.controllers;
 
 
-import com.example.shop.dtos.AddressRequestDTO;
-import com.example.shop.dtos.OrderRequestDTO;
-import com.example.shop.dtos.OrderResponseDTO;
-import com.example.shop.dtos.UserDTO;
+import com.example.shop.dtos.*;
 import com.example.shop.dtos.converters.OrderRequestDTOToOrderConverter;
 import com.example.shop.dtos.converters.OrderResponseDTOToOrderConverter;
 import com.example.shop.dtos.converters.OrderToOrderDTOConverter;
+import com.example.shop.models.CartItem;
 import com.example.shop.models.Order;
 import com.example.shop.services.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -188,6 +186,17 @@ public class OrderController {
                 .toList();
         return ResponseEntity.ok(foundOrdersDTO);
 
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<OrderResponseDTO>> getCartItemsByUserId(@PathVariable("userId") Integer userId){
+        List<Order> foundOrders = this.orderService.findAllByUserId(userId);
+        //convert to dtos
+        List<OrderResponseDTO> foundOrdersDTO = foundOrders.stream()
+                .map(this.orderToOrderDTOConverter::convert)
+                .toList();
+        return ResponseEntity.ok(foundOrdersDTO);
     }
 
     @SecurityRequirement(name = "bearerAuth")

@@ -161,6 +161,17 @@ public class CartItemController {
 
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<CartItemResponseDTO>> getCartItemsByUserId(@PathVariable("userId") Integer userId){
+        List<CartItem> foundCartItems = this.cartItemService.findAllByUserId(userId);
+        //convert to dtos
+        List<CartItemResponseDTO> foundItemsDTO = foundCartItems.stream()
+                .map(this.cartItemToCartItemResponseDTOConverter::convert)
+                .toList();
+        return ResponseEntity.ok(foundItemsDTO);
+
+    }
+
     @SecurityRequirement(name = "bearerAuth")
     @Parameters({
             @Parameter(name = "userId", description = "The target userId", example = "1"),

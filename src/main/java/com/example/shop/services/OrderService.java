@@ -28,6 +28,10 @@ public class OrderService {
         return this.orderRepository.findById(orderId).orElseThrow(() -> new ObjectNotFoundException("order",orderId));
     }
 
+    public List<Order> findAllByUserId(Integer userId){
+        return this.orderRepository.findAllByUserId(userId);
+    }
+
     public List<Order> findAll(){
         return this.orderRepository.findAll();
     }
