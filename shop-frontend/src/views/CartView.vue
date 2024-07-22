@@ -34,7 +34,7 @@ import { computed, ref } from "vue";
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const getItems = useAxios();
-const shippingFee = 35
+const shippingFee = 10
 const subTotal = computed(()=>{
   if (getItems.data){
     return getItems.data.reduce((sum, cartItem)=> 
